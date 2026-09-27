@@ -14,10 +14,37 @@ mkdir -p "$WORK/logs" "$DEPLOY"
 
 # Common tarballs are skipped: every build tarball already carries its core.
 untar() {
-    local glob="$1"
-    shift
-    find download-artifact -path "*/Throne-*-$glob/artifacts.tgz" -not -path '*-Common-*' -print0 |
-        xargs -0 -r -I{} -P "$JOBS" tar xzf {} "$@"
+    local glob="${1:-*}"
+    shift || true
+    echo "=== Searching download-artifact for artifacts (glob: $glob) ==="
+    local found=0
+    while IFS= read -r -d '' tb; do
+        local norm_tb="${tb//\\//}"
+        if [[ "$norm_tb" == *"-Common-"* ]]; then
+            echo "Skipping Common tarball: $norm_tb"
+            continue
+        fi
+        echo "Found artifact archive: $norm_tb -> Extracting..."
+        tar xzf "$tb" "$@"
+        found=1
+    done < <(find download-artifact -name "artifacts.tgz" -print0 2>/dev/null)
+
+    if [ "$found" -eq 0 ]; then
+        echo "WARNING: No artifacts.tgz found by -name in download-artifact! Listing tree:"
+        find download-artifact 2>/dev/null || true
+        # Fallback to any .tgz file
+        while IFS= read -r -d '' tb; do
+            echo "Fallback extracting: $tb"
+            tar xzf "$tb" "$@"
+            found=1
+        done < <(find download-artifact -name "*.tgz" -not -path '*-Common-*' -print0 2>/dev/null)
+    fi
+
+    echo "=== Extracted deployment contents: ==="
+    ls -la "$DEPLOY" 2>/dev/null || echo "DEPLOY directory ($DEPLOY) not found"
+    if [ -d "$DEPLOY" ]; then
+        ls -la "$DEPLOY"/* 2>/dev/null || true
+    fi
 }
 
 build_installer() {
@@ -26,6 +53,15 @@ build_installer() {
     local parts
     IFS='.' read -r -a parts <<<"${version%%-*}"
     local iscc="${ISCC:-$(command -v iscc.exe || echo '/c/Program Files (x86)/Inno Setup 6/ISCC.exe')}"
+    if [ ! -f "$iscc" ] && ! command -v iscc.exe >/dev/null 2>&1; then
+        echo "Searching for ISCC.exe in Program Files..."
+        local alt_iscc
+        alt_iscc=$(find "/c/Program Files" "/c/Program Files (x86)" -name "ISCC.exe" 2>/dev/null | head -n 1 || true)
+        if [ -n "$alt_iscc" ]; then
+            iscc="$alt_iscc"
+        fi
+    fi
+    echo "Using Inno Setup compiler: $iscc"
     # ISCC is a native Windows program: stop MSYS from rewriting its /-switches as paths.
     MSYS_NO_PATHCONV=1 "$iscc" /Q \
         "/DAppVersion=$version" \
@@ -41,7 +77,7 @@ build_installer() {
 # Hard links give the archive its Throne/ root without moving a dir other tasks still read.
 zip_dir() {
     mkdir -p "$WORK/$2"
-    cp -al "$DEPLOY/$1" "$WORK/$2/Throne"
+    cp -al "$DEPLOY/$1" "$WORK/$2/Throne" 2>/dev/null || cp -r "$DEPLOY/$1" "$WORK/$2/Throne"
     cd "$WORK/$2"
     if command -v zip >/dev/null; then
         zip -q -r "$DEPLOY/Throne-$TAG-$2.zip" Throne
