@@ -133,9 +133,10 @@ void GroupItem::on_remove_clicked() {
     if (QMessageBox::question(this, tr("Confirmation"), tr("Remove %1?").arg(ent->name)) ==
         QMessageBox::StandardButton::Yes) {
         auto mw = GetMainWindow();
-        if (mw && mw->running != nullptr) {
+        auto runningProfile = mw ? mw->GetRunningProfile() : nullptr;
+        if (runningProfile != nullptr) {
             // If the running profile was in the deleted group, preserve it by migrating to default group so proxy is not stopped
-            if (mw->running->gid == ent->id || ent->HasProfile(mw->running->id)) {
+            if (runningProfile->gid == ent->id || ent->HasProfile(runningProfile->id)) {
                 auto defaultGroup = Configs::dataManager->groupsRepo->GetGroup(0);
                 if (!defaultGroup) {
                     for (int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
@@ -146,18 +147,18 @@ void GroupItem::on_remove_clicked() {
                     }
                 }
                 if (defaultGroup != nullptr) {
-                    mw->running->gid = defaultGroup->id;
-                    defaultGroup->AddProfile(mw->running->id);
+                    runningProfile->gid = defaultGroup->id;
+                    defaultGroup->AddProfile(runningProfile->id);
                     Configs::dataManager->groupsRepo->Save(defaultGroup);
-                    Configs::dataManager->profilesRepo->Save(mw->running);
-                    MW_show_log(tr("Active node %1 preserved and moved to %2").arg(mw->running->name, defaultGroup->name));
+                    Configs::dataManager->profilesRepo->Save(runningProfile);
+                    MW_show_log(tr("Active node %1 preserved and moved to %2").arg(runningProfile->name, defaultGroup->name));
                 }
             }
         }
         // Clean up remaining profiles of this deleted group
         QList<int> profilesToDelete = ent->Profiles();
-        if (mw && mw->running != nullptr) {
-            profilesToDelete.removeAll(mw->running->id);
+        if (runningProfile != nullptr) {
+            profilesToDelete.removeAll(runningProfile->id);
         }
         if (!profilesToDelete.isEmpty()) {
             Configs::dataManager->profilesRepo->BatchDeleteProfiles(profilesToDelete, false);

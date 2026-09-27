@@ -103,6 +103,8 @@ public:
 
     qint64 GetCorePid();
     QString GetRunningConfigName();
+    std::shared_ptr<Configs::Profile> running;
+    std::shared_ptr<Configs::Profile> GetRunningProfile() const { return running; }
 
     // The two live VPN queries below block on an RPC; never call them from the UI thread.
     static QString liveVpnConnectOkText();
@@ -260,7 +262,6 @@ private:
     QTextDocument *qvLogDocument = new QTextDocument(this);
     QString title_error;
     std::optional<Icon::TrayIconStatus> icon_status;
-    std::shared_ptr<Configs::Profile> running;
     int last_running_profile_id = -1;
     bool m_profileConnecting = false;
     bool m_profileDisconnecting = false;
@@ -536,6 +537,7 @@ private:
     void refreshConnectionIcons();
 
     friend class TestRunner;
+    friend class GroupItem;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
