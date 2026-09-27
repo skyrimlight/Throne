@@ -1,0 +1,258 @@
+#include <include/database/entities/Group.h>
+
+#include "include/database/ProfilesRepo.h"
+#include "include/global/Configs.hpp"
+
+namespace Configs
+{
+    QJsonObject SubscriptionOptions::ToJson() const {
+        QJsonObject json;
+        if (!user_agent.isEmpty()) json["user_agent"] = user_agent;
+        if (send_hwid != sendHwid::keepDefault) json["send_hwid"] = static_cast<int>(send_hwid);
+        if (!hwid.isEmpty()) json["hwid"] = hwid;
+        if (!hwid_os.isEmpty()) json["hwid_os"] = hwid_os;
+        if (!hwid_os_version.isEmpty()) json["hwid_os_version"] = hwid_os_version;
+        if (!hwid_model.isEmpty()) json["hwid_model"] = hwid_model;
+        if (keep_working) json["keep_working"] = true;
+        if (remove_duplicates) json["remove_duplicates"] = true;
+        if (remove_insecure) json["remove_insecure"] = true;
+        if (remove_invalid) json["remove_invalid"] = true;
+        if (url_test) json["url_test"] = true;
+        if (remove_unavailable) json["remove_unavailable"] = true;
+        if (sort_by_latency) json["sort_by_latency"] = true;
+        return json;
+    }
+
+    SubscriptionOptions SubscriptionOptions::FromJson(const QJsonObject &json) {
+        SubscriptionOptions options;
+        options.user_agent = json["user_agent"].toString();
+        const int mode = json["send_hwid"].toInt();
+        if (mode == static_cast<int>(sendHwid::on) || mode == static_cast<int>(sendHwid::off)) {
+            options.send_hwid = static_cast<sendHwid>(mode);
+        }
+        options.hwid = json["hwid"].toString();
+        options.hwid_os = json["hwid_os"].toString();
+        options.hwid_os_version = json["hwid_os_version"].toString();
+        options.hwid_model = json["hwid_model"].toString();
+        options.keep_working = json["keep_working"].toBool();
+        options.remove_duplicates = json["remove_duplicates"].toBool();
+        options.remove_insecure = json["remove_insecure"].toBool();
+        options.remove_invalid = json["remove_invalid"].toBool();
+        options.url_test = json["url_test"].toBool();
+        options.remove_unavailable = json["remove_unavailable"].toBool();
+        options.sort_by_latency = json["sort_by_latency"].toBool();
+        return options;
+    }
+
+    void Group::clearCalculatedColumnWidth() {
+        calculated_column_width.clear();
+    }
+
+    QList<int> Group::Profiles() const {
+        return profiles;
+    }
+
+    double bitrateToBps(const QString& str)
+    {
+        if (str.endsWith("Gbps", Qt::CaseInsensitive)) {
+            double val = str.left(str.size() - 4).toDouble();
+            return val * 1e9;
+        }
+        if (str.endsWith("Mbps", Qt::CaseInsensitive)) {
+            double val = str.left(str.size() - 4).toDouble();
+            return val * 1e6;
+        }
+        if (str.endsWith("Kbps", Qt::CaseInsensitive)) {
+            double val = str.left(str.size() - 4).toDouble();
+            return val * 1e3;
+        }
+        if (str == "N/A") return -1;
+        return 0.0;
+    }
+
+    bool Group::SortProfiles(GroupSortAction sortAction) {
+        if (!mutex.tryLock()) {
+            return false;
+        }
+        // Prune dangling or deleted profile IDs before sorting
+        QList<int> validProfiles;
+        validProfiles.reserve(profiles.size());
+        for (int pid : profiles) {
+            if (dataManager->profilesRepo->GetProfile(pid) != nullptr) {
+                validProfiles.append(pid);
+            }
+        }
+        profiles = validProfiles;
+
+        auto allProfs = dataManager->profilesRepo->GetProfileBatch(profiles); // to warm up the cache
+        switch (sortAction.method) {
+            case GroupSortMethod::Raw: {
+                break;
+            }
+            case GroupSortMethod::ById: {
+                break;
+            }
+            case GroupSortMethod::ByAddress:
+            case GroupSortMethod::ByName:
+            case GroupSortMethod::ByTestResult:
+            case GroupSortMethod::ByLatency:
+            case GroupSortMethod::ByTraffic:
+            case GroupSortMethod::BySecurity:
+            case GroupSortMethod::ByType: {
+                auto get_latency_for_sort = [](const std::shared_ptr<Profile>& prof) {
+                    if (!prof) return 100000;
+                    auto i = prof->latency;
+                    if (i == 0) i = 100000;
+                    if (i < 0) i = 99999;
+                    return i;
+                };
+                std::ranges::sort(profiles,
+                                  [&](int a, int b) {
+                                      auto profA = dataManager->profilesRepo->GetProfile(a);
+                                      auto profB = dataManager->profilesRepo->GetProfile(b);
+                                      if (!profA && !profB) return false;
+                                      if (!profA) return false;
+                                      if (!profB) return true;
+
+                                      QString ms_a;
+                                      QString ms_b;
+                                      if (sortAction.method == GroupSortMethod::ByType) {
+                                          ms_a = profA->outbound ? profA->outbound->DisplayType() : profA->type;
+                                          ms_b = profB->outbound ? profB->outbound->DisplayType() : profB->type;
+                                      } else if (sortAction.method == GroupSortMethod::ByName) {
+                                          ms_a = profA->outbound ? profA->outbound->name : profA->name;
+                                          ms_b = profB->outbound ? profB->outbound->name : profB->name;
+                                      } else if (sortAction.method == GroupSortMethod::ByAddress) {
+                                          ms_a = profA->outbound ? profA->outbound->DisplayAddress() : QString();
+                                          ms_b = profB->outbound ? profB->outbound->DisplayAddress() : QString();
+                                      } else if (sortAction.method == GroupSortMethod::BySecurity) {
+                                          if (!profA->outbound || !profB->outbound) {
+                                              return profA->outbound != nullptr;
+                                          }
+                                          auto secA = profA->outbound->GetSecurity();
+                                          auto secB = profB->outbound->GetSecurity();
+                                          if (secA.level != secB.level) {
+                                              return sortAction.descending ? secA.level > secB.level
+                                                                           : secA.level < secB.level;
+                                          }
+                                          ms_a = secA.transport + secA.label;
+                                          ms_b = secB.transport + secB.label;
+                                      } else if (sortAction.method == GroupSortMethod::ByTestResult || sortAction.method == GroupSortMethod::ByLatency) {
+                                          if (test_sort_by == testBy::latency || sortAction.method == GroupSortMethod::ByLatency) {
+                                              return sortAction.descending ? get_latency_for_sort(profA) > get_latency_for_sort(profB) : get_latency_for_sort(profA) < get_latency_for_sort(profB);
+                                          }
+                                          if (test_sort_by == testBy::dlSpeed) {
+                                              return sortAction.descending ? bitrateToBps(profA->dl_speed) > bitrateToBps(profB->dl_speed) : bitrateToBps(profA->dl_speed) < bitrateToBps(profB->dl_speed);
+                                          }
+                                          if (test_sort_by == testBy::ulSpeed) {
+                                              return sortAction.descending ? bitrateToBps(profA->ul_speed) > bitrateToBps(profB->ul_speed) : bitrateToBps(profA->ul_speed) < bitrateToBps(profB->ul_speed);
+                                          }
+                                          if (test_sort_by == testBy::ipOut) {
+                                              return sortAction.descending ? profA->ip_out > profB->ip_out : profA->ip_out < profB->ip_out;
+                                          }
+                                      } else if (sortAction.method == GroupSortMethod::ByTraffic) {
+                                          if (traffic_sort_by == trafficBy::total) {
+                                              auto totalA = profA->traffic_downlink + profA->traffic_uplink;
+                                              auto totalB = profB->traffic_downlink + profB->traffic_uplink;
+                                              return sortAction.descending ? totalA > totalB  : totalA < totalB;
+                                          }
+                                          if (traffic_sort_by == trafficBy::dl) {
+                                              return sortAction.descending ? profA->traffic_downlink > profB->traffic_downlink : profA->traffic_downlink < profB->traffic_downlink;
+                                          }
+                                          if (traffic_sort_by == trafficBy::ul) {
+                                              return sortAction.descending ? profA->traffic_uplink > profB->traffic_uplink : profA->traffic_uplink < profB->traffic_uplink;
+                                          }
+                                      }
+                                      return sortAction.descending ? ms_a > ms_b : ms_a < ms_b;
+                                  });
+                break;
+            }
+        }
+        mutex.unlock();
+        return true;
+    }
+
+    bool Group::AddProfile(int ID)
+    {
+        QMutexLocker locker(&mutex);
+        if (HasProfile(ID))
+        {
+            return false;
+        }
+        profiles.append(ID);
+        return true;
+    }
+
+    bool Group::AddProfileBatch(const QList<int>& IDs) {
+        QSet<int> currentProfiles;
+        for (const auto& profileID : profiles) {
+            currentProfiles.insert(profileID);
+        }
+        QMutexLocker locker(&mutex);
+        for (auto profileID : IDs) {
+            if (!currentProfiles.contains(profileID)) {
+                profiles.append(profileID);
+            }
+        }
+        return true;
+    }
+
+    bool Group::RemoveProfile(int ID)
+    {
+        QMutexLocker locker(&mutex);
+        if (!HasProfile(ID)) return false;
+        profiles.removeAll(ID);
+        return true;
+    }
+
+    bool Group::RemoveProfileBatch(const QList<int>& IDs) {
+        QSet<int> toDel;
+        for (auto ID : IDs) {
+            toDel.insert(ID);
+        }
+        QList<int> newIDs;
+        QMutexLocker locker(&mutex);
+        for (auto inID : profiles) {
+            if (!toDel.contains(inID)) {
+                newIDs.append(inID);
+            }
+        }
+        profiles = newIDs;
+        return true;
+    }
+
+    bool Group::SwapProfiles(int idx1, int idx2)
+    {
+        QMutexLocker locker(&mutex);
+        if (profiles.size() <= idx1 || profiles.size() <= idx2) return false;
+        profiles.swapItemsAt(idx1, idx2);
+        return true;
+    }
+
+    bool Group::EmplaceProfile(int idx, int newIdx)
+    {
+        QMutexLocker locker(&mutex);
+        if (profiles.size() <= idx || profiles.size() <= newIdx) return false;
+        profiles.insert(newIdx+1, profiles[idx]);
+        if (idx < newIdx) profiles.remove(idx);
+        else profiles.remove(idx+1);
+        return true;
+    }
+
+    bool Group::ShouldAutoClearUnavailable() const
+    {
+        // Single subscription/group setting priority > global setting
+        if (auto_clear_mode == 1) return true;
+        if (auto_clear_mode == 2) return false;
+        // Mode 0: KeepDefault (follow global setting, default true)
+        if (dataManager != nullptr && dataManager->settingsRepo != nullptr) {
+            return dataManager->settingsRepo->auto_clear_unavailable;
+        }
+        return true;
+    }
+
+    bool Group::HasProfile(int ID) const
+    {
+        return profiles.contains(ID);
+    }
+}
