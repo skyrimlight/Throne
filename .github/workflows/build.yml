@@ -5,9 +5,11 @@ on:
       tag:
         description: "Release Tag and version"
         required: true
+        default: "v1.0.8-dev"
       publish:
-        description: "r for normal release, p for prerelease, leave empty to not publish anything"
+        description: "r for normal release, p for prerelease, defaults to r"
         required: false
+        default: "r"
 jobs:
   build-go:
     name: Build Go (${{ matrix.cross_os }}-${{ matrix.cross_arch }})
@@ -227,8 +229,20 @@ jobs:
       - name: PreRelease
         if: github.event.inputs.publish == 'p'
         run: |
-          ./ghr -prerelease -delete -c ${{ github.sha }} -t "${{ github.token }}" -n "${{ github.event.inputs.tag }}" "${{ github.event.inputs.tag }}" deployment
+          TAG_NAME="${{ github.event.inputs.tag }}"
+          [ -z "$TAG_NAME" ] && TAG_NAME="v1.0.8-dev"
+          ./ghr -prerelease -delete -c ${{ github.sha }} -t "${{ github.token }}" -n "$TAG_NAME" "$TAG_NAME" deployment
       - name: Release
-        if: github.event.inputs.publish == 'r'
+        if: github.event.inputs.publish != 'p' && github.event.inputs.publish != 'none' && github.event.inputs.publish != 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          ./ghr -delete -c ${{ github.sha }} -t "${{ github.token }}" -n "${{ github.event.inputs.tag }}" "${{ github.event.inputs.tag }}" deployment
+          TAG_NAME="${{ github.event.inputs.tag }}"
+          [ -z "$TAG_NAME" ] && TAG_NAME="v1.0.8-dev"
+          echo "Publishing release $TAG_NAME to GitHub Releases..."
+          if ./ghr -delete -c ${{ github.sha }} -t "${{ github.token }}" -n "$TAG_NAME" "$TAG_NAME" deployment; then
+            echo "Successfully published via ghr."
+          else
+            echo "Falling back to GitHub CLI gh release..."
+            gh release create "$TAG_NAME" deployment/* --title "$TAG_NAME" --notes "Automated release build for Throne ($TAG_NAME)" --clobber
+          fi
