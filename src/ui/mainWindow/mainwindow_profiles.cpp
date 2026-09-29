@@ -634,23 +634,38 @@ void MainWindow::applyDefaultSort() {
         auto currGroup = Configs::dataManager->groupsRepo->CurrentGroup();
         if (currGroup == nullptr) return;
         const bool isDefaultGroup = (currGroup->id == 0 || currGroup->name.compare(tr("Default"), Qt::CaseInsensitive) == 0 || currGroup->name.compare("Default", Qt::CaseInsensitive) == 0);
-        if (isDefaultGroup && Configs::dataManager->settingsRepo->default_group_include_all) {
-            // When not viewing under a specific subscription (Default group displaying all nodes):
-            // Ensure currGroup->profiles contains all valid profiles from all groups
-            QList<int> allProfileIds = Configs::dataManager->profilesRepo->GetAllProfileIds();
-            QList<int> validProfiles;
-            for (int pid : allProfileIds) {
-                if (Configs::dataManager->profilesRepo->GetProfile(pid) != nullptr) {
-                    validProfiles.append(pid);
-                }
-            }
-            currGroup->profiles = validProfiles;
-        }
 
         GroupSortAction action;
         action.method = static_cast<GroupSortMethod::GroupSortMethod>(Configs::dataManager->settingsRepo->default_sort_method);
         if (action.method == GroupSortMethod::Raw) {
-            action.method = GroupSortMethod::ByLatency;
+            if (isDefaultGroup && Configs::dataManager->settingsRepo->default_group_include_all) {
+                // Reconstruct natural subscription-grouped order
+                QList<int> tabOrder = Configs::dataManager->groupsRepo->GetGroupsTabOrder();
+                QList<int> orderedProfiles;
+                QSet<int> seen;
+                for (int subGid : tabOrder) {
+                    auto subGroup = Configs::dataManager->groupsRepo->GetGroup(subGid);
+                    if (!subGroup || subGroup->id == currGroup->id) continue;
+                    for (int pid : subGroup->profiles) {
+                        if (!seen.contains(pid) && Configs::dataManager->profilesRepo->GetProfile(pid) != nullptr) {
+                            orderedProfiles.append(pid);
+                            seen.insert(pid);
+                        }
+                    }
+                }
+                for (int pid : Configs::dataManager->profilesRepo->GetAllProfileIds()) {
+                    if (!seen.contains(pid) && Configs::dataManager->profilesRepo->GetProfile(pid) != nullptr) {
+                        orderedProfiles.append(pid);
+                        seen.insert(pid);
+                    }
+                }
+                currGroup->profiles = orderedProfiles;
+                Configs::dataManager->groupsRepo->Save(currGroup);
+                runOnUiThread([=, this] { refresh_proxy_list({}, true); });
+                return;
+            } else {
+                action.method = GroupSortMethod::ByLatency;
+            }
         }
         action.descending = Configs::dataManager->settingsRepo->default_sort_descending;
         if (!currGroup->SortProfiles(action)) {

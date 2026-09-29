@@ -154,11 +154,11 @@ namespace Configs {
         int sub_auto_update = -30;
         qint64 sub_auto_update_last = 0;
         // URL test global settings
-        bool auto_clear_unavailable = true; // Global auto-delete unavailable nodes after URL test (default: true)
-        bool auto_sort_after_test = true;   // Automatically apply default sort after URL test (default: true)
+        bool auto_clear_unavailable = false; // Global auto-delete unavailable nodes after URL test (default: false)
+        bool auto_sort_after_test = false;   // Automatically apply default sort after URL test (default: false to preserve subscription order)
         int default_sort_method = 4;        // GroupSortMethod::ByLatency (default: 4)
         bool default_sort_descending = false;
-        bool default_group_include_all = false; // Whether Default group includes all nodes on sub update (default: false)
+        bool default_group_include_all = true; // Whether Default group includes all nodes (default: true)
         bool sub_clear = false;
         bool sub_show_change_popup = true;
         bool sub_send_hwid = false;

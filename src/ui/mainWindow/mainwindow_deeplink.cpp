@@ -7,6 +7,7 @@
 #include <QImageReader>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QRegularExpression>
 #include <QStringConverter>
 #include <QUrl>
 
@@ -253,7 +254,49 @@ void MainWindow::import_or_handle_deeplink(const QString &text) {
 
 void MainWindow::import_text(const QString &text) {
     const auto content = text.trimmed();
-    if (content.startsWith("http://") || content.startsWith("https://")) {
+    if (content.isEmpty()) return;
+
+    // Detect if content contains multiple lines of HTTP/HTTPS subscription URLs
+    QStringList lines = text.split(QRegularExpression("[\r\n]+"), Qt::SkipEmptyParts);
+    QStringList urls;
+    for (const auto &rawLine : lines) {
+        QString line = rawLine.trimmed();
+        if (line.startsWith("http://", Qt::CaseInsensitive) || line.startsWith("https://", Qt::CaseInsensitive)) {
+            urls.append(line);
+        }
+    }
+
+    if (urls.size() > 1) {
+        const QStringList items{
+            QObject::tr("Batch create subscription groups (%1 subscriptions)").arg(urls.size()),
+            QObject::tr("Batch add profiles to current group (%1 subscriptions)").arg(urls.size()),
+            QObject::tr("Import HTTP proxy profiles"),
+        };
+        bool ok = false;
+        const auto choice = QInputDialog::getItem(
+            nullptr,
+            QObject::tr("Multiple URLs detected"),
+            QObject::tr("Detected %1 subscription URLs:\n%2\n\nHow to proceed?").arg(urls.size()).arg(urls.join("\n")),
+            items,
+            0,
+            false,
+            &ok
+        );
+        if (!ok) return;
+
+        int index = items.indexOf(choice);
+        if (index == 0) {
+            for (const auto &url : urls) {
+                Subscription::updater()->SubscribeUrl(url);
+            }
+            return;
+        } else if (index == 1) {
+            for (const auto &url : urls) {
+                Subscription::updater()->ImportUrl(url);
+            }
+            return;
+        }
+    } else if (content.startsWith("http://") || content.startsWith("https://")) {
         const QStringList items{
             QObject::tr("Add profiles to this group"),
             QObject::tr("Create new subscription group"),

@@ -33,15 +33,45 @@ void MainWindow::show_group(int gid) {
 
     const bool isDefaultGroup = (gid == 0 || group->name.compare(tr("Default"), Qt::CaseInsensitive) == 0 || group->name.compare("Default", Qt::CaseInsensitive) == 0);
     if (isDefaultGroup && Configs::dataManager->settingsRepo->default_group_include_all) {
-        QList<int> allProfileIds = Configs::dataManager->profilesRepo->GetAllProfileIds();
+        // Collect all profiles organized by subscription tab order to preserve natural subscription order
+        QList<int> tabOrder = Configs::dataManager->groupsRepo->GetGroupsTabOrder();
         QList<int> validProfiles;
-        for (int pid : allProfileIds) {
-            if (Configs::dataManager->profilesRepo->GetProfile(pid) != nullptr) {
-                validProfiles.append(pid);
+        QSet<int> seen;
+
+        // If Default already has an established order (e.g. user-sorted or existing), retain valid profiles
+        if (!group->profiles.isEmpty()) {
+            for (int pid : group->profiles) {
+                if (Configs::dataManager->profilesRepo->GetProfile(pid) != nullptr && !seen.contains(pid)) {
+                    validProfiles.append(pid);
+                    seen.insert(pid);
+                }
             }
         }
-        group->profiles = validProfiles;
-        Configs::dataManager->groupsRepo->Save(group);
+
+        // Now append any newly added nodes from each subscription group in their display order
+        for (int subGid : tabOrder) {
+            auto subGroup = Configs::dataManager->groupsRepo->GetGroup(subGid);
+            if (!subGroup || subGroup->id == group->id) continue;
+            for (int pid : subGroup->profiles) {
+                if (!seen.contains(pid) && Configs::dataManager->profilesRepo->GetProfile(pid) != nullptr) {
+                    validProfiles.append(pid);
+                    seen.insert(pid);
+                }
+            }
+        }
+
+        // Standalone profiles (profiles in database not in any subscription)
+        for (int pid : Configs::dataManager->profilesRepo->GetAllProfileIds()) {
+            if (!seen.contains(pid) && Configs::dataManager->profilesRepo->GetProfile(pid) != nullptr) {
+                validProfiles.append(pid);
+                seen.insert(pid);
+            }
+        }
+
+        if (validProfiles != group->profiles) {
+            group->profiles = validProfiles;
+            Configs::dataManager->groupsRepo->Save(group);
+        }
     }
 
     if (Configs::dataManager->settingsRepo->current_group != gid) {

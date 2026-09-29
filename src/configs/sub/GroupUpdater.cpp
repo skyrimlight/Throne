@@ -379,7 +379,32 @@ namespace Subscription {
         const auto content = url.trimmed();
         enqueue({-1, false, [=, this] {
             auto group = Configs::GroupsRepo::NewGroup();
-            group->name = QUrl(content).host();
+            QUrl qurl(content);
+            QString host = qurl.host();
+            QString path = qurl.path().trimmed();
+            while (path.startsWith('/')) path = path.mid(1);
+            while (path.endsWith('/')) path.chop(1);
+
+            QString baseName = host;
+            if (!path.isEmpty() && path.length() <= 32) {
+                baseName = QString("%1 (%2)").arg(host, path);
+            } else if (baseName.isEmpty()) {
+                baseName = content;
+            }
+
+            // Ensure unique group name so multiple subscriptions never share the same tab title
+            QSet<QString> existingNames;
+            for (int id : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
+                auto g = Configs::dataManager->groupsRepo->GetGroup(id);
+                if (g) existingNames.insert(g->name);
+            }
+            QString finalName = baseName;
+            int counter = 2;
+            while (existingNames.contains(finalName)) {
+                finalName = QString("%1 (%2)").arg(baseName).arg(counter++);
+            }
+
+            group->name = finalName;
             group->url = content;
             Configs::dataManager->groupsRepo->AddGroup(group);
             MW_dialog_message(MwMessage::SubscriptionNewGroup, {});
