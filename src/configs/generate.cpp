@@ -2621,9 +2621,9 @@ namespace Configs {
                 auto custom = item->Custom();
                 if (custom == nullptr)
                 {
-                    MW_show_log("Corrupted data in build test config");
-                    res->error = "Corrupted data in build test config";
-                    return res;
+                    MW_show_log("Corrupted custom profile data in build test config: " + item->outbound->name);
+                    item->SetLatency(-1);
+                    continue;
                 }
                 if (custom->type == Custom::CustomFullConfig)
                 {
@@ -2635,12 +2635,10 @@ namespace Configs {
             }
             auto IDs = unwrapChain(item->id);
             auto group = dataManager->groupsRepo->GetGroup(item->gid);
-            if (group == nullptr) {
-                res->error = "Null group on profile, data is corrupted";
-                return res;
+            if (group != nullptr) {
+                if (group->landing_proxy_id >= 0) IDs.prepend(group->landing_proxy_id);
+                if (group->front_proxy_id >= 0) IDs.append(group->front_proxy_id);
             }
-            if (group->landing_proxy_id >= 0) IDs.prepend(group->landing_proxy_id);
-            if (group->front_proxy_id >= 0) IDs.append(group->front_proxy_id);
             int singToXrayPort = -1;
             int xrayToSingPort = -1;
             if (item->outbound->IsXray()) singToXrayPort = xrayPorts[xrayPortIdx++];
@@ -2655,8 +2653,10 @@ namespace Configs {
                 .xrayToSingPort = xrayToSingPort,
             });
             if (!ctx.error.isEmpty()) {
-                res->error = ctx.error;
-                return res;
+                MW_show_log(QString("Skipping unbuildable node [%1]: %2").arg(item->outbound->name, ctx.error));
+                ctx.error.clear();
+                item->SetLatency(-1);
+                continue;
             }
             res->outboundTags << tag;
             res->tag2entID.insert(tag, item->id);

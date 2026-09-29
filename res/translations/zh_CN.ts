@@ -8048,6 +8048,32 @@ Direct: %2</source>
         <translation>检测到 URL</translation>
     </message>
     <message>
+        <source>Multiple URLs detected</source>
+        <translation>检测到多个订阅 URL</translation>
+    </message>
+    <message>
+        <source>Detected %1 subscription URLs:
+%2
+
+How to proceed?</source>
+        <translation>检测到 %1 个订阅链接：
+%2
+
+请选择操作方式：</translation>
+    </message>
+    <message>
+        <source>Batch create subscription groups (%1 subscriptions)</source>
+        <translation>批量创建/更新订阅分组 (共 %1 个订阅)</translation>
+    </message>
+    <message>
+        <source>Batch add profiles to current group (%1 subscriptions)</source>
+        <translation>批量添加配置档到当前分组 (共 %1 个订阅)</translation>
+    </message>
+    <message>
+        <source>Import HTTP proxy profiles</source>
+        <translation>批量导入 HTTP 代理配置档</translation>
+    </message>
+    <message>
         <source>%1
 How to update?</source>
         <translation>%1

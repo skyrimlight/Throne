@@ -378,6 +378,48 @@ namespace Subscription {
     void GroupUpdater::SubscribeUrl(const QString &url, const Finish &finish) {
         const auto content = url.trimmed();
         enqueue({-1, false, [=, this] {
+            auto normalizeUrl = [](const QString &u) -> QString {
+                QString trimmed = u.trimmed();
+                QUrl parsed(trimmed);
+                if (parsed.isValid() && !parsed.host().isEmpty()) {
+                    QString scheme = parsed.scheme().toLower();
+                    QString host = parsed.host().toLower();
+                    int port = parsed.port();
+                    QString path = parsed.path();
+                    while (path.endsWith('/') && path.length() > 1) path.chop(1);
+                    QString query = parsed.query();
+                    QString res = scheme + "://" + host;
+                    if (port > 0) res += ":" + QString::number(port);
+                    res += path;
+                    if (!query.isEmpty()) res += "?" + query;
+                    return res;
+                }
+                return trimmed;
+            };
+
+            const QString normContent = normalizeUrl(content);
+
+            // 1. Check if a subscription with the same URL already exists; if so, update it instead of creating a duplicate
+            std::shared_ptr<Configs::Group> existingGroup = nullptr;
+            for (int id : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
+                auto g = Configs::dataManager->groupsRepo->GetGroup(id);
+                if (g && !g->url.trimmed().isEmpty() && normalizeUrl(g->url) == normContent) {
+                    existingGroup = g;
+                    break;
+                }
+            }
+
+            if (existingGroup != nullptr) {
+                MW_show_log(QObject::tr("Subscription already exists: %1. Updating existing subscription...").arg(existingGroup->name));
+                existingGroup->url = content;
+                Configs::dataManager->groupsRepo->Save(existingGroup);
+                refresh(existingGroup->id, false);
+                emit asyncUpdateCallback(existingGroup->id);
+                if (finish != nullptr) finish();
+                return;
+            }
+
+            // 2. If it's a new subscription, create a new group
             auto group = Configs::GroupsRepo::NewGroup();
             QUrl qurl(content);
             QString host = qurl.host();

@@ -222,8 +222,19 @@ func (d *probeDialer) Close() {
 
 func dialerHTTPClient(dial func(ctx context.Context, network, address string) (net.Conn, error), timeout time.Duration) (*http.Client, func()) {
 	probe := &probeDialer{dial: dial}
-	transport := &http.Transport{DialContext: probe.DialContext}
-	return &http.Client{Transport: transport, Timeout: timeout}, func() {
+	transport := &http.Transport{
+		DialContext:        probe.DialContext,
+		DisableKeepAlives:  true,
+		DisableCompression: true,
+	}
+	client := &http.Client{
+		Transport: transport,
+		Timeout:   timeout,
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	return client, func() {
 		probe.Close()
 		transport.CloseIdleConnections()
 	}

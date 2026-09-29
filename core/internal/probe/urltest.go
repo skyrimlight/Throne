@@ -14,8 +14,8 @@ var URLReporter resultBuffer[URLTestResult]
 
 const (
 	URLTestTimeout   = 4 * time.Second
-	FallbackTestURL1 = "http://www.google.com/generate_204"
-	FallbackTestURL2 = "http://cp.cloudflare.com/"
+	FallbackTestURL1 = "http://www.gstatic.com/generate_204"
+	FallbackTestURL2 = "http://cp.cloudflare.com/generate_204"
 	DefaultUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
 
@@ -41,7 +41,10 @@ func BatchURLTest(ctx context.Context, i Box, outboundTags []string, url string,
 			testTimeout := firstRequestTimeout(i, tag, twice, timeout)
 			duration, err := executeUrlTestWithFallback(ctx, client, url, testTimeout)
 			if err == nil && twice {
-				duration, err = executeUrlTestWithFallback(ctx, client, url, timeout)
+				warmDuration, warmErr := executeUrlTestWithFallback(ctx, client, url, timeout)
+				if warmErr == nil {
+					duration = warmDuration
+				}
 			}
 			return &URLTestResult{Duration: duration, Tag: tag, Error: err}
 		},
@@ -68,13 +71,13 @@ func executeUrlTestWithFallback(ctx context.Context, client *http.Client, target
 	// 2. If primary test fails, attempt a reliable fallback probe to eliminate false negatives
 	// (e.g. Cloudflare rate-limiting/blocking datacenter IPs or specific domain routing issue)
 	fallbackUrl := FallbackTestURL1
-	if strings.Contains(targetUrl, "google") {
+	if strings.Contains(targetUrl, "gstatic") || strings.Contains(targetUrl, "google") {
 		fallbackUrl = FallbackTestURL2
 	}
 
 	fallbackTimeout := timeout
-	if fallbackTimeout > 2500*time.Millisecond {
-		fallbackTimeout = 2500 * time.Millisecond
+	if fallbackTimeout > 3000*time.Millisecond {
+		fallbackTimeout = 3000 * time.Millisecond
 	}
 
 	fallbackDuration, fallbackErr := singleUrlTest(ctx, client, fallbackUrl, fallbackTimeout)

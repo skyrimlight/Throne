@@ -227,6 +227,38 @@ void MainWindow::handle_addsub(const QString &url, const QString &name) {
 
     ActivateWindow(this);
 
+    // Normalize URL
+    auto normalizeUrl = [](const QString &u) -> QString {
+        QString trimmed = u.trimmed();
+        QUrl parsed(trimmed);
+        if (parsed.isValid() && !parsed.host().isEmpty()) {
+            QString scheme = parsed.scheme().toLower();
+            QString host = parsed.host().toLower();
+            int port = parsed.port();
+            QString path = parsed.path();
+            while (path.endsWith('/') && path.length() > 1) path.chop(1);
+            QString query = parsed.query();
+            QString res = scheme + "://" + host;
+            if (port > 0) res += ":" + QString::number(port);
+            res += path;
+            if (!query.isEmpty()) res += "?" + query;
+            return res;
+        }
+        return trimmed;
+    };
+
+    const QString norm = normalizeUrl(url);
+    for (int id : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
+        auto g = Configs::dataManager->groupsRepo->GetGroup(id);
+        if (g && !g->url.trimmed().isEmpty() && normalizeUrl(g->url) == norm) {
+            MW_show_log(tr("Subscription already exists: %1. Updating...").arg(g->name));
+            g->url = url.trimmed();
+            Configs::dataManager->groupsRepo->Save(g);
+            Subscription::updater()->RefreshGroup(g->id);
+            return;
+        }
+    }
+
     const QString groupName = FIRST_OR_SECOND(name, QUrl(url).host());
     const auto prompt = tr("Add this subscription?\n\nName: %1\nURL: %2")
                             .arg(groupName, url);
@@ -267,16 +299,29 @@ void MainWindow::import_text(const QString &text) {
     }
 
     if (urls.size() > 1) {
+        const bool isZh = (QObject::tr("url detected") == QString::fromUtf8("检测到 URL"))
+                       || QLocale().name().startsWith("zh", Qt::CaseInsensitive)
+                       || QLocale::system().name().startsWith("zh", Qt::CaseInsensitive);
+
+        const QString title = isZh ? QString::fromUtf8("检测到多个订阅 URL")
+                                   : QObject::tr("Multiple URLs detected");
+        const QString prompt = isZh
+            ? QString::fromUtf8("检测到 %1 个订阅链接：\n%2\n\n请选择操作方式：").arg(urls.size()).arg(urls.join("\n"))
+            : QObject::tr("Detected %1 subscription URLs:\n%2\n\nHow to proceed?").arg(urls.size()).arg(urls.join("\n"));
+
         const QStringList items{
-            QObject::tr("Batch create subscription groups (%1 subscriptions)").arg(urls.size()),
-            QObject::tr("Batch add profiles to current group (%1 subscriptions)").arg(urls.size()),
-            QObject::tr("Import HTTP proxy profiles"),
+            isZh ? QString::fromUtf8("批量创建/更新订阅分组 (共 %1 个订阅)").arg(urls.size())
+                 : QObject::tr("Batch create subscription groups (%1 subscriptions)").arg(urls.size()),
+            isZh ? QString::fromUtf8("批量添加配置档到当前分组 (共 %1 个订阅)").arg(urls.size())
+                 : QObject::tr("Batch add profiles to current group (%1 subscriptions)").arg(urls.size()),
+            isZh ? QString::fromUtf8("批量导入 HTTP 代理配置档")
+                 : QObject::tr("Import HTTP proxy profiles"),
         };
         bool ok = false;
         const auto choice = QInputDialog::getItem(
             nullptr,
-            QObject::tr("Multiple URLs detected"),
-            QObject::tr("Detected %1 subscription URLs:\n%2\n\nHow to proceed?").arg(urls.size()).arg(urls.join("\n")),
+            title,
+            prompt,
             items,
             0,
             false,
