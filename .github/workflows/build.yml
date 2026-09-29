@@ -57,7 +57,8 @@ jobs:
         if: steps.cache-common.outputs.cache-hit != 'true'
         shell: bash
         run: |
-          GOOS=${{ matrix.cross_os }} GOARCH=${{ matrix.cross_arch }} ./script/build_go.sh
+          chmod +x ./script/build_go.sh || true
+          GOOS=${{ matrix.cross_os }} GOARCH=${{ matrix.cross_arch }} bash ./script/build_go.sh
       - name: Tar files
         if: steps.cache-common.outputs.cache-hit != 'true'
         run: tar czf artifacts.tgz ./deployment
@@ -155,7 +156,8 @@ jobs:
           cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo $LAUNCHER_ARGS ..
           ninja
           cd ..
-          ./script/deploy_windows.sh
+          chmod +x ./script/deploy_windows.sh || true
+          bash ./script/deploy_windows.sh
       - name: Tar files
         shell: bash
         run: tar czf artifacts.tgz ./deployment
