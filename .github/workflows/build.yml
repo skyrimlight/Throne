@@ -1,10 +1,16 @@
 name: Throne build matrix
 on:
+  push:
+    branches:
+      - dev
+      - main
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       tag:
         description: "Release Tag and version"
-        required: true
+        required: false
         default: "v1.0.8-dev"
       publish:
         description: "r for normal release, p for prerelease, defaults to r"
@@ -87,7 +93,7 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.platform }}
     env:
-      INPUT_VERSION: ${{ github.event.inputs.tag }}
+      INPUT_VERSION: ${{ github.event.inputs.tag || (startsWith(github.ref, 'refs/tags/') && github.ref_name) || 'v1.0.8-dev' }}
       DEST: ${{ github.workspace }}/deployment/${{ matrix.dest_suffix }}
       DEST_SUFFIX: ${{ matrix.dest_suffix }}
       ARCH: ${{ matrix.target }}
@@ -190,9 +196,22 @@ jobs:
         with:
           pattern: Throne-${{ github.sha }}-${{ matrix.artifacts }}
           path: download-artifact
+      - name: Determine Tag
+        id: vars
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+              TAG="${{ github.ref_name }}"
+            else
+              TAG="v1.0.8-dev"
+            fi
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
       - name: Pack
         shell: bash
-        run: bash ./script/pack_release.sh ${{ matrix.target }} "${{ github.event.inputs.tag }}"
+        run: bash ./script/pack_release.sh ${{ matrix.target }} "${{ steps.vars.outputs.tag }}"
       - name: Uploading Artifact
         uses: actions/upload-artifact@v7.0.1
         with:
@@ -228,19 +247,35 @@ jobs:
         run: |
           curl -Lo - https://github.com/tcnksm/ghr/releases/download/v0.17.0/ghr_v0.17.0_linux_amd64.tar.gz | tar xzv
           mv ghr*linux_amd64/ghr .
-      - name: PreRelease
-        if: github.event.inputs.publish == 'p'
+      - name: Determine Release Info
+        id: rel_info
+        shell: bash
         run: |
-          TAG_NAME="${{ github.event.inputs.tag }}"
-          [ -z "$TAG_NAME" ] && TAG_NAME="v1.0.8-dev"
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+              TAG="${{ github.ref_name }}"
+            else
+              TAG="v1.0.8-dev"
+            fi
+          fi
+          PUBLISH="${{ github.event.inputs.publish }}"
+          if [ -z "$PUBLISH" ]; then
+            PUBLISH="r"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "publish=$PUBLISH" >> "$GITHUB_OUTPUT"
+      - name: PreRelease
+        if: steps.rel_info.outputs.publish == 'p'
+        run: |
+          TAG_NAME="${{ steps.rel_info.outputs.tag }}"
           ./ghr -prerelease -delete -c ${{ github.sha }} -t "${{ github.token }}" -n "$TAG_NAME" "$TAG_NAME" deployment
       - name: Release
-        if: github.event.inputs.publish != 'p' && github.event.inputs.publish != 'none' && github.event.inputs.publish != 'false'
+        if: steps.rel_info.outputs.publish != 'p' && steps.rel_info.outputs.publish != 'none' && steps.rel_info.outputs.publish != 'false'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          TAG_NAME="${{ github.event.inputs.tag }}"
-          [ -z "$TAG_NAME" ] && TAG_NAME="v1.0.8-dev"
+          TAG_NAME="${{ steps.rel_info.outputs.tag }}"
           echo "Publishing release $TAG_NAME to GitHub Releases..."
           if ./ghr -delete -c ${{ github.sha }} -t "${{ github.token }}" -n "$TAG_NAME" "$TAG_NAME" deployment; then
             echo "Successfully published via ghr."
