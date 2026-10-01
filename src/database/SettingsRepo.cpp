@@ -43,6 +43,7 @@ namespace Configs {
             {"vpn_auto_redirect",             &vpn_auto_redirect},
             {"vpn_l3_bridge",                 &vpn_l3_bridge},
             {"auto_clear_unavailable",     &auto_clear_unavailable},
+            {"health_scoring_enabled",    &health_scoring_enabled},
             {"auto_sort_after_test",       &auto_sort_after_test},
             {"default_sort_descending",    &default_sort_descending},
             {"default_group_include_all",  &default_group_include_all},

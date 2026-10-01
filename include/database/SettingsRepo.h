@@ -155,6 +155,7 @@ namespace Configs {
         qint64 sub_auto_update_last = 0;
         // URL test global settings
         bool auto_clear_unavailable = false; // Global auto-delete unavailable nodes after URL test (default: false)
+        bool health_scoring_enabled = true;  // Global health scoring & gradual elimination (default: true)
         bool auto_sort_after_test = false;   // Automatically apply default sort after URL test (default: false to preserve subscription order)
         int default_sort_method = 4;        // GroupSortMethod::ByLatency (default: 4)
         bool default_sort_descending = false;

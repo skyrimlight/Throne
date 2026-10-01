@@ -604,12 +604,28 @@ void MainWindow::clearUnavailableProfiles(bool confirm, QList<int> profileIDs) {
     if (profileIDs.isEmpty()) profileIDs = group->Profiles();
 
     auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(profileIDs);
+    const bool healthScoring = Configs::dataManager->settingsRepo->health_scoring_enabled;
+
     for (const auto &profile: profiles) {
         if (profile->IsUnavailable()) {
-            del_ids += profile->id;
-            if (++remove_display_count == removeListPreviewLimit) {
-                remove_display += "...";
-            }else if (remove_display_count < removeListPreviewLimit) remove_display += profile->outbound->DisplayTypeAndName() + "\n";
+            if (healthScoring) {
+                // Progressive elimination: only delete if continuous failure count >= 3
+                if (profile->failed_count >= 3) {
+                    del_ids += profile->id;
+                    if (++remove_display_count == removeListPreviewLimit) {
+                        remove_display += "...";
+                    } else if (remove_display_count < removeListPreviewLimit) {
+                        remove_display += profile->outbound->DisplayTypeAndName() + " (failed 3 times)\n";
+                    }
+                }
+            } else {
+                del_ids += profile->id;
+                if (++remove_display_count == removeListPreviewLimit) {
+                    remove_display += "...";
+                } else if (remove_display_count < removeListPreviewLimit) {
+                    remove_display += profile->outbound->DisplayTypeAndName() + "\n";
+                }
+            }
         }
     }
 

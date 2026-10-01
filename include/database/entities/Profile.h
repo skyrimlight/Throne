@@ -46,6 +46,7 @@ namespace Configs {
         int latency = 0;
         // Unix seconds when `latency` was measured; 0 = never.
         qint64 latency_at = 0;
+        int failed_count = 0; // Health check scoring: failure count (1 = suspicious, 3 = elimination)
         QString dl_speed;
         QString ul_speed;
         QString test_country;

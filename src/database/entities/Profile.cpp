@@ -31,6 +31,13 @@ namespace Configs
         latency = ms;
         // 0 means "never measured", so a reset must clear the stamp rather than record now.
         latency_at = ms == 0 ? 0 : QDateTime::currentSecsSinceEpoch();
+        if (ms > 0 || ms == kLatencyConnectOnly) {
+            // Any test success: reset failed_count to 0
+            failed_count = 0;
+        } else if (ms < 0) {
+            // Failure: increment failed_count
+            failed_count++;
+        }
     }
 
     QString Profile::DisplayTestResult() const {
@@ -42,7 +49,15 @@ namespace Configs
             result = QObject::tr("Connect OK");
             return result;
         } else if (latency < 0) {
-            result = QObject::tr("Unavailable");
+            if (failed_count == 1) {
+                result = QObject::tr("异常/可疑 (1/3)");
+            } else if (failed_count == 2) {
+                result = QObject::tr("可疑 (2/3)");
+            } else if (failed_count >= 3) {
+                result = QObject::tr("连续失败 3 次");
+            } else {
+                result = QObject::tr("Unavailable");
+            }
             return result;
         } else if (latency > 0) {
             result += QString("%1 ms").arg(latency);
@@ -59,6 +74,11 @@ namespace Configs
         if (latency == kLatencyConnectOnly) {
             return Qt::darkCyan;
         } else if (latency < 0) {
+            if (failed_count == 1) {
+                return QColor(245, 158, 11); // Amber
+            } else if (failed_count == 2) {
+                return QColor(249, 115, 22); // Orange
+            }
             return Qt::darkGray;
         } else if (latency > 0) {
             if (latency <= 100) {
