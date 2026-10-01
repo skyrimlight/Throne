@@ -18,6 +18,7 @@ namespace Configs {
         int gid;
         int latency;
         long long latency_at = 0;
+        int failed_count = 0;
         std::string dl_speed;
         std::string ul_speed;
         std::string test_country;

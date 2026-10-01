@@ -23,6 +23,7 @@ namespace Configs
         ip_out.clear();
         latency = 0;
         latency_at = 0;
+        failed_count = 0;
         dl_speed.clear();
         ul_speed.clear();
     }
