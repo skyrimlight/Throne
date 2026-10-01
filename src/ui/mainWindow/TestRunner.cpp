@@ -178,8 +178,9 @@ void TestRunner::runUrlProbe(const Target& target) {
     bool rpcOK = false;
     QString coreError;
     libcore::TestResp result;
+    QSet<int> processedEnts;
     {
-        ResultPoller poller([this, gen = sessionGen_.load(), tag2entID = target.tag2entID] {
+        ResultPoller poller([this, gen = sessionGen_.load(), tag2entID = target.tag2entID, &processedEnts] {
             if (staleGen(gen)) return;
             bool ok = false;
             const auto resp = defaultClient->QueryURLTest(&ok);
@@ -189,10 +190,12 @@ void TestRunner::runUrlProbe(const Target& target) {
 
             QList<int> updated;
             for (const auto& res : resp.results) {
+                const int entid = resolveEntID(tag2entID, res.outbound_tag.value(), -1);
+                if (entid == -1 || processedEnts.contains(entid)) continue;
+                processedEnts.insert(entid);
+
                 mw_->dataViewHtmlGenerator_.addTestProgress();
                 mw_->UpdateDataView();
-                const int entid = resolveEntID(tag2entID, res.outbound_tag.value(), -1);
-                if (entid == -1) continue;
                 auto ent = Configs::dataManager->profilesRepo->GetProfile(entid);
                 if (ent == nullptr) continue;
                 applyUrlResult(ent, res);
@@ -222,6 +225,10 @@ void TestRunner::runUrlProbe(const Target& target) {
             MW_show_log(MainWindow::tr("Something is very wrong, the subject ent cannot be found!"));
             continue;
         }
+        if (processedEnts.contains(entid)) {
+            continue; // Already applied during poller
+        }
+        processedEnts.insert(entid);
         auto ent = Configs::dataManager->profilesRepo->GetProfile(entid);
         if (ent == nullptr) {
             MW_show_log(MainWindow::tr("Profile manager data is corrupted, try again."));

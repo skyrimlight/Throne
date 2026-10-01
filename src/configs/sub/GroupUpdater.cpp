@@ -279,8 +279,13 @@ namespace Subscription {
             if (options.remove_unavailable) {
                 QList<int> doomed;
                 QStringList names;
+                const bool healthScoring = Configs::dataManager->settingsRepo->health_scoring_enabled;
                 forEachProfile(withoutSelectors(group->Profiles()), [&](const std::shared_ptr<Configs::Profile> &ent) {
                     if (!ent->IsUnavailable()) return;
+                    if (healthScoring && ent->failed_count < 3) {
+                        // Health check scoring: preserve suspicious nodes (failed 1 or 2 times), do not delete
+                        return;
+                    }
                     doomed << ent->id;
                     names << ent->outbound->DisplayTypeAndName();
                 });

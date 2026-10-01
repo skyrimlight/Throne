@@ -49,12 +49,17 @@ namespace Configs
             result = QObject::tr("Connect OK");
             return result;
         } else if (latency < 0) {
-            if (failed_count == 1) {
-                result = QObject::tr("异常/可疑 (1/3)");
-            } else if (failed_count == 2) {
-                result = QObject::tr("可疑 (2/3)");
-            } else if (failed_count >= 3) {
-                result = QObject::tr("连续失败 3 次");
+            const bool healthScoring = dataManager->settingsRepo->health_scoring_enabled;
+            if (healthScoring) {
+                if (failed_count == 1) {
+                    result = QObject::tr("异常/可疑 (1/3)");
+                } else if (failed_count == 2) {
+                    result = QObject::tr("可疑 (2/3)");
+                } else if (failed_count >= 3) {
+                    result = QObject::tr("连续失败 3 次 (不可用)");
+                } else {
+                    result = QObject::tr("异常/可疑 (1/3)");
+                }
             } else {
                 result = QObject::tr("Unavailable");
             }
