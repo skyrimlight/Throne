@@ -53,16 +53,16 @@ namespace Configs
             const bool healthScoring = dataManager->settingsRepo->health_scoring_enabled;
             if (healthScoring) {
                 if (failed_count == 1) {
-                    result = QObject::tr("异常/可疑 (1/3)");
+                    result = QObject::tr("可疑 (1/3)");
                 } else if (failed_count == 2) {
-                    result = QObject::tr("可疑 (2/3)");
+                    result = QObject::tr("异常 (2/3)");
                 } else if (failed_count >= 3) {
-                    result = QObject::tr("连续失败 3 次 (不可用)");
+                    result = QObject::tr("移除");
                 } else {
-                    result = QObject::tr("异常/可疑 (1/3)");
+                    result = QObject::tr("可疑 (1/3)");
                 }
             } else {
-                result = QObject::tr("Unavailable");
+                result = QObject::tr("移除");
             }
             return result;
         } else if (latency > 0) {
@@ -85,7 +85,7 @@ namespace Configs
             } else if (failed_count == 2) {
                 return QColor(249, 115, 22); // Orange
             }
-            return Qt::darkGray;
+            return Qt::red; // Red for "移除"
         } else if (latency > 0) {
             if (latency <= 100) {
                 return Qt::darkGreen;

@@ -262,6 +262,9 @@ void MainWindow::show_group_tab_menu(const QPoint &p) {
         connect(menu.addAction(tr("Speed Test selected Group")), &QAction::triggered, this, [=,this]{
             testRunner->runSpeedTests(clickedGroup->Profiles());
         });
+        connect(menu.addAction(tr("Remove abnormal items")), &QAction::triggered, this, [=,this]{
+            removeAbnormalProfiles(clickedGroup->id);
+        });
     }
     menu.exec(ui->tabWidget->tabBar()->mapToGlobal(p));
 }

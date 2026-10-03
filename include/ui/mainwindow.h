@@ -221,6 +221,8 @@ private slots:
 
     void on_menu_remove_unavailable_triggered();
 
+    void on_menu_remove_abnormal_triggered();
+
     void on_menu_remove_invalid_triggered();
 
     void on_menu_remove_insecure_triggered();
@@ -359,6 +361,7 @@ private:
     void focusProfilesTable(bool selectFirst);
 
     void clearUnavailableProfiles(bool confirm = true, QList<int> profileIDs = {});
+    void removeAbnormalProfiles(int targetGid = -1);
     void applyDefaultSort(int targetGid = -1);
     void on_btn_default_sort_clicked();
 

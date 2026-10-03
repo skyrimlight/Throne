@@ -759,6 +759,7 @@ QToolButton::menu-indicator {
     <addaction name="menu_resolve_domain"/>
     <addaction name="menu_remove_invalid"/>
     <addaction name="actionUrl_Test_Group"/>
+    <addaction name="menu_remove_abnormal"/>
     <addaction name="menu_remove_unavailable"/>
     <addaction name="actionDefault_Sort"/>
     <addaction name="actionToggle_Global_Auto_Clear"/>
@@ -805,6 +806,7 @@ QToolButton::menu-indicator {
     <addaction name="menu_update_subscription"/>
     <addaction name="actionUpdate_All_Subscriptions"/>
     <addaction name="menu_delete_repeat"/>
+    <addaction name="menu_remove_abnormal"/>
     <addaction name="menu_remove_unavailable"/>
     <addaction name="menu_remove_invalid"/>
     <addaction name="menu_remove_insecure"/>
@@ -1025,6 +1027,11 @@ QToolButton::menu-indicator {
    </property>
    <property name="text">
     <string>Auto Clear Unavailable on URL Test (Global)</string>
+   </property>
+  </action>
+  <action name="menu_remove_abnormal">
+   <property name="text">
+    <string>Remove abnormal items</string>
    </property>
   </action>
   <action name="menu_remove_unavailable">

@@ -361,6 +361,10 @@ void MainWindow::on_menu_remove_unavailable_triggered() {
     clearUnavailableProfiles();
 }
 
+void MainWindow::on_menu_remove_abnormal_triggered() {
+    removeAbnormalProfiles(-1);
+}
+
 void MainWindow::on_menu_remove_invalid_triggered() {
     runOnNewThread([=,this]
     {
@@ -648,6 +652,66 @@ void MainWindow::clearUnavailableProfiles(bool confirm, QList<int> profileIDs) {
         } else {
             clearFunc();
         }
+    }
+}
+
+void MainWindow::removeAbnormalProfiles(int targetGid) {
+    auto group = (targetGid >= 0)
+        ? Configs::dataManager->groupsRepo->GetGroup(targetGid)
+        : Configs::dataManager->groupsRepo->CurrentGroup();
+    if (!group) return;
+
+    QList<int> profileIDs = group->Profiles();
+    auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(profileIDs);
+
+    QList<int> del_ids;
+    int remove_display_count = 0;
+    QString remove_display;
+
+    for (const auto &profile: profiles) {
+        if (!profile) continue;
+        bool isRemoval = false;
+        const QString disp = profile->DisplayTestResult();
+
+        if (disp == tr("移除") || disp.contains(tr("移除")) || disp == "移除" || disp.contains("移除") ||
+            disp.compare("Remove", Qt::CaseInsensitive) == 0 || disp.contains("Remove", Qt::CaseInsensitive)) {
+            isRemoval = true;
+        } else if (profile->failed_count >= 3) {
+            isRemoval = true;
+        } else if (!Configs::dataManager->settingsRepo->health_scoring_enabled && profile->IsUnavailable()) {
+            isRemoval = true;
+        }
+
+        if (isRemoval) {
+            del_ids += profile->id;
+            if (++remove_display_count == removeListPreviewLimit) {
+                remove_display += "...";
+            } else if (remove_display_count < removeListPreviewLimit) {
+                remove_display += profile->outbound->DisplayTypeAndName() + "\n";
+            }
+        }
+    }
+
+    if (del_ids.isEmpty()) {
+        MW_show_log(tr("No abnormal nodes with test result '移除' found in group: %1").arg(group->name));
+        return;
+    }
+
+    auto clearFunc = [del_ids, group, this] {
+        QList<int> idsCopy = del_ids;
+        Configs::dataManager->profilesRepo->BatchDeleteProfiles(idsCopy, true);
+        refresh_proxy_list({}, true, RefreshAnchor::Removal);
+        MW_show_log(tr("Removed %1 abnormal node(s) with test result '移除' from group: %2").arg(del_ids.length()).arg(group->name));
+    };
+
+    if (!Configs::dataManager->settingsRepo->skip_delete_confirmation) {
+        if (QMessageBox::question(this, tr("Confirmation"),
+                tr("Remove %1 abnormal item(s) with test result '移除' ?").arg(del_ids.length()) + "\n" + remove_display)
+            == QMessageBox::StandardButton::Yes) {
+            clearFunc();
+        }
+    } else {
+        clearFunc();
     }
 }
 

@@ -102,6 +102,7 @@ void MainWindow::setActionsData()
     ui->menu_export_config->setData(QString("m7"));
     ui->menu_qr->setData(QString("m8"));
     ui->menu_remove_invalid->setData(QString("m9"));
+    ui->menu_remove_abnormal->setData(QString("m38"));
     ui->menu_remove_unavailable->setData(QString("m10"));
     ui->menu_reset_traffic->setData(QString("m11"));
     ui->menu_resolve_domain->setData(QString("m12"));

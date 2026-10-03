@@ -6379,6 +6379,10 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>允许其他设备连接</translation>
     </message>
     <message>
+        <source>Remove abnormal items</source>
+        <translation>移除异常节点</translation>
+    </message>
+    <message>
         <source>Remove Unavailable</source>
         <translation>移除不可用项</translation>
     </message>
@@ -7041,6 +7045,10 @@ Error: %1</source>
     <message>
         <source>Replace domain server addresses with their resolved IPs?</source>
         <translation>替换域名服务器地址为其解析后的 IP 地址吗？</translation>
+    </message>
+    <message>
+        <source>Remove %1 abnormal item(s) with test result '移除' ?</source>
+        <translation>移除 %1 个测试结果为移除的异常节点吗？</translation>
     </message>
     <message>
         <source>Remove %1 Unavailable item(s) ?</source>
