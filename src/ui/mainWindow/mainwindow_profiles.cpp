@@ -671,15 +671,19 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
     for (const auto &profile: profiles) {
         if (!profile) continue;
         bool isRemoval = false;
-        const QString disp = profile->DisplayTestResult();
 
-        if (disp == tr("移除") || disp.contains(tr("移除")) || disp == "移除" || disp.contains("移除") ||
-            disp.compare("Remove", Qt::CaseInsensitive) == 0 || disp.contains("Remove", Qt::CaseInsensitive)) {
+        // Any node whose last test failed (whether 1 time or more) is defined as abnormal
+        if (profile->latency < 0 && profile->latency != Configs::kLatencyConnectOnly) {
             isRemoval = true;
-        } else if (profile->failed_count >= 3) {
+        } else if (profile->failed_count >= 1) {
             isRemoval = true;
-        } else if (!Configs::dataManager->settingsRepo->health_scoring_enabled && profile->IsUnavailable()) {
-            isRemoval = true;
+        } else {
+            const QString disp = profile->DisplayTestResult();
+            if (disp == tr("移除") || disp.contains(tr("移除")) || disp == "移除" || disp.contains("移除") ||
+                disp.compare("Remove", Qt::CaseInsensitive) == 0 || disp.contains("Remove", Qt::CaseInsensitive) ||
+                disp.contains("Unavailable", Qt::CaseInsensitive)) {
+                isRemoval = true;
+            }
         }
 
         if (isRemoval) {
@@ -693,7 +697,7 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
     }
 
     if (del_ids.isEmpty()) {
-        MW_show_log(tr("No abnormal nodes with test result '移除' found in group: %1").arg(group->name));
+        MW_show_log(tr("No abnormal nodes (last test failed) found in group: %1").arg(group->name));
         return;
     }
 
@@ -701,12 +705,12 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
         QList<int> idsCopy = del_ids;
         Configs::dataManager->profilesRepo->BatchDeleteProfiles(idsCopy, true);
         refresh_proxy_list({}, true, RefreshAnchor::Removal);
-        MW_show_log(tr("Removed %1 abnormal node(s) with test result '移除' from group: %2").arg(del_ids.length()).arg(group->name));
+        MW_show_log(tr("Removed %1 abnormal node(s) (last test failed) from group: %2").arg(del_ids.length()).arg(group->name));
     };
 
     if (!Configs::dataManager->settingsRepo->skip_delete_confirmation) {
         if (QMessageBox::question(this, tr("Confirmation"),
-                tr("Remove %1 abnormal item(s) with test result '移除' ?").arg(del_ids.length()) + "\n" + remove_display)
+                tr("Remove %1 abnormal node(s) that failed the last test?").arg(del_ids.length()) + "\n" + remove_display)
             == QMessageBox::StandardButton::Yes) {
             clearFunc();
         }

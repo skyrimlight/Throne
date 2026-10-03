@@ -7055,8 +7055,8 @@ Error: %1</source>
         <translation>替换域名服务器地址为其解析后的 IP 地址吗？</translation>
     </message>
     <message>
-        <source>Remove %1 abnormal item(s) with test result '移除' ?</source>
-        <translation>移除 %1 个测试结果为移除的异常节点吗？</translation>
+        <source>Remove %1 abnormal node(s) that failed the last test?</source>
+        <translation>移除 %1 个上次测试未通过的异常节点吗？</translation>
     </message>
     <message>
         <source>Remove %1 Unavailable item(s) ?</source>
