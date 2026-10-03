@@ -828,6 +828,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         MW_show_log(tr("[Smart Failover] %1").arg(checked ? tr("Enabled") : tr("Disabled")));
     });
 
+    connect(ui->menu_remove_abnormal, &QAction::triggered, this, [this] {
+        removeAbnormalProfiles(-1);
+    });
+
     connect(ui->menuTools, &QMenu::aboutToShow, this, [=,this](){
         ui->actionSpeedtest_Current->setEnabled(running != nullptr);
     });
