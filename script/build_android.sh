@@ -11,6 +11,7 @@ mkdir -p "$DEST"
 
 #### Go: core/mobile -> ThroneCore.aar ####
 pushd core
+go mod tidy
 VERSION_SINGBOX=$(go list -m -f '{{.Version}}' github.com/sagernet/sing-box)
 gomobile bind -v -o "$DEST/ThroneCore.aar" -target "$TARGET" -androidapi 24 -javapkg=io.throneproj -libname=throne -trimpath \
   -ldflags "-s -w -checklinkname=0 -X github.com/sagernet/sing-box/constant.Version=${VERSION_SINGBOX} -X runtime.godebugDefault=multipathtcp=0" \
