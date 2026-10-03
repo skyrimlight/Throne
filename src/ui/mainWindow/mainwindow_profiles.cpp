@@ -608,6 +608,12 @@ void MainWindow::clearUnavailableProfiles(bool confirm, QList<int> profileIDs) {
 
     for (const auto &profile: profiles) {
         if (profile->IsUnavailable()) {
+            auto profGroup = Configs::dataManager->groupsRepo->GetGroup(profile->gid);
+            const bool shouldClearNode = (profGroup != nullptr)
+                ? profGroup->ShouldAutoClearUnavailable()
+                : Configs::dataManager->settingsRepo->auto_clear_unavailable;
+            if (!shouldClearNode) continue;
+
             if (healthScoring) {
                 // Progressive elimination: only delete if continuous failure count >= 3
                 if (profile->failed_count >= 3) {
@@ -645,9 +651,11 @@ void MainWindow::clearUnavailableProfiles(bool confirm, QList<int> profileIDs) {
     }
 }
 
-void MainWindow::applyDefaultSort() {
+void MainWindow::applyDefaultSort(int targetGid) {
     runOnNewThread([=, this] {
-        auto currGroup = Configs::dataManager->groupsRepo->CurrentGroup();
+        auto currGroup = (targetGid >= 0)
+            ? Configs::dataManager->groupsRepo->GetGroup(targetGid)
+            : Configs::dataManager->groupsRepo->CurrentGroup();
         if (currGroup == nullptr) return;
         const bool isDefaultGroup = (currGroup->id == 0 || currGroup->name.compare(tr("Default"), Qt::CaseInsensitive) == 0 || currGroup->name.compare("Default", Qt::CaseInsensitive) == 0);
 

@@ -338,7 +338,10 @@ void TestRunner::runLatencyGroup(LatencyKind kind, const QList<int>& requestedID
     }
     sessionGen_.fetch_add(1);
 
-    runOnNewThread([this, profileIDs, panelKind, isUrl, finish]() {
+    auto currentGroup = Configs::dataManager->groupsRepo->CurrentGroup();
+    const int testGid = currentGroup ? currentGroup->id : -1;
+
+    runOnNewThread([this, profileIDs, panelKind, isUrl, finish, testGid]() {
         stopRequested_.store(false);
         mw_->dataViewHtmlGenerator_.seedLatencyTest(panelKind, profileIDs.size());
         mw_->UpdateDataView(true);
@@ -405,10 +408,21 @@ void TestRunner::runLatencyGroup(LatencyKind kind, const QList<int>& requestedID
         session_.unlock();
         finish();
 
-        const bool shouldClear = (currentGroup != nullptr)
-            ? currentGroup->ShouldAutoClearUnavailable()
-            : Configs::dataManager->settingsRepo->auto_clear_unavailable;
-        if (shouldClear) {
+        const bool globalAutoClear = Configs::dataManager->settingsRepo->auto_clear_unavailable;
+        bool anyAutoClear = globalAutoClear;
+        if (!anyAutoClear && isUrl) {
+            for (int pid : profileIDs) {
+                if (auto p = Configs::dataManager->profilesRepo->GetProfile(pid)) {
+                    if (auto g = Configs::dataManager->groupsRepo->GetGroup(p->gid)) {
+                        if (g->ShouldAutoClearUnavailable()) {
+                            anyAutoClear = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (isUrl && anyAutoClear) {
             MW_show_log("URL test finished, auto clearing unavailable profiles (Sub config > Global config)...");
             runOnUiThread([=, this] {
                mw_->clearUnavailableProfiles(false, profileIDs);
@@ -417,7 +431,7 @@ void TestRunner::runLatencyGroup(LatencyKind kind, const QList<int>& requestedID
         if (isUrl && Configs::dataManager->settingsRepo->auto_sort_after_test) {
             MW_show_log("URL test finished, automatically sorting profiles by default sort order...");
             runOnUiThread([=, this] {
-               mw_->applyDefaultSort();
+               mw_->applyDefaultSort(testGid);
             });
         }
         MW_show_log(isUrl ? MainWindow::tr("URL test finished!") : MainWindow::tr("IP test finished!"));

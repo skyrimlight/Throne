@@ -6,6 +6,7 @@
 #include <QNetworkRequest>
 #include <QTimer>
 #include <QFile>
+#include <QFileInfo>
 #include <QApplication>
 #include <QStringList>
 
@@ -163,7 +164,9 @@ namespace Configs_network {
             return QObject::tr("Download failed: the server returned an empty response.");
         }
 
-        const auto filePath = Configs::GetBasePath() + "/" + fileName;
+        const auto safeFileName = QFileInfo(fileName).fileName();
+        const auto effectiveFileName = safeFileName.isEmpty() ? fileName : safeFileName;
+        const auto filePath = Configs::GetBasePath() + "/" + effectiveFileName;
         const auto tmpPath = filePath + ".tmp";
         QFile tmp(tmpPath);
         if (!tmp.open(QIODevice::WriteOnly | QIODevice::Truncate)) {

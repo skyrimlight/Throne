@@ -173,6 +173,7 @@ void MainWindow::on_menu_exit_triggered() {
     if (exit_reason == ExitReason::RunUpdater) {
         QDir::setCurrent(QApplication::applicationDirPath());
 #ifdef Q_OS_WIN
+        QFile::remove("./updater.old");
         QFile::copy("./updater.exe", "./updater.old");
         QProcess::startDetached("./updater.old", QStringList{});
 #else

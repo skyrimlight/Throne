@@ -359,7 +359,7 @@ private:
     void focusProfilesTable(bool selectFirst);
 
     void clearUnavailableProfiles(bool confirm = true, QList<int> profileIDs = {});
-    void applyDefaultSort();
+    void applyDefaultSort(int targetGid = -1);
     void on_btn_default_sort_clicked();
 
     void dialog_message_impl(MwMessage cmd, const QStringList &args);
