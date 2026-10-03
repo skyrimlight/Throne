@@ -9,9 +9,9 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/miekg/dns v1.1.73
 	github.com/sagernet/gomobile v0.1.13
-	github.com/sagernet/sing v0.9.6-0.20260920093512-38496bf4f1df
-	github.com/sagernet/sing-box v1.14.1-0.20260908150512-6d1fc214c16b
-	github.com/sagernet/sing-tun v0.9.5
+	github.com/sagernet/sing v0.9.7-0.20260929150544-6f21f2425a95
+	github.com/sagernet/sing-box v1.14.2
+	github.com/sagernet/sing-tun v0.9.7-0.20261002083955-3f8acd9da65b
 	github.com/tailscale/go-winio v0.0.0-20231025203758-c4f33415bf55
 	github.com/xtls/xray-core v1.260327.1-0.20260908222543-52a412d9e2f5
 	golang.org/x/crypto v0.55.0
@@ -22,11 +22,11 @@ require (
 
 replace github.com/xtls/xray-core => github.com/throneproj/xray-core v1.251015.1-0.20260926005000-e662c22ab109
 
-replace github.com/sagernet/sing-box => github.com/throneproj/sing-box v1.11.16-0.20260925153044-b4be66275d73
+replace github.com/sagernet/sing-box => github.com/throneproj/sing-box v1.11.16-0.20261003011458-ebe0747b4182
 
-replace github.com/sagernet/wireguard-go => github.com/throneproj/wireguard-go v0.0.0-20260922234409-f60e4eda0d08
+replace github.com/sagernet/wireguard-go => github.com/throneproj/wireguard-go v0.0.0-20261003011310-3517ea9271e4
 
-replace github.com/sagernet/sing => github.com/throneproj/sing v0.9.4-0.20260922020918-4e0ee1952d35
+replace github.com/sagernet/sing => github.com/throneproj/sing v0.9.4-0.20261002235655-c4c9e6e3b2c1
 
 require (
 	filippo.io/edwards25519 v1.2.0 // indirect
