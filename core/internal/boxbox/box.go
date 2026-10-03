@@ -60,6 +60,7 @@ type Box struct {
 	router              *route.Router
 	httpClientService   adapter.LifecycleService
 	internalService     []adapter.LifecycleService
+	ntpService          *ntp.Service
 	scope               *adapter.Scope
 	done                chan struct{}
 }
@@ -438,6 +439,7 @@ func New(options Options) (*Box, error) {
 			service.MustRegister[adapter.V2RayServer](ctx, v2rayServer)
 		}
 	}
+	var ntpService *ntp.Service
 	if ntpOptions.Enabled {
 		if ntpOptions.WriteToSystem {
 			err = adapter.CheckSecurityFeature(ctx, "NTP `write_to_system`")
@@ -449,7 +451,7 @@ func New(options Options) (*Box, error) {
 		if err != nil {
 			return nil, E.Cause(err, "create NTP service")
 		}
-		ntpService := ntp.NewService(ntp.Options{
+		ntpService = ntp.NewService(ntp.Options{
 			Context:       ctx,
 			Dialer:        ntpDialer,
 			Logger:        logFactory.NewLogger("ntp"),
@@ -458,7 +460,6 @@ func New(options Options) (*Box, error) {
 			WriteToSystem: ntpOptions.WriteToSystem,
 		})
 		timeService.TimeService = ntpService
-		internalServices = append(internalServices, adapter.NewLifecycleService(ntpService, "ntp service"))
 	}
 	return &Box{
 		ctx:                 ctx,
@@ -477,6 +478,7 @@ func New(options Options) (*Box, error) {
 		logFactory:          logFactory,
 		logger:              logFactory.Logger(),
 		internalService:     internalServices,
+		ntpService:          ntpService,
 		scope:               adapter.NewScope(ctx, logFactory.Logger()),
 		done:                make(chan struct{}),
 	}, nil
@@ -524,6 +526,31 @@ func (s *Box) Start() error {
 	return nil
 }
 
+type boxComponent struct {
+	name      string
+	lifecycle adapter.Lifecycle
+}
+
+func (s *Box) startComponents(stage adapter.StartStage, components ...boxComponent) error {
+	for _, component := range components {
+		err := s.scope.Start(component.name, component.lifecycle, stage)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *Box) startInternalServices(stage adapter.StartStage) error {
+	for _, lifecycleService := range s.internalService {
+		err := s.scope.Start(lifecycleService.Name(), lifecycleService, stage)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (s *Box) preStart() error {
 	monitor := taskmonitor.New(s.logger, C.StartTimeout)
 	monitor.Start("start logger")
@@ -532,23 +559,36 @@ func (s *Box) preStart() error {
 	if err != nil {
 		return E.Cause(err, "start logger")
 	}
-	err = adapter.StartNamed(s.ctx, s.logger, adapter.StartStateInitialize, s.internalService) // cache-file clash-api v2ray-api
+	s.scope.Add(s.logFactory.Close)
+	err = s.startInternalServices(adapter.StartStateInitialize) // cache-file clash-api v2ray-api
 	if err != nil {
 		return err
 	}
-	err = adapter.Start(s.ctx, s.logger, adapter.StartStateInitialize, s.network, s.dnsTransport, s.dnsRouter, s.connection, s.router, s.outbound, s.inbound, s.endpoint, s.service, s.certificateProvider)
+	err = s.startComponents(adapter.StartStateInitialize,
+		boxComponent{s.httpClientService.Name(), s.httpClientService},
+		boxComponent{"network", s.network},
+		boxComponent{"dns-transport", s.dnsTransport},
+		boxComponent{"dns-router", s.dnsRouter},
+		boxComponent{"connection", s.connection},
+		boxComponent{"router", s.router},
+		boxComponent{"outbound", s.outbound},
+		boxComponent{"endpoint", s.endpoint},
+		boxComponent{"certificate-provider", s.certificateProvider},
+		boxComponent{"inbound", s.inbound},
+		boxComponent{"service", s.service},
+	)
 	if err != nil {
 		return err
 	}
-	err = adapter.Start(s.ctx, s.logger, adapter.StartStateStart, s.outbound, s.dnsTransport, s.network, s.connection)
-	if err != nil {
-		return err
-	}
-	err = adapter.StartNamed(s.ctx, s.logger, adapter.StartStateStart, []adapter.LifecycleService{s.httpClientService})
-	if err != nil {
-		return err
-	}
-	err = adapter.Start(s.ctx, s.logger, adapter.StartStateStart, s.router, s.dnsRouter)
+	err = s.startComponents(adapter.StartStateStart,
+		boxComponent{"outbound", s.outbound},
+		boxComponent{"dns-transport", s.dnsTransport},
+		boxComponent{"network", s.network},
+		boxComponent{"connection", s.connection},
+		boxComponent{s.httpClientService.Name(), s.httpClientService},
+		boxComponent{"router", s.router},
+		boxComponent{"dns-router", s.dnsRouter},
+	)
 	if err != nil {
 		return err
 	}
@@ -560,35 +600,63 @@ func (s *Box) start() error {
 	if err != nil {
 		return err
 	}
-	err = adapter.StartNamed(s.ctx, s.logger, adapter.StartStateStart, s.internalService)
+	err = s.startInternalServices(adapter.StartStateStart)
 	if err != nil {
 		return err
 	}
-	err = adapter.Start(s.ctx, s.logger, adapter.StartStateStart, s.endpoint)
+	if s.ntpService != nil {
+		done := adapter.LogElapsed(s.logger, "start ntp service")
+		err = s.ntpService.Start()
+		done()
+		if err != nil {
+			return E.Cause(err, "start ntp service")
+		}
+		s.scope.Add(s.ntpService.Close)
+	}
+	err = s.startComponents(adapter.StartStateStart,
+		boxComponent{"endpoint", s.endpoint},
+		boxComponent{"certificate-provider", s.certificateProvider},
+		boxComponent{"inbound", s.inbound},
+		boxComponent{"service", s.service},
+	)
 	if err != nil {
 		return err
 	}
-	err = adapter.Start(s.ctx, s.logger, adapter.StartStateStart, s.certificateProvider)
+	err = s.startComponents(adapter.StartStatePostStart,
+		boxComponent{"outbound", s.outbound},
+		boxComponent{"network", s.network},
+		boxComponent{"dns-transport", s.dnsTransport},
+		boxComponent{"dns-router", s.dnsRouter},
+		boxComponent{"connection", s.connection},
+		boxComponent{"router", s.router},
+		boxComponent{"endpoint", s.endpoint},
+		boxComponent{"certificate-provider", s.certificateProvider},
+		boxComponent{"inbound", s.inbound},
+		boxComponent{"service", s.service},
+	)
 	if err != nil {
 		return err
 	}
-	err = adapter.Start(s.ctx, s.logger, adapter.StartStateStart, s.inbound, s.service)
+	err = s.startInternalServices(adapter.StartStatePostStart)
 	if err != nil {
 		return err
 	}
-	err = adapter.Start(s.ctx, s.logger, adapter.StartStatePostStart, s.outbound, s.network, s.dnsTransport, s.dnsRouter, s.connection, s.router, s.endpoint, s.certificateProvider, s.inbound, s.service)
+	err = s.startComponents(adapter.StartStateStarted,
+		boxComponent{"network", s.network},
+		boxComponent{"dns-transport", s.dnsTransport},
+		boxComponent{"dns-router", s.dnsRouter},
+		boxComponent{"connection", s.connection},
+		boxComponent{"router", s.router},
+		boxComponent{"outbound", s.outbound},
+		boxComponent{"endpoint", s.endpoint},
+		boxComponent{"certificate-provider", s.certificateProvider},
+		boxComponent{"inbound", s.inbound},
+		boxComponent{"service", s.service},
+	)
 	if err != nil {
 		return err
 	}
-	err = adapter.StartNamed(s.ctx, s.logger, adapter.StartStatePostStart, s.internalService)
-	if err != nil {
-		return err
-	}
-	err = adapter.Start(s.ctx, s.logger, adapter.StartStateStarted, s.network, s.dnsTransport, s.dnsRouter, s.connection, s.router, s.outbound, s.endpoint, s.certificateProvider, s.inbound, s.service)
-	if err != nil {
-		return err
-	}
-	err = adapter.StartNamed(s.ctx, s.logger, adapter.StartStateStarted, s.internalService)
+	err = s.startInternalServices(adapter.StartStateStarted)
 	if err != nil {
 		return err
 	}
