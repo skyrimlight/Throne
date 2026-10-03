@@ -6383,6 +6383,14 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>移除异常节点</translation>
     </message>
     <message>
+        <source>Smart Failover for Active Node</source>
+        <translation>活动节点智能故障转移</translation>
+    </message>
+    <message>
+        <source>Smart Failover</source>
+        <translation>智能故障转移</translation>
+    </message>
+    <message>
         <source>Remove Unavailable</source>
         <translation>移除不可用项</translation>
     </message>

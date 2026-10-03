@@ -139,6 +139,9 @@ void TestRunner::applyUrlResult(const std::shared_ptr<Configs::Profile>& ent, co
         MW_show_log(MainWindow::tr("[%1] test error: %2").arg(ent->outbound->DisplayTypeAndName(), error));
     }
     Configs::dataManager->profilesRepo->Save(ent);
+    if (mw_->running && ent->id == mw_->running->id) {
+        mw_->evaluateSmartFailover(ent);
+    }
 }
 
 void TestRunner::applyIpResult(const std::shared_ptr<Configs::Profile>& ent, const libcore::IPTestRes& res) {
@@ -678,5 +681,8 @@ void TestRunner::runSpeedProbe(const Target& target)
             MW_show_log(MainWindow::tr("[%1] speed test error: %2").arg(ent->outbound->DisplayTypeAndName(), error));
         }
         Configs::dataManager->profilesRepo->Save(ent);
+        if (mw_->running && ent->id == mw_->running->id) {
+            mw_->evaluateSmartFailover(ent);
+        }
     }
 }

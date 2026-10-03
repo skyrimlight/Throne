@@ -18,6 +18,9 @@ public:
     void setVisible(bool visible);
     void hide() { setVisible(false); }
     bool isVisible() const;
+    void showMessage(const QString &title, const QString &message,
+                     QSystemTrayIcon::MessageIcon icon = QSystemTrayIcon::Information,
+                     int msecs = 10000);
 
 signals:
     void activated(QSystemTrayIcon::ActivationReason reason);

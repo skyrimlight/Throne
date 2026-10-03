@@ -45,3 +45,14 @@ void TrayIcon::setVisible(bool visible) {
 bool TrayIcon::isVisible() const {
     return m_visible;
 }
+
+void TrayIcon::showMessage(const QString &title, const QString &message,
+                           QSystemTrayIcon::MessageIcon icon, int msecs) {
+    Q_UNUSED(icon);
+    Q_UNUSED(msecs);
+    NSUserNotification *notification = [[NSUserNotification alloc] init];
+    notification.title = title.toNSString();
+    notification.informativeText = message.toNSString();
+    [NSUserNotificationCenter.defaultUserNotificationCenter deliverNotification:notification];
+    [notification release];
+}

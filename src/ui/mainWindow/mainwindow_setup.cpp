@@ -809,6 +809,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         } else {
             ui->menu_server->removeAction(ui->menu_stop_testing);
         }
+        ui->actionToggle_Smart_Failover->setChecked(Configs::dataManager->settingsRepo->smart_failover_enabled);
     });
 
     connect(ui->menuTesting, &QMenu::aboutToShow, this, [=,this](){
@@ -818,6 +819,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         } else {
             ui->menuTesting->removeAction(ui->menu_stop_testing);
         }
+        ui->actionToggle_Smart_Failover->setChecked(Configs::dataManager->settingsRepo->smart_failover_enabled);
+    });
+
+    connect(ui->actionToggle_Smart_Failover, &QAction::toggled, this, [=, this](bool checked) {
+        Configs::dataManager->settingsRepo->smart_failover_enabled = checked;
+        Configs::dataManager->settingsRepo->Save();
+        MW_show_log(tr("[Smart Failover] %1").arg(checked ? tr("Enabled") : tr("Disabled")));
     });
 
     connect(ui->menuTools, &QMenu::aboutToShow, this, [=,this](){
@@ -1138,6 +1146,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     m_proxyListRefreshDebounce = new QTimer(this);
     m_proxyListRefreshDebounce->setSingleShot(true);
     connect(m_proxyListRefreshDebounce, &QTimer::timeout, this, [this] { refresh_proxy_list({}, false); });
+
+    m_failoverMonitorTimer = new QTimer(this);
+    connect(m_failoverMonitorTimer, &QTimer::timeout, this, [this] { checkActiveNodeHealth(); });
+    m_failoverMonitorTimer->start(15000);
 
     // The selector monitor emits from its own poll thread.
     connect(Stats::autoSelectorMonitor, &Stats::AutoSelectorMonitor::poolExhausted, this,

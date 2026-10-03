@@ -268,6 +268,8 @@ private:
     bool m_profileConnecting = false;
     bool m_profileDisconnecting = false;
     bool m_xrayGeoAssetBusy = false;
+    std::atomic<qint64> m_lastFailoverTime{0};
+    QTimer *m_failoverMonitorTimer = nullptr;
     bool m_ruleSetUpdateBusy = false;
     QString traffic_update_cache;
     qint64 last_test_time = 0;
@@ -362,6 +364,8 @@ private:
 
     void clearUnavailableProfiles(bool confirm = true, QList<int> profileIDs = {});
     void removeAbnormalProfiles(int targetGid = -1);
+    void evaluateSmartFailover(const std::shared_ptr<Configs::Profile>& ent);
+    void checkActiveNodeHealth();
     void applyDefaultSort(int targetGid = -1);
     void on_btn_default_sort_clicked();
 

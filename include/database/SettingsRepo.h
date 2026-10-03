@@ -160,6 +160,8 @@ namespace Configs {
         int default_sort_method = 4;        // GroupSortMethod::ByLatency (default: 4)
         bool default_sort_descending = false;
         bool default_group_include_all = true; // Whether Default group includes all nodes (default: true)
+        bool smart_failover_enabled = true; // Automatically switch running profile on failure/spike (default: true)
+        int smart_failover_latency_spike_ms = 1500; // Latency spike threshold in ms (default: 1500ms)
         bool sub_clear = false;
         bool sub_show_change_popup = true;
         bool sub_send_hwid = false;
