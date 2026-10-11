@@ -136,7 +136,8 @@ void TestRunner::applyUrlResult(const std::shared_ptr<Configs::Profile>& ent, co
         ent->SetLatency(Configs::kLatencyConnectOnly);
     } else {
         ent->SetLatency(-1);
-        MW_show_log(MainWindow::tr("[%1] test error: %2").arg(ent->outbound->DisplayTypeAndName(), error));
+        const QString name = ent->outbound ? ent->outbound->DisplayTypeAndName() : ent->name;
+        MW_show_log(MainWindow::tr("[%1] test error: %2").arg(name, error));
     }
     Configs::dataManager->profilesRepo->Save(ent);
     if (mw_->running && ent->id == mw_->running->id) {
@@ -151,7 +152,8 @@ void TestRunner::applyIpResult(const std::shared_ptr<Configs::Profile>& ent, con
         ent->test_country = QString::fromStdString(res.country_code.value());
     } else {
         if (!isTestAborted(error)) {
-            MW_show_log(MainWindow::tr("[%1] IP test error: %2").arg(ent->outbound->DisplayTypeAndName(), error));
+            const QString name = ent->outbound ? ent->outbound->DisplayTypeAndName() : ent->name;
+            MW_show_log(MainWindow::tr("[%1] IP test error: %2").arg(name, error));
         }
         ent->ip_out.clear();
         ent->test_country.clear();
@@ -432,7 +434,7 @@ bool TestRunner::runLatencyGroup(LatencyKind kind, const QList<int>& requestedID
                mw_->clearUnavailableProfiles(false, profileIDs);
             });
         }
-        if (isUrl && Configs::dataManager->settingsRepo->auto_sort_after_test) {
+        if (isUrl && interactive && Configs::dataManager->settingsRepo->auto_sort_after_test) {
             MW_show_log("URL test finished, automatically sorting profiles by default sort order...");
             runOnUiThread([=, this] {
                mw_->applyDefaultSort(testGid);
@@ -688,7 +690,8 @@ void TestRunner::runSpeedProbe(const Target& target)
             ent->ul_speed = "N/A";
             ent->SetLatency(-1);
             ent->test_country = "";
-            MW_show_log(MainWindow::tr("[%1] speed test error: %2").arg(ent->outbound->DisplayTypeAndName(), error));
+            const QString name = ent->outbound ? ent->outbound->DisplayTypeAndName() : ent->name;
+            MW_show_log(MainWindow::tr("[%1] speed test error: %2").arg(name, error));
         }
         Configs::dataManager->profilesRepo->Save(ent);
         if (mw_->running && ent->id == mw_->running->id) {

@@ -43,7 +43,6 @@ namespace Configs
 
     QString Profile::DisplayTestResult() const {
         auto group = dataManager->groupsRepo->GetGroup(gid);
-        if (group == nullptr) return "";
         QString result;
         if (!test_country.isEmpty()) result += UNICODE_LRO + CountryCodeToFlag(test_country) + " ";
         if (latency == kLatencyConnectOnly) {
@@ -53,13 +52,13 @@ namespace Configs
             const bool healthScoring = dataManager->settingsRepo->health_scoring_enabled;
             if (healthScoring) {
                 if (failed_count == 1) {
-                    result = QObject::tr("可疑 (1/3)");
+                    result = QObject::tr("Suspicious (1/3)");
                 } else if (failed_count == 2) {
-                    result = QObject::tr("异常 (2/3)");
+                    result = QObject::tr("Abnormal (2/3)");
                 } else if (failed_count >= 3) {
-                    result = QObject::tr("连续失败 3 次 (不可用)");
+                    result = QObject::tr("Failed 3 times (Unavailable)");
                 } else {
-                    result = QObject::tr("可疑 (1/3)");
+                    result = QObject::tr("Suspicious (1/3)");
                 }
             } else {
                 result = QObject::tr("Unavailable");
@@ -68,8 +67,8 @@ namespace Configs
         } else if (latency > 0) {
             result += QString("%1 ms").arg(latency);
         }
-        bool showSpeed = group->test_items_to_show == testShowItems::all || group->test_items_to_show == testShowItems::speedOnly;
-        bool showIP = group->test_items_to_show == testShowItems::all || group->test_items_to_show == testShowItems::ipOnly;
+        bool showSpeed = group ? (group->test_items_to_show == testShowItems::all || group->test_items_to_show == testShowItems::speedOnly) : true;
+        bool showIP = group ? (group->test_items_to_show == testShowItems::all || group->test_items_to_show == testShowItems::ipOnly) : true;
         if (!dl_speed.isEmpty() && dl_speed != "N/A" && showSpeed) result += " ↓" + dl_speed;
         if (!ul_speed.isEmpty() && ul_speed != "N/A" && showSpeed) result += " ↑" + ul_speed;
         if (!ip_out.isEmpty() && showIP) result += " 🌐" + ip_out;

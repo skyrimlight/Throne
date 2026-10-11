@@ -1,6 +1,9 @@
 #pragma once
 
 #include <QObject>
+#include <QSsl>
+#include <QSslConfiguration>
+#include <QSslSocket>
 #include <functional>
 
 namespace Configs_network {

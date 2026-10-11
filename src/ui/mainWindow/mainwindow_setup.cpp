@@ -1181,15 +1181,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         auto* runner = Throne::PeriodicRunner::instance();
         // Interval is sign-encoded in settings (negative = disabled); < 30 min counts as off.
         const auto minutesOf = [](int v) { return v >= 30 ? v : 0; };
+        // Every poll while enabled: each group keeps its own schedule, persisted as its sub_last_update.
         runner->Add({
-            tr("subscriptions"),
-            [minutesOf] { return minutesOf(Configs::dataManager->settingsRepo->sub_auto_update); },
-            [] { return Configs::dataManager->settingsRepo->sub_auto_update_last; },
-            [](qint64 t) {
-                Configs::dataManager->settingsRepo->sub_auto_update_last = t;
-                Configs::dataManager->settingsRepo->Save();
-            },
-            [] { Subscription::updater()->RefreshAll(true); },
+            {},
+            [minutesOf] { return minutesOf(Configs::dataManager->settingsRepo->sub_auto_update) > 0 ? 1 : 0; },
+            nullptr,
+            nullptr,
+            [] { Subscription::updater()->CheckAutoUpdate(); },
         });
         runner->Add({
             tr("routing profiles"),

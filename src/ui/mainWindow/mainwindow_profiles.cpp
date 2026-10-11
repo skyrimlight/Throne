@@ -619,6 +619,7 @@ void MainWindow::clearUnavailableProfiles(bool confirm, QList<int> profileIDs) {
     const bool healthScoring = Configs::dataManager->settingsRepo->health_scoring_enabled;
 
     for (const auto &profile: profiles) {
+        if (!profile) continue;
         if (profile->IsUnavailable()) {
             auto profGroup = Configs::dataManager->groupsRepo->GetGroup(profile->gid);
             const bool shouldClearNode = (profGroup != nullptr)
@@ -626,6 +627,7 @@ void MainWindow::clearUnavailableProfiles(bool confirm, QList<int> profileIDs) {
                 : Configs::dataManager->settingsRepo->auto_clear_unavailable;
             if (!shouldClearNode) continue;
 
+            const QString profName = profile->outbound ? profile->outbound->DisplayTypeAndName() : profile->name;
             if (healthScoring) {
                 // Progressive elimination: only delete if continuous failure count >= 3
                 if (profile->failed_count >= 3) {
@@ -633,7 +635,7 @@ void MainWindow::clearUnavailableProfiles(bool confirm, QList<int> profileIDs) {
                     if (++remove_display_count == removeListPreviewLimit) {
                         remove_display += "...";
                     } else if (remove_display_count < removeListPreviewLimit) {
-                        remove_display += profile->outbound->DisplayTypeAndName() + " (failed 3 times)\n";
+                        remove_display += profName + " (failed 3 times)\n";
                     }
                 }
             } else {
@@ -641,7 +643,7 @@ void MainWindow::clearUnavailableProfiles(bool confirm, QList<int> profileIDs) {
                 if (++remove_display_count == removeListPreviewLimit) {
                     remove_display += "...";
                 } else if (remove_display_count < removeListPreviewLimit) {
-                    remove_display += profile->outbound->DisplayTypeAndName() + "\n";
+                    remove_display += profName + "\n";
                 }
             }
         }
@@ -707,10 +709,11 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
             if (profile->failed_count > 0) {
                 failInfo = QString(" (%1/3)").arg(profile->failed_count);
             }
+            const QString profName = profile->outbound ? profile->outbound->DisplayTypeAndName() : profile->name;
             if (++remove_display_count == removeListPreviewLimit) {
                 remove_display += "...";
             } else if (remove_display_count < removeListPreviewLimit) {
-                remove_display += profile->outbound->DisplayTypeAndName() + failInfo + "\n";
+                remove_display += profName + failInfo + "\n";
             }
         }
     }

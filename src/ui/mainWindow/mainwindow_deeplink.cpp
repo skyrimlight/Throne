@@ -343,6 +343,9 @@ void MainWindow::import_text(const QString &text) {
                 Subscription::updater()->ImportUrl(url);
             }
             return;
+        } else if (index == 2) {
+            Subscription::updater()->ImportText(content);
+            return;
         }
     } else if (content.startsWith("http://") || content.startsWith("https://")) {
         const QStringList items{

@@ -221,6 +221,8 @@ set(PROJECT_SOURCES
         src/ui/widget/TrayProfileSelector.cpp
         include/ui/widget/TrayOtpCodes.hpp
         src/ui/widget/TrayOtpCodes.cpp
+        include/ui/widget/SubscriptionInfoCard.hpp
+        src/ui/widget/SubscriptionInfoCard.cpp
         include/ui/widget/json/JsonTree.h
         src/ui/widget/json/JsonTree.cpp
         include/ui/widget/json/JsonValidator.h
@@ -256,6 +258,8 @@ set(PROJECT_SOURCES
 
         include/ui/profile/dialog_edit_profile.h
         src/ui/profile/dialog_edit_profile.cpp
+        src/ui/profile/dialog_edit_profile_singbox.cpp
+        src/ui/profile/dialog_edit_profile_xray.cpp
         src/ui/profile/dialog_edit_profile_xhttp.cpp
         include/ui/profile/dialog_edit_profile.ui
         include/ui/group/dialog_edit_group.h

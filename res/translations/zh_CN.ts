@@ -8307,6 +8307,18 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <translation>移除异常节点</translation>
     </message>
     <message>
+        <source>Suspicious (1/3)</source>
+        <translation>可疑 (1/3)</translation>
+    </message>
+    <message>
+        <source>Abnormal (2/3)</source>
+        <translation>异常 (2/3)</translation>
+    </message>
+    <message>
+        <source>Failed 3 times (Unavailable)</source>
+        <translation>连续失败 3 次 (不可用)</translation>
+    </message>
+    <message>
         <source>Smart Failover for Active Node</source>
         <translation>活动节点智能故障转移</translation>
     </message>

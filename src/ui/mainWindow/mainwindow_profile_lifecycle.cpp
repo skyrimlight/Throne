@@ -1125,6 +1125,6 @@ void MainWindow::checkActiveNodeHealth() {
 
     const qint64 now = QDateTime::currentSecsSinceEpoch();
     if (running->latency_at == 0 || (now - running->latency_at > 60)) {
-        testRunner->runUrlTests({running->id});
+        testRunner->runUrlTests({running->id}, {}, false);
     }
 }
