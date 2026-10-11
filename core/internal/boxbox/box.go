@@ -3,6 +3,7 @@ package boxbox
 import (
 	"context"
 	"io"
+	"os"
 	"time"
 
 	"github.com/sagernet/sing-box/adapter"
