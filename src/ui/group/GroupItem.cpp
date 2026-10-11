@@ -8,6 +8,7 @@
 #include <QListWidget>
 
 #include "include/database/GroupsRepo.h"
+#include "include/database/ProfilesRepo.h"
 #include "include/ui/mainwindow.h"
 #include "include/ui/stats/dialog_endpoint_details.h"
 #include "include/ui/widget/SubscriptionInfoCard.hpp"

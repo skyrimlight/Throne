@@ -9,6 +9,7 @@
 
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/database/GroupsRepo.h"
+#include "include/database/ProfilesRepo.h"
 #include "include/ui/group/dialog_edit_group.h"
 #include "include/ui/mainWindow/MainWindowInternal.h"
 #include "include/ui/mainWindow/TestRunner.h"
