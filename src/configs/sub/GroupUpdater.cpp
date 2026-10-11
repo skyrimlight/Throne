@@ -246,7 +246,7 @@ namespace Subscription {
             }
             if (options.remove_insecure) {
                 collect(QObject::tr("Removed %1 insecure profiles:"),
-                        [](const std::shared_ptr<Configs::Profile> &ent) { return ent->outbound->GetSecurity().isDangerous(); });
+                        [](const std::shared_ptr<Configs::Profile> &ent) { return ent->outbound->EffectiveSecurity().isInsecure(); });
             }
             if (options.remove_invalid) {
                 QList<std::shared_ptr<Configs::Profile>> unchecked;
@@ -487,6 +487,31 @@ namespace Subscription {
         for (const auto &payload : payloads) documents << payload.trimmed().toUtf8();
         enqueue({-1, false, [=, this]() mutable {
             importDocuments(-1, std::move(documents));
+            emit asyncUpdateCallback(-1);
+            if (finish != nullptr) finish();
+        }});
+    }
+
+    void GroupUpdater::CloneProfiles(const QList<int> &ids, const Finish &finish) {
+        QList<QPair<QByteArray, Configs::EndpointSource>> copies;
+        for (const auto &ent : Configs::dataManager->profilesRepo->GetProfileBatch(ids)) {
+            copies.append({ent->outbound->ExportJsonLink().toUtf8(), ent->endpoint});
+        }
+        enqueue({-1, false, [=, this] {
+            auto &settings = Configs::dataManager->settingsRepo;
+            settings->imported_count = 0;
+            ImportSink sink(-1, nullptr);
+            auto parseSink = sinkFor(sink);
+            for (const auto &copy : copies) {
+                parseSink.profile = [&sink, endpoint = copy.second](std::shared_ptr<Configs::Profile> ent) {
+                    ent->endpoint = endpoint;
+                    sink.add(std::move(ent));
+                };
+                ParseDocument(copy.first, parseSink);
+            }
+            sink.flush();
+            settings->imported_count = sink.entries.size();
+            MW_dialog_message(MwMessage::SubscriptionFinished, {});
             emit asyncUpdateCallback(-1);
             if (finish != nullptr) finish();
         }});

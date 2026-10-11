@@ -207,7 +207,8 @@ func (w *platformInterfaceWrapper) FindConnectionOwner(request *adapter.FindConn
 			return nil, E.New("procfs: not found")
 		}
 		return &adapter.ConnectionOwner{
-			UserId: uid,
+			UserId:       uid,
+			PackageNames: iteratorToArray[string](packageNames),
 		}, nil
 	}
 
@@ -284,5 +285,13 @@ func (w *platformInterfaceWrapper) UsePlatformBridge() bool {
 }
 
 func (w *platformInterfaceWrapper) CreateBridge(options adapter.BridgeOptions) (adapter.BridgeSession, error) {
+	return nil, os.ErrInvalid
+}
+
+func (w *platformInterfaceWrapper) UsePlatformAutoRedirect() bool {
+	return false
+}
+
+func (w *platformInterfaceWrapper) CreateAutoRedirect(options adapter.AutoRedirectOptions) (adapter.AutoRedirectSession, error) {
 	return nil, os.ErrInvalid
 }

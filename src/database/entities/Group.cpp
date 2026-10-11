@@ -1,5 +1,6 @@
 #include <include/database/entities/Group.h>
 
+#include "include/configs/generate.h"
 #include "include/database/ProfilesRepo.h"
 #include "include/global/Configs.hpp"
 
@@ -106,6 +107,12 @@ namespace Configs
                     if (i < 0) i = 99999;
                     return i;
                 };
+                // Resolved once up front: an endpoint source may query the IP lists.
+                QHash<int, QString> addresses;
+                if (sortAction.method == GroupSortMethod::ByAddress) {
+                    for (const auto &profile : dataManager->profilesRepo->GetProfileBatch(profiles))
+                        if (profile != nullptr) addresses.insert(profile->id, DisplayEffectiveAddress(profile));
+                }
                 std::ranges::sort(profiles,
                                   [&](int a, int b) {
                                       auto profA = dataManager->profilesRepo->GetProfile(a);
@@ -123,14 +130,14 @@ namespace Configs
                                           ms_a = profA->outbound ? profA->outbound->name : profA->name;
                                           ms_b = profB->outbound ? profB->outbound->name : profB->name;
                                       } else if (sortAction.method == GroupSortMethod::ByAddress) {
-                                          ms_a = profA->outbound ? profA->outbound->DisplayAddress() : QString();
-                                          ms_b = profB->outbound ? profB->outbound->DisplayAddress() : QString();
+                                          ms_a = addresses.value(a);
+                                          ms_b = addresses.value(b);
                                       } else if (sortAction.method == GroupSortMethod::BySecurity) {
                                           if (!profA->outbound || !profB->outbound) {
                                               return profA->outbound != nullptr;
                                           }
-                                          auto secA = profA->outbound->GetSecurity();
-                                          auto secB = profB->outbound->GetSecurity();
+                                          auto secA = profA->outbound->EffectiveSecurity();
+                                          auto secB = profB->outbound->EffectiveSecurity();
                                           if (secA.level != secB.level) {
                                               return sortAction.descending ? secA.level > secB.level
                                                                            : secA.level < secB.level;

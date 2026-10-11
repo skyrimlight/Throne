@@ -197,7 +197,7 @@ void MainWindow::show_group_tab_menu(const QPoint &p) {
             if (dialog->result() == QDialog::Accepted) {
                 const bool urlChanged = (oldUrl != ent->url);
                 Configs::dataManager->groupsRepo->Save(ent);
-                MW_dialog_message(MwMessage::GroupsChanged, {});
+                MW_dialog_message(MwMessage::GroupsChanged, dialog->RestartNeeded() ? QStringList{MwArg::RestartProxy} : QStringList{});
                 if (urlChanged && !ent->url.trimmed().isEmpty()) {
                     Subscription::updater()->RefreshGroup(ent->id, nullptr, false);
                 }
@@ -265,6 +265,9 @@ void MainWindow::show_group_tab_menu(const QPoint &p) {
         connect(menu.addAction(tr("Remove abnormal items")), &QAction::triggered, this, [=,this]{
             removeAbnormalProfiles(clickedGroup->id);
         });
+        // Clean up acts on the current group; setCurrentIndex above already switched to the clicked one.
+        menu.addSeparator();
+        menu.addMenu(ui->menu_clean_up);
     }
     menu.exec(ui->tabWidget->tabBar()->mapToGlobal(p));
 }

@@ -16,8 +16,10 @@ import (
 func connMetaToProto(c *trafficcontrol.TrackerMetadata) *gen.ConnectionMetaData {
 	process := ""
 	processPath := ""
-	if c.Metadata.ProcessInfo != nil && len(c.Metadata.ProcessInfo.ProcessPaths) > 0 {
-		processPath = c.Metadata.ProcessInfo.ProcessPaths[0]
+	if c.Metadata.ProcessInfo != nil {
+		if len(c.Metadata.ProcessInfo.ProcessPaths) > 0 {
+			processPath = c.Metadata.ProcessInfo.ProcessPaths[0]
+		}
 		spl := strings.Split(processPath, string(os.PathSeparator))
 		process = spl[len(spl)-1]
 	}

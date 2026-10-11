@@ -4,6 +4,7 @@
 #include <QMutex>
 #include <QString>
 
+#include "include/database/entities/EndpointSource.h"
 #include "include/ui/group/GroupSort.hpp"
 
 namespace Configs
@@ -62,6 +63,9 @@ namespace Configs
         static SubscriptionOptions FromJson(const QJsonObject &json);
     };
 
+    // A speed-test result such as "48.3 Mbps"; -1 for "N/A", 0 when empty.
+    double bitrateToBps(const QString &str);
+
     class Group {
     public:
         QMutex mutex;
@@ -78,6 +82,8 @@ namespace Configs
         SubscriptionOptions sub_options;
         int front_proxy_id = -1;
         int landing_proxy_id = -1;
+        // Inherit (profiles keep their own addresses), Address or IpList.
+        EndpointSource endpoint;
 
         QList<int> column_width;
         QList<int> calculated_column_width; // memory only, no need to save to db

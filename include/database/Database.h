@@ -2,6 +2,8 @@
 
 #include <3rdparty/SQLiteCpp/include/SQLiteCpp.h>
 #include <atomic>
+#include <functional>
+#include <mutex>
 #include <string>
 #include <iostream>
 #include <vector>
@@ -26,6 +28,7 @@ namespace Configs {
         std::string outbound_json;
         long long traffic_dl = 0;
         long long traffic_up = 0;
+        std::string endpoint_json = "{}";
     };
     // icons is the icons/ folder, handled by the UI layer rather than the database.
     struct BackupParts {
@@ -33,9 +36,10 @@ namespace Configs {
         bool routes = false;
         bool settings = false;
         bool otp = false;
+        bool ipLists = false;
         bool icons = false;
 
-        [[nodiscard]] bool anyDb() const { return profiles || routes || settings || otp; }
+        [[nodiscard]] bool anyDb() const { return profiles || routes || settings || otp || ipLists; }
         [[nodiscard]] bool any() const { return anyDb() || icons; }
     };
 
@@ -79,6 +83,7 @@ namespace Configs {
         SQLite::Database db;
         std::string path_;
         std::atomic<int> writeCount{0};
+        std::recursive_mutex writeMutex_;
         void maybeCheckpoint(int count);
         void maybeVacuum();
 
@@ -103,6 +108,9 @@ namespace Configs {
         void RunMaintenance();
 
         [[nodiscard]] const std::string& Path() const { return path_; }
+
+        // Transactions span the connection: hold this to write, or to read rows a writer may be replacing.
+        std::recursive_mutex& WriteMutex() { return writeMutex_; }
 
     private:
 
@@ -184,9 +192,9 @@ namespace Configs {
             }
         }
 
-        // 13 bind params per row.
+        // 14 bind params per row.
         void execBatchInsertProfiles0(const std::vector<ProfileInsertRow>& rows) {
-            const size_t chunkSize = BATCH_LIMIT_WRITE / 13;
+            const size_t chunkSize = BATCH_LIMIT_WRITE / 14;
             for (size_t off = 0; off < rows.size(); off += chunkSize) {
                 size_t end = std::min(off + chunkSize, rows.size());
                 std::vector<ProfileInsertRow> chunk(rows.begin() + static_cast<std::ptrdiff_t>(off),
@@ -196,7 +204,7 @@ namespace Configs {
         }
 
         void execBatchReplaceProfiles0(const std::vector<ProfileInsertRow>& rows) {
-            const size_t chunkSize = BATCH_LIMIT_WRITE / 13;
+            const size_t chunkSize = BATCH_LIMIT_WRITE / 14;
             for (size_t off = 0; off < rows.size(); off += chunkSize) {
                 size_t end = std::min(off + chunkSize, rows.size());
                 std::vector<ProfileInsertRow> chunk(rows.begin() + static_cast<std::ptrdiff_t>(off),
@@ -220,6 +228,23 @@ namespace Configs {
         void execThrow(const std::string& sql, Args&&... args) {
             exec0(sql, std::forward<Args>(args)...);
         }
+
+        template<typename... Args>
+        int execChanges(const std::string& sql, Args&&... args) {
+            try {
+                SQLite::Statement query(db, sql);
+                bindArgs(query, 1, std::forward<Args>(args)...);
+                const int changes = query.exec();
+                maybeCheckpoint(1);
+                return changes;
+            } catch (std::exception& e) {
+                NotifyError(sql, e);
+                return -1;
+            }
+        }
+
+        // BEGIN IMMEDIATE .. COMMIT; body returning false rolls back quietly, a throw rolls back and is reported as op.
+        bool transaction(const std::string& op, const std::function<bool()>& body);
 
         template<typename... Args>
         std::unique_ptr<SQLite::Statement> queryThrow(const std::string& sql, Args&&... args) {
