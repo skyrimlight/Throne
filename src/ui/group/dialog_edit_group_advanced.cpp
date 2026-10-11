@@ -12,6 +12,8 @@
 #include <QHostAddress>
 #include <QRegularExpression>
 #include <QScreen>
+#include <QSslSocket>
+#include <QStandardItemModel>
 #include <QStyle>
 
 namespace {
