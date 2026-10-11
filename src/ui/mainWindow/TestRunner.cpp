@@ -348,7 +348,7 @@ bool TestRunner::runLatencyGroup(LatencyKind kind, const QList<int>& requestedID
     auto currentGroup = Configs::dataManager->groupsRepo->CurrentGroup();
     const int testGid = currentGroup ? currentGroup->id : -1;
 
-    runOnNewThread([this, profileIDs, panelKind, isUrl, finish, testGid]() {
+    runOnNewThread([this, profileIDs, panelKind, isUrl, finish, testGid, interactive]() {
         mw_->dataViewHtmlGenerator_.seedLatencyTest(panelKind, profileIDs.size());
         mw_->UpdateDataView(true);
 
