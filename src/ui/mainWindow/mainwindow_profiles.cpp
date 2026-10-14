@@ -620,31 +620,25 @@ void MainWindow::clearUnavailableProfiles(bool confirm, QList<int> profileIDs) {
 
     for (const auto &profile: profiles) {
         if (!profile) continue;
-        if (profile->IsUnavailable()) {
+        if (!profile->IsEliminated(healthScoring)) continue;
+
+        if (!confirm) {
             auto profGroup = Configs::dataManager->groupsRepo->GetGroup(profile->gid);
             const bool shouldClearNode = (profGroup != nullptr)
                 ? profGroup->ShouldAutoClearUnavailable()
                 : Configs::dataManager->settingsRepo->auto_clear_unavailable;
             if (!shouldClearNode) continue;
+        }
 
-            const QString profName = profile->outbound ? profile->outbound->DisplayTypeAndName() : profile->name;
-            if (healthScoring) {
-                // Progressive elimination: only delete if continuous failure count >= 3
-                if (profile->failed_count >= 3) {
-                    del_ids += profile->id;
-                    if (++remove_display_count == removeListPreviewLimit) {
-                        remove_display += "...";
-                    } else if (remove_display_count < removeListPreviewLimit) {
-                        remove_display += profName + " (failed 3 times)\n";
-                    }
-                }
+        del_ids += profile->id;
+        const QString profName = profile->outbound ? profile->outbound->DisplayTypeAndName() : profile->name;
+        if (++remove_display_count == removeListPreviewLimit) {
+            remove_display += "...";
+        } else if (remove_display_count < removeListPreviewLimit) {
+            if (healthScoring && profile->failed_count >= 3) {
+                remove_display += profName + " (failed 3 times)\n";
             } else {
-                del_ids += profile->id;
-                if (++remove_display_count == removeListPreviewLimit) {
-                    remove_display += "...";
-                } else if (remove_display_count < removeListPreviewLimit) {
-                    remove_display += profName + "\n";
-                }
+                remove_display += profName + "\n";
             }
         }
     }
@@ -685,6 +679,7 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
     }
 
     auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(profileIDs);
+    const bool healthScoring = Configs::dataManager->settingsRepo->health_scoring_enabled;
 
     QList<int> del_ids;
     int remove_display_count = 0;
@@ -693,17 +688,9 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
     for (const auto &profile: profiles) {
         if (!profile) continue;
 
-        // Any node where the last test failed (failed 1 time, 2 times, or more)
-        bool isAbnormal = false;
-        if (profile->latency < 0 && profile->latency != Configs::kLatencyConnectOnly) {
-            isAbnormal = true;
-        } else if (profile->failed_count >= 1) {
-            isAbnormal = true;
-        } else if (profile->IsUnavailable()) {
-            isAbnormal = true;
-        }
-
-        if (isAbnormal) {
+        // When healthScoring is enabled, only nodes with failed_count >= 2 (Abnormal 2/3 or Failed 3/3)
+        // are treated as abnormal. Single failures (failed_count == 1, Suspicious 1/3) are preserved.
+        if (profile->IsAbnormal(healthScoring)) {
             del_ids += profile->id;
             QString failInfo;
             if (profile->failed_count > 0) {
@@ -721,7 +708,7 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
     const QString groupName = currentGroup ? currentGroup->name : tr("All");
 
     if (del_ids.isEmpty()) {
-        MW_show_log(tr("No abnormal nodes (last test failed) found in group: %1").arg(groupName));
+        MW_show_log(tr("No abnormal nodes found in group: %1").arg(groupName));
         return;
     }
 
@@ -729,13 +716,14 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
         QList<int> idsCopy = del_ids;
         Configs::dataManager->profilesRepo->BatchDeleteProfiles(idsCopy, true);
         refresh_proxy_list({}, true, RefreshAnchor::Removal);
-        MW_show_log(tr("Removed %1 abnormal node(s) (last test failed) from group: %2").arg(del_ids.length()).arg(groupName));
+        MW_show_log(tr("Removed %1 abnormal node(s) from group: %2").arg(del_ids.length()).arg(groupName));
     };
 
     if (!Configs::dataManager->settingsRepo->skip_delete_confirmation) {
-        if (QMessageBox::question(this, tr("Confirmation"),
-                tr("Remove %1 abnormal node(s) that failed the last test (including 1 or 2 failures)?").arg(del_ids.length()) + "\n" + remove_display)
-            == QMessageBox::StandardButton::Yes) {
+        const QString confirmMsg = healthScoring
+            ? tr("Remove %1 abnormal node(s) (failed 2 or more times)?").arg(del_ids.length()) + "\n" + remove_display
+            : tr("Remove %1 abnormal node(s)?").arg(del_ids.length()) + "\n" + remove_display;
+        if (QMessageBox::question(this, tr("Confirmation"), confirmMsg) == QMessageBox::StandardButton::Yes) {
             clearFunc();
         }
     } else {

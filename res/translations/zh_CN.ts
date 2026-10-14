@@ -9209,8 +9209,20 @@ Error: %1</source>
         <translation>替换域名服务器地址为其解析后的 IP 地址吗？</translation>
     </message>
     <message>
-        <source>Remove %1 abnormal node(s) that failed the last test (including 1 or 2 failures)?</source>
-        <translation>移除 %1 个上次测试未通过的异常节点（包含失败1次或2次的节点）吗？</translation>
+        <source>Remove %1 abnormal node(s) (failed 2 or more times)?</source>
+        <translation>移除 %1 个异常节点（连续失败2次或以上）吗？</translation>
+    </message>
+    <message>
+        <source>Remove %1 abnormal node(s)?</source>
+        <translation>移除 %1 个异常节点吗？</translation>
+    </message>
+    <message>
+        <source>No abnormal nodes found in group: %1</source>
+        <translation>在分组 %1 中未找到异常节点</translation>
+    </message>
+    <message>
+        <source>Removed %1 abnormal node(s) from group: %2</source>
+        <translation>已从分组 %2 中移除 %1 个异常节点</translation>
     </message>
     <message>
         <location filename="Throne-1.3.1/src/ui/mainWindow/mainwindow_profiles.cpp" line="625"/>

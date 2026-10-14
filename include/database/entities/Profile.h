@@ -75,6 +75,24 @@ namespace Configs {
 
         [[nodiscard]] bool IsUnavailable() const { return latency < 0 && latency != kLatencyConnectOnly; }
 
+        // Progressive health elimination:
+        // When healthScoring is enabled, only nodes with failed_count >= 3 (and latency < 0) are eliminated.
+        // Single failures (failed_count == 1) or 2 failures are NOT eliminated.
+        // When healthScoring is disabled, any latency < 0 is eliminated.
+        [[nodiscard]] bool IsEliminated(bool healthScoring = true) const {
+            if (latency >= 0 || latency == kLatencyConnectOnly) return false;
+            return healthScoring ? (failed_count >= 3) : true;
+        }
+
+        // Abnormal check:
+        // When healthScoring is enabled, a single failure (failed_count == 1) is only 'Suspicious (1/3)'
+        // and is NOT abnormal. A node becomes 'Abnormal (2/3)' only after 2 or more failures (failed_count >= 2).
+        // When healthScoring is disabled, any latency < 0 is abnormal.
+        [[nodiscard]] bool IsAbnormal(bool healthScoring = true) const {
+            if (latency >= 0 || latency == kLatencyConnectOnly) return false;
+            return healthScoring ? (failed_count >= 2) : true;
+        }
+
         [[nodiscard]] QString DisplayTestResult() const;
 
         [[nodiscard]] QColor DisplayLatencyColor() const;

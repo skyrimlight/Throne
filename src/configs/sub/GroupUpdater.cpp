@@ -343,10 +343,13 @@ namespace Subscription {
         QList<int> removeUnavailableAndSort(const std::shared_ptr<Configs::Group> &group, const Configs::SubscriptionOptions &options, QString &report) {
             QList<int> deleted;
             if (options.remove_unavailable) {
+                const bool healthScoring = Configs::dataManager && Configs::dataManager->settingsRepo
+                    ? Configs::dataManager->settingsRepo->health_scoring_enabled
+                    : true;
                 QList<int> doomed;
                 QStringList names;
                 forEachProfile(withoutSelectors(group->Profiles()), [&](const std::shared_ptr<Configs::Profile> &ent) {
-                    if (!ent->IsUnavailable()) return;
+                    if (!ent || !ent->IsEliminated(healthScoring)) return;
                     doomed << ent->id;
                     names << ent->outbound->DisplayTypeAndName();
                 });
@@ -356,7 +359,10 @@ namespace Subscription {
                         runOnUiThread([] { MessageBoxWarning("Internal error", "DB Error when deleting profiles, data may be corrupted"); });
                     }
                     deleted = outcome.deleted;
-                    report += "\n" + QObject::tr("Removed %1 unavailable profiles:").arg(names.size()) + "\n" + notice(names, "[-]", "removed");
+                    const QString noticeHeader = healthScoring
+                        ? QObject::tr("Removed %1 unavailable profiles (failed 3 times):").arg(names.size())
+                        : QObject::tr("Removed %1 unavailable profiles:").arg(names.size());
+                    report += "\n" + noticeHeader + "\n" + notice(names, "[-]", "removed");
                     if (!outcome.kept.isEmpty()) report += "\n" + QObject::tr("The running profile was kept.");
                 }
             }
