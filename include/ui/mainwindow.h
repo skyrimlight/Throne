@@ -547,9 +547,6 @@ private:
 
     void refreshConnectionIcons();
 
-    friend class GroupItem;
-    friend class RemoteApi::Router;
-
     // EnginePolicy, in mainwindow_policy.cpp; reached through EngineHost::policy().
     void geoAssetMissingCategory(const QString &contextName, const QString &needed, const QString &whichFile) override;
 
