@@ -10,9 +10,10 @@
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
+#include "include/engine/services/GroupService.h"
 #include "include/ui/group/dialog_edit_group.h"
 #include "include/ui/mainWindow/MainWindowInternal.h"
-#include "include/ui/mainWindow/TestRunner.h"
+#include "include/engine/tests/TestRunner.h"
 #include "include/ui/stats/dialog_endpoint_details.h"
 #include "include/ui/utils/ProfilesTableFilterHeader.h"
 #include "include/global/Utils.hpp"
@@ -235,10 +236,12 @@ void MainWindow::show_group_tab_menu(const QPoint &p) {
         return;
     }
 
+    // The actions run inside menu.exec(), whose event loop may let the API add or delete groups: each resolves the id again.
+    const int clickedGid = ui->tabWidget->tabBar()->tabData(clickedIndex).toInt();
     ui->tabWidget->setCurrentIndex(clickedIndex);
     QMenu menu(this);
 
-    const auto clickedGroup = Configs::dataManager->groupsRepo->GetGroup(Configs::dataManager->groupsRepo->GetGroupsTabOrder()[clickedIndex]);
+    const auto clickedGroup = Configs::dataManager->groupsRepo->GetGroup(clickedGid);
 
     connect(menu.addAction(tr("Add new Group")), &QAction::triggered, this, [=,this]{
         auto ent = Configs::dataManager->groupsRepo->NewGroup();
@@ -255,17 +258,20 @@ void MainWindow::show_group_tab_menu(const QPoint &p) {
         }
     });
     connect(menu.addAction(tr("Edit selected Group")), &QAction::triggered, this, [=,this]{
-        const auto id = Configs::dataManager->groupsRepo->GetGroupsTabOrder()[clickedIndex];
-        auto ent = Configs::dataManager->groupsRepo->GetGroup(id);
-        const QString oldUrl = ent ? ent->url : "";
+        auto ent = Configs::dataManager->groupsRepo->GetGroup(clickedGid);
+        if (ent == nullptr) return;
+        const QString oldUrl = ent->url;
         auto dialog = new DialogEditGroup(ent, this);
         connect(dialog, &QDialog::finished, this, [=,this] {
             if (dialog->result() == QDialog::Accepted) {
                 const bool urlChanged = (oldUrl != ent->url);
-                Configs::dataManager->groupsRepo->Save(ent);
-                MW_dialog_message(MwMessage::GroupsChanged, dialog->RestartNeeded() ? QStringList{MwArg::RestartProxy} : QStringList{});
-                if (urlChanged && !ent->url.trimmed().isEmpty()) {
-                    Subscription::updater()->RefreshGroup(ent->id, nullptr, false);
+                if (Configs::dataManager->groupsRepo->Save(ent)) {
+                    MW_dialog_message(MwMessage::GroupsChanged, dialog->RestartNeeded() ? QStringList{MwArg::RestartProxy} : QStringList{});
+                    if (urlChanged && !ent->url.trimmed().isEmpty()) {
+                        Subscription::updater()->RefreshGroup(ent->id, nullptr, false);
+                    }
+                } else {
+                    MessageBoxWarning(tr("Edit selected Group"), tr("This group was deleted while you were editing it."));
                 }
             }
             dialog->deleteLater();
@@ -274,48 +280,18 @@ void MainWindow::show_group_tab_menu(const QPoint &p) {
     });
     if (Configs::dataManager->groupsRepo->GetAllGroupIds().size() > 1) {
         connect(menu.addAction(tr("Delete selected Group")), &QAction::triggered, this, [=,this] {
-            const auto id = Configs::dataManager->groupsRepo->GetGroupsTabOrder()[clickedIndex];
-            auto targetGroup = Configs::dataManager->groupsRepo->GetGroup(id);
-            if (!targetGroup) return;
-            if (QMessageBox::question(this, tr("Confirmation"), tr("Remove %1?").arg(targetGroup->name)) ==
+            const auto group = Configs::dataManager->groupsRepo->GetGroup(clickedGid);
+            if (group == nullptr) return;
+            if (QMessageBox::question(this, tr("Confirmation"), tr("Remove %1?").arg(group->name)) ==
                 QMessageBox::StandardButton::Yes) {
-                if (running != nullptr) {
-                    if (running->gid == id || targetGroup->HasProfile(running->id)) {
-                        auto defaultGroup = Configs::dataManager->groupsRepo->GetGroup(0);
-                        if (!defaultGroup) {
-                            for (int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
-                                if (gid != id) {
-                                    defaultGroup = Configs::dataManager->groupsRepo->GetGroup(gid);
-                                    break;
-                                }
-                            }
-                        }
-                        if (defaultGroup != nullptr) {
-                            running->gid = defaultGroup->id;
-                            defaultGroup->AddProfile(running->id);
-                            Configs::dataManager->groupsRepo->Save(defaultGroup);
-                            Configs::dataManager->profilesRepo->Save(running);
-                            MW_show_log(tr("Active node %1 preserved and moved to %2").arg(running->name, defaultGroup->name));
-                        }
-                    }
-                }
-                QList<int> profilesToDelete = targetGroup->Profiles();
-                if (running != nullptr) {
-                    profilesToDelete.removeAll(running->id);
-                }
-                if (!profilesToDelete.isEmpty()) {
-                    Configs::dataManager->profilesRepo->BatchDeleteProfiles(profilesToDelete, false);
-                }
-                Configs::dataManager->groupsRepo->DeleteGroup(id);
-                MW_dialog_message(MwMessage::GroupsChanged, {});
+                delete_group(clickedGid, tr("Delete selected Group"));
             }
         });
     }
     if (clickedGroup != nullptr && !clickedGroup->url.isEmpty()) {
         connect(menu.addAction(tr("Update subscription")), &QAction::triggered, this, [=,this]{
-            const auto id = Configs::dataManager->groupsRepo->GetGroupsTabOrder()[clickedIndex];
-            auto group = Configs::dataManager->groupsRepo->GetGroup(id);
-            if (group->url.isEmpty()) return;
+            auto group = Configs::dataManager->groupsRepo->GetGroup(clickedGid);
+            if (group == nullptr || group->url.isEmpty()) return;
             if (mw_sub_updating) return;
             mw_sub_updating = true;
             Subscription::updater()->RefreshGroup(group->id, [&] { mw_sub_updating = false; }, true);
@@ -323,10 +299,10 @@ void MainWindow::show_group_tab_menu(const QPoint &p) {
     }
     if (clickedGroup != nullptr) {
         connect(menu.addAction(tr("Url Test selected Group")), &QAction::triggered, this, [=,this]{
-            testRunner->runUrlTests(clickedGroup->Profiles());
+            if (const auto group = Configs::dataManager->groupsRepo->GetGroup(clickedGid)) tests()->runUrlTests(group->Profiles());
         });
         connect(menu.addAction(tr("Speed Test selected Group")), &QAction::triggered, this, [=,this]{
-            testRunner->runSpeedTests(clickedGroup->Profiles());
+            if (const auto group = Configs::dataManager->groupsRepo->GetGroup(clickedGid)) tests()->runSpeedTests(group->Profiles());
         });
         connect(menu.addAction(tr("Remove abnormal items")), &QAction::triggered, this, [=,this]{
             removeAbnormalProfiles(clickedGroup->id);
@@ -336,4 +312,38 @@ void MainWindow::show_group_tab_menu(const QPoint &p) {
         menu.addMenu(ui->menu_clean_up);
     }
     menu.exec(ui->tabWidget->tabBar()->mapToGlobal(p));
+}
+
+void MainWindow::delete_group(int gid, const QString &title) {
+    // Checked before the stop, so a refused delete leaves the running profile alone.
+    if (const auto refusal = Engine::GroupService::CheckDelete(gid)) {
+        MessageBoxWarning(title, GroupDeleteRefusalText(*refusal));
+        return;
+    }
+    auto targetGroup = Configs::dataManager->groupsRepo->GetGroup(gid);
+    if (const auto running = runningSnapshot();
+        running != nullptr && targetGroup != nullptr && (running->gid == gid || targetGroup->HasProfile(running->id))) {
+        auto defaultGroup = Configs::dataManager->groupsRepo->GetGroup(0);
+        if (!defaultGroup || defaultGroup->id == gid) {
+            defaultGroup = nullptr;
+            for (int otherGid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
+                if (otherGid != gid) {
+                    defaultGroup = Configs::dataManager->groupsRepo->GetGroup(otherGid);
+                    if (defaultGroup) break;
+                }
+            }
+        }
+        if (defaultGroup != nullptr) {
+            targetGroup->RemoveProfile(running->id);
+            Configs::dataManager->groupsRepo->Save(targetGroup);
+            running->gid = defaultGroup->id;
+            defaultGroup->AddProfile(running->id);
+            Configs::dataManager->groupsRepo->Save(defaultGroup);
+            Configs::dataManager->profilesRepo->Save(running);
+            MW_show_log(tr("Active node %1 preserved and moved to %2").arg(running->name, defaultGroup->name));
+        } else {
+            profile_stop(false, true, false);
+        }
+    }
+    if (const auto refusal = Engine::GroupService::Delete(gid)) MessageBoxWarning(title, GroupDeleteRefusalText(*refusal));
 }

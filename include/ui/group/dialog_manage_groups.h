@@ -5,7 +5,10 @@
 #include <QMenu>
 #include <QTableWidgetItem>
 
+#include <optional>
+
 #include "ui_dialog_manage_groups.h"
+#include "include/engine/services/ServiceTypes.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -21,12 +24,20 @@ public:
 
     ~DialogManageGroups() override;
 
+    // GroupService::CheckDelete (checkOnly) or Delete.
+    std::optional<Engine::ServiceError> deleteGroup(int groupId, bool checkOnly = false);
+
+    // Drops the rows of groups that no longer exist and appends the groups added elsewhere.
+    void refreshGroups();
+
 protected:
     void showEvent(QShowEvent *event) override;
     void changeEvent(QEvent *event) override;
 
 private:
     Ui::DialogManageGroups *ui;
+
+    void addGroupItem(int groupId);
 
 private slots:
 

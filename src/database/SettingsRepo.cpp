@@ -6,6 +6,7 @@
 #include <QUuid>
 
 #include "include/global/Utils.hpp"
+#include "include/global/Validation.hpp"
 
 namespace Configs {
     SettingsRepo::SettingsRepo(Database& database) : db(database) {
@@ -64,6 +65,7 @@ namespace Configs {
             {"kill_switch",                   &kill_switch},
             {"remote_api_enable",             &remote_api_enable},
             {"remote_api_lan",                &remote_api_lan},
+            {"remote_api_admin_lan",          &remote_api_admin_lan},
             {"allow_beta_update",             &allow_beta_update},
             {"adblock_enable",                &adblock_enable},
             {"use_custom_icons",              &use_custom_icons},
@@ -94,6 +96,10 @@ namespace Configs {
             {"dns_use_hosts", &dns_use_hosts},
             {"dns_predefined_enable", &dns_predefined_enable},
             {"connection_sort_asc", &connection_sort_asc},
+            {"traffic_graph_smooth", &traffic_graph_smooth},
+            {"traffic_graph_markers", &traffic_graph_markers},
+            {"exit_country_lookup", &exit_country_lookup},
+            {"webdav_use_proxy", &webdav_use_proxy},
         };
 
         intMap = {
@@ -108,6 +114,8 @@ namespace Configs {
             {"max_log_line",           &max_log_line},
             {"log_font_size",          &log_font_size},
             {"stats_tab",              &stats_tab},
+            {"traffic_graph_hidden_dirs", &traffic_graph_hidden_dirs},
+            {"traffic_graph_range",    &traffic_graph_range},
             {"connection_sort",        &connection_sort},
             {"traffic_stats_retention_days", &traffic_stats_retention_days},
             {"sub_auto_update",        &sub_auto_update},
@@ -138,6 +146,7 @@ namespace Configs {
             {"user_agent2",                &user_agent},
             {"test_url",                   &test_latency_url},
             {"direct_test_url",            &direct_test_url},
+            {"exit_lookup_provider",       &exit_lookup_provider},
             {"inbound_address",            &inbound_address},
             {"log_level",                  &log_level},
             {"log_file_level",             &log_file_level},
@@ -165,6 +174,12 @@ namespace Configs {
             {"hk_tun",                     &hotkey_toggle_tun},
             {"remote_api_key",             &remote_api_key},
             {"remote_api_allow",           &remote_api_allow},
+            {"webdav_server",              &webdav_server},
+            {"webdav_user",                &webdav_user},
+            {"webdav_pass",                &webdav_pass},
+            {"webdav_path",                &webdav_path},
+            {"device_id",                  &device_id},
+            {"device_name",                &device_name},
             {"active_routing",             &active_routing},
             {"mw_size",                    &mw_size},
             {"vpn_tun_ipv4_cidr",          &vpn_tun_ipv4_cidr},
@@ -210,11 +225,14 @@ namespace Configs {
 
         stringListMap = {
             {"dns_predefined_rules",     &dns_predefined_rules},
+            {"remote_dns_history",       &remote_dns_history},
+            {"direct_dns_history",       &direct_dns_history},
             {"extra_core_paths",         &extraCorePaths},
             {"log_include_keyword",      &log_include_keyword},
             {"log_include_regex",        &log_include_regex},
             {"log_exclude_keyword",      &log_exclude_keyword},
             {"log_exclude_regex",        &log_exclude_regex},
+            {"traffic_graph_hidden",     &traffic_graph_hidden},
             {"warp_ifc_addrs",           &warp_ifc_addrs},
             {"vpn_private_ranges",       &vpn_private_ranges},
             {"xray_geoip_url_history",   &xray_geoip_url_history},
@@ -303,6 +321,14 @@ namespace Configs {
                 *strVal.value() = str;
                 continue;
             }
+        }
+        // Builds before 1.2.1 saved the translated interval label ("5 мин.", "۱۰ دقیقه"), which the core rejects.
+        if (!Validation::Duration(ntp_interval).isEmpty()) {
+            QString minutes;
+            for (const QChar c : ntp_interval) {
+                if (c.digitValue() >= 0) minutes += QChar(u'0' + c.digitValue());
+            }
+            ntp_interval = minutes.isEmpty() ? QStringLiteral("30m") : minutes + u'm';
         }
         // Retired keys nothing writes back; the DNS ones would otherwise keep overriding the migrated flags on every load.
         db.exec("DELETE FROM settings WHERE key IN ('direct_dns_strategy', 'remote_dns_strategy', 'log_auto_scroll')");

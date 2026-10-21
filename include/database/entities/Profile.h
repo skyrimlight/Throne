@@ -71,7 +71,12 @@ namespace Configs {
         void SetLatency(int ms);
 
         // Untested profiles are neither; a kLatencyConnectOnly tunnel counts as working.
-        [[nodiscard]] bool IsWorking() const { return latency > 0 || latency == kLatencyConnectOnly; }
+        // When healthScoring is enabled, a tested node with only 1 transient failure (Suspicious 1/3) is still preserved.
+        [[nodiscard]] bool IsWorking(bool healthScoring = false) const {
+            if (latency > 0 || latency == kLatencyConnectOnly) return true;
+            if (healthScoring && latency < 0 && failed_count == 1) return true;
+            return false;
+        }
 
         [[nodiscard]] bool IsUnavailable() const { return latency < 0 && latency != kLatencyConnectOnly; }
 

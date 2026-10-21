@@ -1,15 +1,18 @@
 #include "include/ui/group/GroupItem.h"
 
 #include "include/ui/group/dialog_edit_group.h"
-#include "include/global/GuiUtils.hpp"
+#include "include/ui/group/dialog_manage_groups.h"
+#include "include/ui/utils/GuiUtils.hpp"
 #include "include/configs/sub/GroupUpdater.hpp"
 
 #include <QMessageBox>
 #include <QListWidget>
+#include <QPointer>
 
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
-#include "include/ui/mainwindow.h"
+#include "include/engine/EngineHost.h"
+#include "include/engine/connection/ConnectionManager.h"
 #include "include/ui/stats/dialog_endpoint_details.h"
 #include "include/ui/widget/SubscriptionInfoCard.hpp"
 
@@ -102,53 +105,59 @@ void GroupItem::on_update_sub_clicked() {
 void GroupItem::on_edit_clicked() {
     auto dialog = new DialogEditGroup(ent, parentWindow);
     connect(dialog, &QDialog::finished, this, [=,this] {
-        if (dialog->result() == QDialog::Accepted) {
-            Configs::dataManager->groupsRepo->Save(ent);
-            refresh_data();
-            MW_dialog_message(MwMessage::GroupsChanged, dialog->RestartNeeded() ? QStringList{MwArg::RestartProxy} : QStringList{});
-        }
         dialog->deleteLater();
+        if (dialog->result() != QDialog::Accepted) return;
+        if (!Configs::dataManager->groupsRepo->Save(ent)) {
+            MessageBoxWarning(software_name, tr("This group was deleted while you were editing it."));
+            return;
+        }
+        refresh_data();
+        MW_dialog_message(MwMessage::GroupsChanged, dialog->RestartNeeded() ? QStringList{MwArg::RestartProxy} : QStringList{});
     });
     dialog->show();
 }
 
 void GroupItem::on_remove_clicked() {
-    if (Configs::dataManager->groupsRepo->GetAllGroupIds().size() <= 1) return;
-    if (QMessageBox::question(this, tr("Confirmation"), tr("Remove %1?").arg(ent->name)) ==
-        QMessageBox::StandardButton::Yes) {
-        auto mw = GetMainWindow();
-        auto runningProfile = mw ? mw->GetRunningProfile() : nullptr;
-        if (runningProfile != nullptr) {
-            // If the running profile was in the deleted group, preserve it by migrating to default group so proxy is not stopped
-            if (runningProfile->gid == ent->id || ent->HasProfile(runningProfile->id)) {
-                auto defaultGroup = Configs::dataManager->groupsRepo->GetGroup(0);
-                if (!defaultGroup) {
-                    for (int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
-                        if (gid != ent->id) {
-                            defaultGroup = Configs::dataManager->groupsRepo->GetGroup(gid);
-                            break;
-                        }
-                    }
-                }
-                if (defaultGroup != nullptr) {
-                    runningProfile->gid = defaultGroup->id;
-                    defaultGroup->AddProfile(runningProfile->id);
-                    Configs::dataManager->groupsRepo->Save(defaultGroup);
-                    Configs::dataManager->profilesRepo->Save(runningProfile);
-                    MW_show_log(tr("Active node %1 preserved and moved to %2").arg(runningProfile->name, defaultGroup->name));
+    auto *manage = qobject_cast<DialogManageGroups *>(parentWindow);
+    if (manage == nullptr) return;
+    const int id = ent->id;
+    if (const auto error = manage->deleteGroup(id, true)) {
+        if (error->code != QLatin1String("last_group")) MessageBoxWarning(software_name, GroupDeleteRefusalText(*error));
+        return;
+    }
+    // The question box and a blocking stop run nested loops, where a refresh may remove this row; the box hangs off the dialog.
+    const QPointer<GroupItem> self(this);
+    if (QMessageBox::question(manage, tr("Confirmation"), tr("Remove %1?").arg(ent->name)) != QMessageBox::StandardButton::Yes || self == nullptr) {
+        return;
+    }
+    if (const auto running = Engine::host()->connection()->runningSnapshot();
+        running != nullptr && (running->gid == id || ent->HasProfile(running->id))) {
+        auto defaultGroup = Configs::dataManager->groupsRepo->GetGroup(0);
+        if (!defaultGroup || defaultGroup->id == id) {
+            defaultGroup = nullptr;
+            for (int gid : Configs::dataManager->groupsRepo->GetGroupsTabOrder()) {
+                if (gid != id) {
+                    defaultGroup = Configs::dataManager->groupsRepo->GetGroup(gid);
+                    if (defaultGroup) break;
                 }
             }
         }
-        // Clean up remaining profiles of this deleted group
-        QList<int> profilesToDelete = ent->Profiles();
-        if (runningProfile != nullptr) {
-            profilesToDelete.removeAll(runningProfile->id);
+        if (defaultGroup != nullptr) {
+            ent->RemoveProfile(running->id);
+            Configs::dataManager->groupsRepo->Save(ent);
+            running->gid = defaultGroup->id;
+            defaultGroup->AddProfile(running->id);
+            Configs::dataManager->groupsRepo->Save(defaultGroup);
+            Configs::dataManager->profilesRepo->Save(running);
+            MW_show_log(tr("Active node %1 preserved and moved to %2").arg(running->name, defaultGroup->name));
+        } else {
+            Engine::host()->connection()->stop({.block = true});
+            if (self == nullptr) return;
         }
-        if (!profilesToDelete.isEmpty()) {
-            Configs::dataManager->profilesRepo->BatchDeleteProfiles(profilesToDelete, false);
-        }
-        Configs::dataManager->groupsRepo->DeleteGroup(ent->id);
-        MW_dialog_message(MwMessage::GroupsChanged, {});
-        delete item;
     }
+    if (const auto error = manage->deleteGroup(id)) {
+        MessageBoxWarning(software_name, GroupDeleteRefusalText(*error));
+        return;
+    }
+    manage->refreshGroups();
 }

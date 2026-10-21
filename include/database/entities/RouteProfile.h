@@ -3,10 +3,39 @@
 #include "include/database/entities/RouteRule.h"
 #include <QUrl>
 #include <QJsonArray>
+#include <QJsonObject>
 #include <QStringList>
+#include <optional>
 
 namespace Configs {
     const int INVALID_ID = -99999;
+
+    // The DNS settings a routing profile can take over; local override, hosts, predefined answers and the advanced settings stay global.
+    struct RouteDns {
+        QString remote_dns = "https://8.8.8.8/dns-query";
+        bool remote_dns_disable_ipv6 = false;
+        QString direct_dns = "localhost";
+        bool direct_dns_disable_ipv6 = false;
+        QString dns_final_out = "remote";
+        bool enable_dns_routing = true;
+        bool fake_dns = false;
+        bool fakeip_disable_ipv6 = false;
+
+        static RouteDns Global();
+
+        // The current routing profile's own DNS, else the global one; *own tells which.
+        static RouteDns Current(bool* own = nullptr);
+
+        [[nodiscard]] QJsonObject ToJson() const;
+
+        // Absent keys keep their defaults.
+        static RouteDns FromJson(const QJsonObject& obj);
+
+        // Why the core could not use it; empty when it can.
+        [[nodiscard]] QString Problem() const;
+
+        bool operator==(const RouteDns&) const = default;
+    };
 
     // Fixed underlying type so headers that only pass it around (mainwindow.h) can forward-declare it.
     enum simpleAction : int {bypass, block, proxy, warpBypass};
@@ -42,6 +71,13 @@ namespace Configs {
 
         // Subset of endpointProfileIDs whose inner endpoint hops are routable too.
         QList<int> innerHopEndpointIDs;
+
+        // Picks between the global DNS settings and dns, which is kept either way once set.
+        bool customDns = false;
+        std::optional<RouteDns> dns;
+
+        // The DNS this profile imposes; nullopt while the global settings apply.
+        [[nodiscard]] std::optional<RouteDns> ActiveDns() const { return customDns ? dns : std::nullopt; }
 
         RouteProfile() = default;
 
@@ -96,10 +132,13 @@ namespace Configs {
 
         QString GetSimpleRules(simpleAction action);
 
-        QString UpdateSimpleRules(const QString& content, simpleAction action);
+        // label names the Basic-tab box in the returned reasons.
+        QString UpdateSimpleRules(const QString& content, simpleAction action, const QString& label = {});
+
+        static RuleIssue CheckSimpleRule(const QString& line);
 
         // Adds one "prefix:value" line to the matching simple rule, creating it if the profile has none yet.
-        bool AppendSimpleRule(const QString& rawRule, simpleAction action);
+        bool AppendSimpleRule(const QString& rawRule, simpleAction action, QString* why = nullptr);
 
         // Whether that "prefix:value" line already sits in the action's simple rules.
         bool HasSimpleRule(const QString& rawRule, simpleAction action);
@@ -113,11 +152,11 @@ namespace Configs {
 
         void FilterEmptyRules();
     private:
-        static bool add_simple_rule(const QString& content, const std::shared_ptr<RouteRule>& rule, ruleType type);
+        static QString add_simple_rule(const QString& content, const std::shared_ptr<RouteRule>& rule, ruleType type);
 
-        static bool add_simple_address_rule(const QString& content, const std::shared_ptr<RouteRule>& rule);
+        static QString add_simple_address_rule(const QString& content, const std::shared_ptr<RouteRule>& rule);
 
-        static bool add_simple_process_rule(const QString& content, const std::shared_ptr<RouteRule>& rule);
+        static QString add_simple_process_rule(const QString& content, const std::shared_ptr<RouteRule>& rule);
 
         // The list inside rule that a "prefix:value" line lives in, with the value split off into *value; nullptr for an unknown prefix.
         static QList<QString>* simple_rule_values(const QString& content, RouteRule& rule, QString* value);
