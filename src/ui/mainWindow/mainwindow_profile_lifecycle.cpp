@@ -1,5 +1,6 @@
 #include "include/ui/mainwindow.h"
 
+#include "include/configs/generate.h"
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
 #include "include/engine/connection/ConnectionManager.h"
