@@ -18,6 +18,7 @@
 #include "include/engine/vpn/VpnAuthController.h"
 #include "include/engine/vpn/VpnEndpoints.h"
 #include "include/global/LocalNetwork.hpp"
+#include "include/global/RunningProfiles.hpp"
 #include "include/stats/autoselector/AutoSelectorMonitor.hpp"
 #include "include/sys/KillSwitch.hpp"
 #include "include/ui/setting/Icon.hpp"
@@ -76,9 +77,14 @@ void MainWindow::applyTopBarMetrics() {
         ui->toolButton_startstop->setFixedSize(computedHeight, computedHeight);
     }
 
-    const QSize contentMin = minimumSizeHint();
-    setMinimumSize(qMax(designMinimumSize.width(), contentMin.width()),
-                   qMax(designMinimumSize.height(), contentMin.height()));
+    auto* centralLayout = centralWidget()->layout();
+    // Nested layouts keep stale minimums until the next layout pass.
+    centralLayout->activate();
+    const QMargins margins = centralLayout->contentsMargins();
+    // Top bar only: the rows below show profile names, and an explicit minimum never shrinks back (#2081).
+    const int topBarWidth = ui->horizontalLayout_2->minimumSize().width() + margins.left() + margins.right();
+    setMinimumSize(qMax(designMinimumSize.width(), topBarWidth),
+                   qMax(designMinimumSize.height(), minimumSizeHint().height()));
 }
 
 void MainWindow::UpdateDataView(bool force)
@@ -88,9 +94,10 @@ void MainWindow::UpdateDataView(bool force)
     {
         return;
     }
-    auto html = dataViewHtmlGenerator_.buildHtml();
+    auto content = dataViewHtmlGenerator_.build();
     runOnUiThread([=, this] {
-        ui->data_view->setHtml(html);
+        ui->data_view->setHtml(content.html);
+        ui->data_view->setToolTip(content.toolTip);
     }, true);
     lastUpdatedMs.store(QDateTime::currentMSecsSinceEpoch());
 }
@@ -273,7 +280,7 @@ void MainWindow::refresh_status(const QString &traffic_update) {
         ui->label_running->setToolTip({});
     }
 
-    const auto route = Configs::dataManager->routesRepo->GetRouteProfile(settings->current_route_id);
+    const auto route = Configs::dataManager->routesRepo->GetRouteProfile(Configs::ActiveRouteId());
     const QString activeRouteName = (route && route->name != "Default") ? route->name : "";
     const auto killSwitchState = Sys::KillSwitch::instance()->state();
     const bool killSwitchBlocking = killSwitchState == Sys::KillSwitch::State::Failed && Sys::KillSwitch::instance()->failedForIdentity();
@@ -512,9 +519,8 @@ void MainWindow::refresh_proxy_list_impl(const QList<int>& ids, bool mayNeedRese
 void MainWindow::refresh_sort_indicator() {
     const auto group = Configs::dataManager->groupsRepo->CurrentGroup();
     const int column = group == nullptr ? -1 : ProfilesTableModel::columnOfSort(group->sort.method);
-    const auto order = group != nullptr && group->sort.descending ? Qt::DescendingOrder : Qt::AscendingOrder;
-    // Section -1 hides the indicator.
-    ui->profilesTableView->horizontalHeader()->setSortIndicator(column, order);
+    auto *header = static_cast<ProfilesTableFilterHeader*>(ui->profilesTableView->horizontalHeader());
+    if (header->setSortSection(column, group != nullptr && group->sort.descending)) refresh_proxy_list_column_size();
 }
 
 void MainWindow::sortCurrentGroup(GroupSortAction action) {

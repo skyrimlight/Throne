@@ -4,6 +4,8 @@
 #include <QJsonObject>
 #include <QSet>
 
+#include <optional>
+
 #include "include/database/entities/Profile.h"
 
 namespace Configs
@@ -55,6 +57,10 @@ namespace Configs
         QHash<QString, QString> outboundNames;
         // Every profile the config was built from, chain hops and route members included.
         QSet<int> involvedProfiles;
+        // The routing profile it was built with; -1 for a custom full config.
+        int routeId = -1;
+        // The Xray sidecar's outbound resolution, read under the build's routing profile; empty without Xray.
+        QString xrayDnsStrategy;
     };
 
     class BuildTestConfigResult {
@@ -105,6 +111,9 @@ namespace Configs
 
     constexpr int warpProfileID = -2408;
 
+    // The stored identity of the built-in WARP's mode ("wireguard", "amnezia" or "masque") is complete enough to build.
+    bool WarpConfigured(const QString &mode);
+
     struct PredefinedDNSEntry {
         QString domain;
         QStringList v4;
@@ -129,7 +138,8 @@ namespace Configs
     // "local...", "dhcp://auto|<iface>", "udp|tcp|tls|quic://host[:port]", "https|h3://host[:port][/path]" or a bare "host[:port]" (udp).
     bool ParseDnsAddress(const QString &text, DnsAddress *out, QString *why = nullptr);
 
-    std::shared_ptr<BuildConfigResult> BuildSingBoxConfig(const std::shared_ptr<Profile> &ent);
+    // routeId overrides the routing profile, which otherwise follows ent's group (RouteIdFor).
+    std::shared_ptr<BuildConfigResult> BuildSingBoxConfig(const std::shared_ptr<Profile> &ent, std::optional<int> routeId = std::nullopt);
 
     // coreUnreachable is set when a false came from a failed core call rather than from the config.
     bool IsValid(const std::shared_ptr<Profile> &ent, bool *coreUnreachable = nullptr);

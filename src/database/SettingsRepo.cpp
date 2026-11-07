@@ -25,6 +25,7 @@ namespace Configs {
             {"disable_tray",                  &disable_tray},
             {"random_inbound_port",           &random_inbound_port},
             {"mux_padding",                   &mux_padding},
+            {"mux_brutal",                    &mux_brutal},
             {"mux_default_on",                &mux_default_on},
             {"fragment_default_on",           &fragment_default_on},
             {"tls_tricks_default_on",         &tls_tricks_default_on},
@@ -43,12 +44,13 @@ namespace Configs {
             {"vpn_strict_route",              &vpn_strict_route},
             {"vpn_auto_redirect",             &vpn_auto_redirect},
             {"vpn_l3_bridge",                 &vpn_l3_bridge},
-            {"auto_clear_unavailable",     &auto_clear_unavailable},
-            {"health_scoring_enabled",    &health_scoring_enabled},
-            {"auto_sort_after_test",       &auto_sort_after_test},
-            {"default_sort_descending",    &default_sort_descending},
-            {"default_group_include_all",  &default_group_include_all},
-            {"smart_failover_enabled",    &smart_failover_enabled},
+            {"core_dns_in_lan",               &core_dns_in_lan},
+            {"auto_clear_unavailable",        &auto_clear_unavailable},
+            {"health_scoring_enabled",        &health_scoring_enabled},
+            {"auto_sort_after_test",          &auto_sort_after_test},
+            {"default_sort_descending",       &default_sort_descending},
+            {"default_group_include_all",     &default_group_include_all},
+            {"smart_failover_enabled",        &smart_failover_enabled},
             {"sub_clear",                     &sub_clear},
             {"sub_respect_server_interval",   &sub_respect_server_interval},
             {"sub_show_change_popup",         &sub_show_change_popup},
@@ -71,9 +73,11 @@ namespace Configs {
             {"use_custom_icons",              &use_custom_icons},
             {"follow_status_in_taskbar",           &follow_status_in_taskbar},
             {"xray_mux_default_on",           &xray_mux_default_on},
+            {"xray_use_system_ca",            &xray_use_system_ca},
             {"use_dns_object",                &use_dns_object},
             {"skip_delete_confirmation",      &skip_delete_confirmation},
             {"show_config_security",          &show_config_security},
+            {"simple_mode",                   &simple_mode},
             {"log_enable_include",            &log_enable_include},
             {"log_enable_exclude",            &log_enable_exclude},
             {"enable_warp",                   &enable_warp},
@@ -107,6 +111,10 @@ namespace Configs {
             {"last_filter_column",     &last_filter_column},
             {"inbound_socks_port",     &inbound_socks_port},
             {"mux_concurrency",        &mux_concurrency},
+            {"mux_max_connections",    &mux_max_connections},
+            {"mux_min_streams",        &mux_min_streams},
+            {"mux_brutal_up_mbps",     &mux_brutal_up_mbps},
+            {"mux_brutal_down_mbps",   &mux_brutal_down_mbps},
             {"test_concurrent",        &test_concurrent},
             {"remember_id",            &remember_id},
             {"language",               &language},
@@ -133,6 +141,8 @@ namespace Configs {
             {"smart_failover_latency_spike_ms", &smart_failover_latency_spike_ms},
             {"url_test_timeout_ms",    &url_test_timeout_ms},
             {"xray_mux_concurrency",   &xray_mux_concurrency},
+            {"xray_mux_max_connections", &xray_mux_max_connections},
+            {"xray_mux_xudp_concurrency", &xray_mux_xudp_concurrency},
             {"current_route_id",       &current_route_id},
             {"ruleset_mirror",         &ruleset_mirror},
             {"core_dns_in_port",       &core_dns_in_port},
@@ -151,6 +161,8 @@ namespace Configs {
             {"log_level",                  &log_level},
             {"log_file_level",             &log_file_level},
             {"mux_protocol",               &mux_protocol},
+            {"mux_mode",                   &mux_mode},
+            {"xray_mux_xudp_proxy_udp443", &xray_mux_xudp_proxy_udp443},
             {"fragment_implementation",    &fragment_implementation},
             {"fragment_size",              &fragment_size},
             {"fragment_sleep",             &fragment_sleep},
@@ -243,6 +255,7 @@ namespace Configs {
             {"warp_reserved", &warp_reserved},
             {"warp_masque_ifc_addrs", &warp_masque_ifc_addrs},
             {"warp_api_hosts", &warp_api_hosts},
+            {"warp_amnezia_packets", &warp_amnezia_packets},
         };
     }
 
@@ -259,7 +272,9 @@ namespace Configs {
         auto query = db.query("SELECT key, value FROM settings");
         if (!query) return;
 
+        bool freshInstall = true;
         while (query->executeStep()) {
+            freshInstall = false;
             const QString key = QString::fromStdString(query->getColumn(0).getText());
             const QString str = QString::fromStdString(query->getColumn(1).getText());
 
@@ -322,6 +337,7 @@ namespace Configs {
                 continue;
             }
         }
+        if (freshInstall) simple_mode = true;
         // Builds before 1.2.1 saved the translated interval label ("5 мин.", "۱۰ دقیقه"), which the core rejects.
         if (!Validation::Duration(ntp_interval).isEmpty()) {
             QString minutes;
@@ -400,6 +416,7 @@ namespace Configs {
 
     bool SettingsRepo::Save() {
         saveAllSettings();
+        ++revision;
         return true;
     }
 

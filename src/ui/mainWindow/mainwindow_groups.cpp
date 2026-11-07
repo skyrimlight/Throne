@@ -299,13 +299,25 @@ void MainWindow::show_group_tab_menu(const QPoint &p) {
     }
     if (clickedGroup != nullptr) {
         connect(menu.addAction(tr("Url Test selected Group")), &QAction::triggered, this, [=,this]{
-            if (const auto group = Configs::dataManager->groupsRepo->GetGroup(clickedGid)) tests()->runUrlTests(group->Profiles());
+            if (const auto group = Configs::dataManager->groupsRepo->GetGroup(clickedGid)) {
+                const bool isDefaultGroup = (group->id == 0 || group->name.compare(tr("Default"), Qt::CaseInsensitive) == 0 || group->name.compare("Default", Qt::CaseInsensitive) == 0);
+                const QList<int> targetProfiles = (isDefaultGroup && Configs::dataManager->settingsRepo->default_group_include_all)
+                    ? Configs::dataManager->profilesRepo->GetAllProfileIds()
+                    : group->Profiles();
+                tests()->runUrlTests(targetProfiles);
+            }
         });
         connect(menu.addAction(tr("Speed Test selected Group")), &QAction::triggered, this, [=,this]{
-            if (const auto group = Configs::dataManager->groupsRepo->GetGroup(clickedGid)) tests()->runSpeedTests(group->Profiles());
+            if (const auto group = Configs::dataManager->groupsRepo->GetGroup(clickedGid)) {
+                const bool isDefaultGroup = (group->id == 0 || group->name.compare(tr("Default"), Qt::CaseInsensitive) == 0 || group->name.compare("Default", Qt::CaseInsensitive) == 0);
+                const QList<int> targetProfiles = (isDefaultGroup && Configs::dataManager->settingsRepo->default_group_include_all)
+                    ? Configs::dataManager->profilesRepo->GetAllProfileIds()
+                    : group->Profiles();
+                tests()->runSpeedTests(targetProfiles);
+            }
         });
         connect(menu.addAction(tr("Remove abnormal items")), &QAction::triggered, this, [=,this]{
-            removeAbnormalProfiles(clickedGroup->id);
+            removeAbnormalProfiles(clickedGid);
         });
         // Clean up acts on the current group; setCurrentIndex above already switched to the clicked one.
         menu.addSeparator();

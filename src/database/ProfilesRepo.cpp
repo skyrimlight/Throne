@@ -50,6 +50,7 @@ namespace Configs {
             db.exec("ALTER TABLE profiles ADD COLUMN failed_count INTEGER NOT NULL DEFAULT 0");
 
         db.exec("CREATE INDEX IF NOT EXISTS idx_profiles_name ON profiles(name)");
+        db.exec("CREATE INDEX IF NOT EXISTS idx_profiles_type ON profiles(type)");
     }
 
     bool ProfilesRepo::profilesColumnExists(const char* columnName) const {
@@ -227,6 +228,7 @@ namespace Configs {
             if (dataManager->groupsRepo->GetGroup(profile->gid) == nullptr) return false;
             identityMap[newId] = std::weak_ptr<Profile>(profile);
             saveToDatabase(profile.get(), profile->id);
+            ++revision;
         }
         auto group = dataManager->groupsRepo->GetGroup(profile->gid);
         if (group == nullptr) return false;
@@ -266,6 +268,7 @@ namespace Configs {
             rows.push_back(profileToInsertRow(toAdd[i].get(), toAdd[i]->id, toAdd[i]->gid));
         }
         db.execBatchInsertProfiles(rows);
+        ++revision;
 
         QList<int> profileIDs;
         for (const auto& profile : toAdd) {
@@ -470,6 +473,7 @@ namespace Configs {
             identityMap.erase(id);
             tombstones.insert(id);
         }
+        ++revision;
         return true;
     }
 
@@ -491,6 +495,16 @@ namespace Configs {
             while (query->executeStep()) {
                 ids.append(query->getColumn(0).getInt());
             }
+        }
+        return ids;
+    }
+
+    QList<int> ProfilesRepo::GetProfileIdsByTypeContaining(const QString& type, const QString& needle) const {
+        QList<int> ids;
+        auto query = db.query("SELECT id FROM profiles WHERE type = ? AND instr(lower(outbound_json), ?) > 0 ORDER BY id",
+                              type.toStdString(), needle.toLower().toStdString());
+        if (query) {
+            while (query->executeStep()) ids.append(query->getColumn(0).getInt());
         }
         return ids;
     }
@@ -524,6 +538,7 @@ namespace Configs {
             if (!tombstones.contains(profile->id)) {
                 saveToDatabase(profile.get(), profile->id);
                 identityMap[profile->id] = std::weak_ptr<Profile>(profile);
+                ++revision;
                 return true;
             }
         }
@@ -580,6 +595,7 @@ namespace Configs {
             for (const auto& p : valid) {
                 if (!tombstones.contains(p->id)) identityMap[p->id] = std::weak_ptr<Profile>(p);
             }
+            if (!rows.empty()) ++revision;
             locker.unlock();
             if (skipped > 0) LOG_DEBUG(QString("SaveBatch skipped %1 deleted profiles").arg(skipped));
         });

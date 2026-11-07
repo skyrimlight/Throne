@@ -2,6 +2,45 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru_RU">
 <context>
+    <name>CommandPalette</name>
+    <message>
+        <source>Search Commands and Settings</source>
+        <translation>Поиск команд и настроек</translation>
+    </message>
+    <message>
+        <source>Search commands and settings</source>
+        <translation>Поиск команд и настроек</translation>
+    </message>
+    <message>
+        <source>↑↓ move · Enter run · Esc close · &gt; commands only · @ settings only</source>
+        <translation>↑↓ выбор · Enter выполнить · Esc закрыть · &gt; только команды · @ только настройки</translation>
+    </message>
+    <message>
+        <source>Commands</source>
+        <translation>Команды</translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
+    <message>
+        <source>Nothing found</source>
+        <translation>Ничего не найдено</translation>
+    </message>
+    <message>
+        <source> (on)</source>
+        <translation> (вкл.)</translation>
+    </message>
+    <message>
+        <source> (off)</source>
+        <translation> (выкл.)</translation>
+    </message>
+    <message>
+        <source>Settings in Advanced mode</source>
+        <translation>Настройки в расширенном режиме</translation>
+    </message>
+</context>
+<context>
     <name>ConnectionsFilterHeader</name>
     <message>
         <source>Disable Filter</source>
@@ -25,6 +64,10 @@
     <message>
         <source>System</source>
         <translation>Система</translation>
+    </message>
+    <message>
+        <source>Matched: %1 → %2</source>
+        <translation>Сработало: %1 → %2</translation>
     </message>
     <message>
         <source>Process: %1
@@ -168,6 +211,89 @@ Outbound: %4</translation>
     <message>
         <source>Recording… %1 left</source>
         <translation>Запись… Осталось %1</translation>
+    </message>
+    <message>
+        <source>Logs</source>
+        <translation>Логи</translation>
+    </message>
+    <message>
+        <source>Saves the Throne log of this session as one file, including the core output shown in the log panel.</source>
+        <translation>Сохраняет лог Throne за текущий сеанс в один файл, включая вывод ядра из панели логов.</translation>
+    </message>
+    <message>
+        <source>Save logs…</source>
+        <translation>Сохранить логи…</translation>
+    </message>
+    <message>
+        <source>There is no log file to save.</source>
+        <translation>Нет файла лога для сохранения.</translation>
+    </message>
+    <message>
+        <source>Save logs</source>
+        <translation>Сохранить логи</translation>
+    </message>
+    <message>
+        <source>Log files (*.log);;All files (*)</source>
+        <translation>Файлы логов (*.log);;Все файлы (*)</translation>
+    </message>
+    <message>
+        <source>Cannot write to: %1</source>
+        <translation>Не удается записать файл: %1</translation>
+    </message>
+</context>
+<context>
+    <name>DialogAbout</name>
+    <message>
+        <source>About Throne</source>
+        <translation>О Throne</translation>
+    </message>
+    <message>
+        <source>Version:</source>
+        <translation>Версия:</translation>
+    </message>
+    <message>
+        <source>Open-source and cross platform Desktop Proxy management utility developed as a successor to Nekoray.</source>
+        <translation>Кроссплатформенная утилита с открытым исходным кодом для управления прокси на компьютере, созданная как преемник Nekoray.</translation>
+    </message>
+    <message>
+        <source>Support Throne</source>
+        <translation>Поддержать Throne</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation>Неизвестно</translation>
+    </message>
+</context>
+<context>
+    <name>DialogUpdate</name>
+    <message>
+        <source>Update (Pre-release)</source>
+        <translation>Обновление (предварительная версия)</translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation>Обновление</translation>
+    </message>
+    <message>
+        <source>Throne %1 is available, you are using %2.</source>
+        <translation>Доступна версия Throne %1, у вас установлена %2.</translation>
+    </message>
+    <message>
+        <source>Release notes are unavailable.</source>
+        <translation>Список изменений недоступен.</translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <comment>button</comment>
+        <translation>Обновить</translation>
+    </message>
+    <message>
+        <source>Open in browser</source>
+        <translation>Открыть в браузере</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>Закрыть</translation>
     </message>
 </context>
 <context>
@@ -1189,6 +1315,38 @@ Throne will restart to complete the restore.</source>
         <source>The backup&apos;s database is damaged: %1</source>
         <translation>База данных резервной копии повреждена: %1</translation>
     </message>
+    <message>
+        <source>Trust System Certificates in Xray</source>
+        <translation>Доверять системным сертификатам в Xray</translation>
+    </message>
+    <message>
+        <source>Xray verifies servers only against its built-in root certificates. Turn this on to also trust the certificates installed in the system, such as a company or self-signed root. A profile or Xray config that sets useSystemCA itself keeps its own value.</source>
+        <translation>Xray проверяет серверы только по встроенным корневым сертификатам. Включите, чтобы доверять и сертификатам, установленным в системе, например корпоративному или самоподписанному корневому. Профиль или конфигурация Xray, где useSystemCA задан явно, сохраняет своё значение.</translation>
+    </message>
+    <message>
+        <source>Interface</source>
+        <translation>Интерфейс</translation>
+    </message>
+    <message>
+        <source>Simple hides the advanced options. They keep their values and still apply.</source>
+        <translation>Простой режим скрывает дополнительные параметры. Их значения сохраняются и продолжают действовать.</translation>
+    </message>
+    <message>
+        <source>Simple</source>
+        <translation>Простой</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>Расширенный</translation>
+    </message>
+    <message>
+        <source>Allow other devices to connect</source>
+        <translation>Разрешить подключаться другим устройствам</translation>
+    </message>
+    <message>
+        <source>Lets other devices on your network use this DNS server, for example a router that sends its DNS through this computer. Anyone who can reach this port can then resolve names through your DNS settings.</source>
+        <translation>Позволяет другим устройствам в сети использовать этот DNS-сервер, например роутеру, который направляет DNS через этот компьютер. Любой, кто может достучаться до этого порта, сможет разрешать имена через ваши настройки DNS.</translation>
+    </message>
 </context>
 <context>
     <name>DialogEditGroup</name>
@@ -1259,6 +1417,34 @@ Throne will restart to complete the restore.</source>
     <message>
         <source>Copy profile share links (Deep Links)</source>
         <translation>Копировать ссылки профилей (deep links)</translation>
+    </message>
+    <message>
+        <source>Default (%1)</source>
+        <translation>По умолчанию (%1)</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>По умолчанию</translation>
+    </message>
+    <message>
+        <source>%1 (from this subscription)</source>
+        <translation>%1 (из этой подписки)</translation>
+    </message>
+    <message>
+        <source>Routing Profile</source>
+        <translation>Профиль маршрутизации</translation>
+    </message>
+    <message>
+        <source>Use the subscription&apos;s routing profile</source>
+        <translation>Использовать профиль маршрутизации из подписки</translation>
+    </message>
+    <message>
+        <source>The routing profile this group&apos;s profiles connect with. Default follows the routing profile chosen in the Routing menu.</source>
+        <translation>Профиль маршрутизации, с которым подключаются профили этой группы. «По умолчанию» — профиль, выбранный в меню «Маршрутизация».</translation>
+    </message>
+    <message>
+        <source>Each update saves the routing profile the subscription provides (Happ format) as this group&apos;s own routing profile. DNS settings from the subscription are never used.</source>
+        <translation>При каждом обновлении профиль маршрутизации из подписки (формат Happ) сохраняется как собственный профиль этой группы. Настройки DNS из подписки никогда не используются.</translation>
     </message>
 </context>
 <context>
@@ -2492,6 +2678,274 @@ Throne will restart to complete the restore.</source>
         <source>The short ID has no effect without a Reality public key, so Reality stays off.</source>
         <translation>Short ID не действует без публичного ключа Reality, поэтому Reality остается выключенным.</translation>
     </message>
+    <message>
+        <source>Storage</source>
+        <translation>Хранилище</translation>
+    </message>
+    <message>
+        <source>Tuning</source>
+        <translation>Настройка</translation>
+    </message>
+    <message>
+        <source>Service</source>
+        <translation>Сервис</translation>
+    </message>
+    <message>
+        <source>Folder</source>
+        <translation>Папка</translation>
+    </message>
+    <message>
+        <source>Client ID</source>
+        <translation>Client ID</translation>
+    </message>
+    <message>
+        <source>Client Secret</source>
+        <translation>Client Secret</translation>
+    </message>
+    <message>
+        <source>Refresh Token</source>
+        <translation>Refresh Token</translation>
+    </message>
+    <message>
+        <source>Endpoint</source>
+        <translation>Эндпоинт</translation>
+    </message>
+    <message>
+        <source>Region</source>
+        <translation>Регион</translation>
+    </message>
+    <message>
+        <source>Bucket</source>
+        <translation>Бакет</translation>
+    </message>
+    <message>
+        <source>Path-Style Addressing</source>
+        <translation>Адресация path-style</translation>
+    </message>
+    <message>
+        <source>Access Key ID</source>
+        <translation>Access Key ID</translation>
+    </message>
+    <message>
+        <source>Secret Access Key</source>
+        <translation>Secret Access Key</translation>
+    </message>
+    <message>
+        <source>Session Token</source>
+        <translation>Session Token</translation>
+    </message>
+    <message>
+        <source>Secrets</source>
+        <translation>Секреты</translation>
+    </message>
+    <message>
+        <source>Template</source>
+        <translation>Шаблон</translation>
+    </message>
+    <message>
+        <source>Front Address</source>
+        <translation>Адрес фронта</translation>
+    </message>
+    <message>
+        <source>Front Port</source>
+        <translation>Порт фронта</translation>
+    </message>
+    <message>
+        <source>Segment Bytes</source>
+        <translation>Байт в сегменте</translation>
+    </message>
+    <message>
+        <source>Flush Interval</source>
+        <translation>Интервал сброса</translation>
+    </message>
+    <message>
+        <source>Poll Interval</source>
+        <translation>Интервал опроса</translation>
+    </message>
+    <message>
+        <source>Max Poll Interval</source>
+        <translation>Макс. интервал опроса</translation>
+    </message>
+    <message>
+        <source>Eager Window</source>
+        <translation>Окно активного опроса</translation>
+    </message>
+    <message>
+        <source>Hole Timeout</source>
+        <translation>Тайм-аут пропуска</translation>
+    </message>
+    <message>
+        <source>Session TTL</source>
+        <translation>Время жизни сеанса</translation>
+    </message>
+    <message>
+        <source>Concurrency</source>
+        <translation>Параллельность</translation>
+    </message>
+    <message>
+        <source>Google Drive folder ID</source>
+        <translation>ID папки Google Drive</translation>
+    </message>
+    <message>
+        <source>A directory path</source>
+        <translation>Путь к каталогу</translation>
+    </message>
+    <message>
+        <source>Key prefix in the bucket</source>
+        <translation>Префикс ключей в бакете</translation>
+    </message>
+    <message>
+        <source>Where both ends exchange the stream: google-drive uses a Google Drive folder, s3 a bucket of any S3-compatible storage, template any HTTP storage API described by Template, local a folder on this machine.</source>
+        <translation>Где обе стороны обмениваются потоком: google-drive использует папку Google Drive, s3 — бакет любого S3-совместимого хранилища, template — любой HTTP API хранилища, описанный в шаблоне, local — папку на этом компьютере.</translation>
+    </message>
+    <message>
+        <source>google-drive: the folder ID. s3: the key prefix inside the bucket. local: a directory path. template: read as {folder}.</source>
+        <translation>google-drive: ID папки. s3: префикс ключей внутри бакета. local: путь к каталогу. template: подставляется как {folder}.</translation>
+    </message>
+    <message>
+        <source>The Google Drive OAuth client ID.</source>
+        <translation>OAuth client ID для Google Drive.</translation>
+    </message>
+    <message>
+        <source>The Google Drive OAuth client secret.</source>
+        <translation>OAuth client secret для Google Drive.</translation>
+    </message>
+    <message>
+        <source>The OAuth refresh token for the Google account that owns the folder.</source>
+        <translation>OAuth refresh token аккаунта Google, которому принадлежит папка.</translation>
+    </message>
+    <message>
+        <source>The S3 API URL, such as https://s3.us-east-1.amazonaws.com or a MinIO or R2 endpoint.</source>
+        <translation>URL API S3, например https://s3.us-east-1.amazonaws.com или эндпоинт MinIO или R2.</translation>
+    </message>
+    <message>
+        <source>The region requests are signed for. Default: us-east-1.</source>
+        <translation>Регион, для которого подписываются запросы. По умолчанию: us-east-1.</translation>
+    </message>
+    <message>
+        <source>The bucket both ends share.</source>
+        <translation>Бакет, общий для обеих сторон.</translation>
+    </message>
+    <message>
+        <source>Puts the bucket in the URL path. When off, the bucket becomes part of the endpoint&apos;s host name, which needs a DNS endpoint and a DNS-compatible bucket name. Default: on.</source>
+        <translation>Помещает бакет в путь URL. Если выключено, бакет становится частью имени хоста эндпоинта, для чего нужны DNS-эндпоинт и совместимое с DNS имя бакета. По умолчанию: вкл.</translation>
+    </message>
+    <message>
+        <source>The S3 access key ID.</source>
+        <translation>Access key ID для S3.</translation>
+    </message>
+    <message>
+        <source>The S3 secret access key.</source>
+        <translation>Secret access key для S3.</translation>
+    </message>
+    <message>
+        <source>Optional: the session token of temporary credentials.</source>
+        <translation>Необязательно: session token временных учётных данных.</translation>
+    </message>
+    <message>
+        <source>Values the template reads as {secret0}, {secret1}, …, separated by commas.</source>
+        <translation>Значения, которые шаблон подставляет как {secret0}, {secret1}, …, через запятую.</translation>
+    </message>
+    <message>
+        <source>The storage API&apos;s auth, put, get, list and delete operations, as JSON.</source>
+        <translation>Операции auth, put, get, list и delete API хранилища в формате JSON.</translation>
+    </message>
+    <message>
+        <source>Optional domain front: the storage API is dialed at this address while TLS still names the API host.</source>
+        <translation>Необязательный домен-фронт: API хранилища вызывается по этому адресу, а TLS по-прежнему указывает хост API.</translation>
+    </message>
+    <message>
+        <source>Port of the front address. Default: 443.</source>
+        <translation>Порт адреса фронта. По умолчанию: 443.</translation>
+    </message>
+    <message>
+        <source>Largest upload per file, in bytes. Default: 524288; Xray caps it at 16 MiB.</source>
+        <translation>Наибольший объём загрузки на один файл, в байтах. По умолчанию: 524288; Xray ограничивает его 16 МиБ.</translation>
+    </message>
+    <message>
+        <source>How long writes are gathered before an upload, in milliseconds. Default: 20.</source>
+        <translation>Сколько записи накапливаются перед загрузкой, в миллисекундах. По умолчанию: 20.</translation>
+    </message>
+    <message>
+        <source>Shortest wait between checks for new files, in milliseconds. Default: 50.</source>
+        <translation>Наименьшая пауза между проверками новых файлов, в миллисекундах. По умолчанию: 50.</translation>
+    </message>
+    <message>
+        <source>Longest wait between checks while the stream is idle, in milliseconds. Default: 500.</source>
+        <translation>Наибольшая пауза между проверками, пока поток простаивает, в миллисекундах. По умолчанию: 500.</translation>
+    </message>
+    <message>
+        <source>How long after traffic polling stays at the shortest wait, in milliseconds. Default: 2000.</source>
+        <translation>Сколько после трафика опрос остаётся с наименьшей паузой, в миллисекундах. По умолчанию: 2000.</translation>
+    </message>
+    <message>
+        <source>How long a missing segment is waited for before the stream fails, in milliseconds. Default: 30000.</source>
+        <translation>Сколько ждать пропавший сегмент, прежде чем поток завершится ошибкой, в миллисекундах. По умолчанию: 30000.</translation>
+    </message>
+    <message>
+        <source>How long an idle session lives before its files are cleaned up, in seconds. Default: 300.</source>
+        <translation>Сколько живёт простаивающий сеанс, прежде чем его файлы будут удалены, в секундах. По умолчанию: 300.</translation>
+    </message>
+    <message>
+        <source>Parallel storage requests per stream. Default: 8; Xray caps it at 64.</source>
+        <translation>Параллельные запросы к хранилищу на один поток. По умолчанию: 8; Xray ограничивает их 64.</translation>
+    </message>
+    <message>
+        <source>MTU</source>
+        <translation>MTU</translation>
+    </message>
+    <message>
+        <source>TTI</source>
+        <translation>TTI</translation>
+    </message>
+    <message>
+        <source>Uplink Capacity</source>
+        <translation>Исходящая полоса</translation>
+    </message>
+    <message>
+        <source>Downlink Capacity</source>
+        <translation>Входящая полоса</translation>
+    </message>
+    <message>
+        <source>CWND Multiplier</source>
+        <translation>Множитель CWND</translation>
+    </message>
+    <message>
+        <source>Max Sending Window</source>
+        <translation>Макс. окно отправки</translation>
+    </message>
+    <message>
+        <source>Largest packet mKCP sends, in bytes, from 21 to 8192. Default: 1350.</source>
+        <translation>Наибольший пакет, который отправляет mKCP, в байтах, от 21 до 8192. По умолчанию: 1350.</translation>
+    </message>
+    <message>
+        <source>How often mKCP sends, in milliseconds, from 10 to 1000. Default: 50.</source>
+        <translation>Как часто mKCP отправляет данные, в миллисекундах, от 10 до 1000. По умолчанию: 50.</translation>
+    </message>
+    <message>
+        <source>Most data sent per second, in MB/s; 0 means very little. Default: 5.</source>
+        <translation>Максимум данных, отправляемых в секунду, в МБ/с; 0 означает очень мало. По умолчанию: 5.</translation>
+    </message>
+    <message>
+        <source>Most data received per second, in MB/s; 0 means very little. Default: 20.</source>
+        <translation>Максимум данных, принимаемых в секунду, в МБ/с; 0 означает очень мало. По умолчанию: 20.</translation>
+    </message>
+    <message>
+        <source>Multiplies how many packets may be in flight at once. Default: 1.</source>
+        <translation>Множитель числа пакетов, которые могут одновременно находиться в пути. По умолчанию: 1.</translation>
+    </message>
+    <message>
+        <source>Most data waiting to be sent or acknowledged, in bytes; at least the MTU. Default: 2097152.</source>
+        <translation>Максимум данных, ожидающих отправки или подтверждения, в байтах; не меньше MTU. По умолчанию: 2097152.</translation>
+    </message>
+    <message>
+        <source>Resolvers</source>
+        <translation>Резолверы</translation>
+    </message>
+    <message>
+        <source>DNSTT / VayDNS</source>
+        <translation>DNSTT / VayDNS</translation>
+    </message>
 </context>
 <context>
     <name>DialogEndpointDetails</name>
@@ -3088,8 +3542,8 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
         <translation>Включить FakeIP</translation>
     </message>
     <message>
-        <source>WireGuard runs over UDP. MASQUE tunnels over HTTP/3 or HTTP/2 and passes networks that block WireGuard.</source>
-        <translation>WireGuard работает поверх UDP. MASQUE туннелирует трафик через HTTP/3 или HTTP/2 и проходит через сети, блокирующие WireGuard.</translation>
+        <source>WireGuard runs over UDP. AmneziaWG adds WARP-compatible junk and camouflage packets. MASQUE tunnels over HTTP/3 or HTTP/2.</source>
+        <translation>WireGuard работает по UDP. AmneziaWG добавляет совместимые с WARP мусорные и маскирующие пакеты. MASQUE работает через HTTP/3 или HTTP/2.</translation>
     </message>
     <message>
         <source>Mode</source>
@@ -3531,6 +3985,26 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <source>Add these remote routing profiles?</source>
         <translation>Добавить эти удалённые профили маршрутизации?</translation>
     </message>
+    <message>
+        <source>WARP has no config yet: click Generate Warp Config.</source>
+        <translation>У WARP ещё нет конфигурации: нажмите «Сгенерировать конфигурацию Warp».</translation>
+    </message>
+    <message>
+        <source>Generating the AmneziaWG QUIC signature...</source>
+        <translation>Генерация QUIC-сигнатуры AmneziaWG...</translation>
+    </message>
+    <message>
+        <source>AmneziaWG has no QUIC signature yet: click Generate Warp Config.</source>
+        <translation>У AmneziaWG ещё нет QUIC-сигнатуры: нажмите «Сгенерировать конфигурацию Warp».</translation>
+    </message>
+    <message>
+        <source>%1 (updated by subscription &quot;%2&quot;)</source>
+        <translation>%1 (обновляется подпиской «%2»)</translation>
+    </message>
+    <message>
+        <source>Every update of the subscription &quot;%1&quot; overwrites its rules. Deleting it stops the import.</source>
+        <translation>Каждое обновление подписки «%1» перезаписывает его правила. Удаление прекращает импорт.</translation>
+    </message>
 </context>
 <context>
     <name>DialogNewScan</name>
@@ -3565,6 +4039,14 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     <message>
         <source>Failed to store the scan.</source>
         <translation>Не удалось сохранить сканирование.</translation>
+    </message>
+    <message>
+        <source>DNS resolver scan</source>
+        <translation>Сканирование DNS-резолверов</translation>
+    </message>
+    <message>
+        <source>Find DNS resolvers that relay the tunnel of one of your DNSTT, MasterDNS or XDNS profiles.</source>
+        <translation>Находит DNS-резолверы, которые пропускают туннель одного из ваших профилей DNSTT, MasterDNS или XDNS.</translation>
     </message>
 </context>
 <context>
@@ -4495,6 +4977,82 @@ Close without saving?</source>
         <source>Rescan current results</source>
         <translation>Перепроверить текущие результаты</translation>
     </message>
+    <message>
+        <source>Poll: relays one tunnel query</source>
+        <translation>Опрос: пропускает один запрос туннеля</translation>
+    </message>
+    <message>
+        <source>Query names: also relays names as long as the profile sends</source>
+        <translation>Имена запросов: также пропускает имена той же длины, что отправляет профиль</translation>
+    </message>
+    <message>
+        <source>Handshake: also opens a tunnel session</source>
+        <translation>Хендшейк: также открывает сеанс туннеля</translation>
+    </message>
+    <message>
+        <source>Quick: relays the smallest packets</source>
+        <translation>Быстрая: пропускает самые маленькие пакеты</translation>
+    </message>
+    <message>
+        <source>Full: also measures the upload and download MTU</source>
+        <translation>Полная: также измеряет MTU отправки и приема</translation>
+    </message>
+    <message>
+        <source>Each address is tried as a resolver; an entry without a port uses port 53.</source>
+        <translation>Каждый адрес проверяется в роли резолвера; запись без порта использует порт 53.</translation>
+    </message>
+    <message>
+        <source>DNS tunnel test</source>
+        <translation>Проверка DNS-туннеля</translation>
+    </message>
+    <message>
+        <source>Each address is tried as the only resolver of this profile; those that relay its tunnel are kept.</source>
+        <translation>Каждый адрес проверяется как единственный резолвер этого профиля; сохраняются те, что пропускают его туннель.</translation>
+    </message>
+    <message>
+        <source>Test</source>
+        <translation>Проверка</translation>
+    </message>
+    <message>
+        <source>Bounds the whole test of one resolver. Empty: the default of the chosen test.</source>
+        <translation>Ограничивает всю проверку одного резолвера. Пусто — значение по умолчанию для выбранной проверки.</translation>
+    </message>
+    <message>
+        <source>Use as resolvers</source>
+        <translation>Использовать как резолверы</translation>
+    </message>
+    <message>
+        <source>Makes the scan&apos;s profile take its resolvers from this result list; the resolvers typed in the profile are kept.</source>
+        <translation>Профиль сканирования будет брать резолверы из этого списка результатов; резолверы, введенные в профиле, сохраняются.</translation>
+    </message>
+    <message>
+        <source>DNS resolver scan</source>
+        <translation>Сканирование DNS-резолверов</translation>
+    </message>
+    <message>
+        <source>DNS tunnel test: the timeout must be between %1 and %2 ms.</source>
+        <translation>Проверка DNS-туннеля: таймаут должен быть от %1 до %2 мс.</translation>
+    </message>
+    <message>
+        <source>The scan&apos;s profile was deleted or is no longer a DNS tunnel profile.</source>
+        <translation>Профиль сканирования удален или больше не является профилем DNS-туннеля.</translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; is open in an editor; close it and try again.</source>
+        <translation>&quot;%1&quot; открыт в редакторе; закройте его и повторите попытку.</translation>
+    </message>
+    <message>
+        <source>The open editor of &quot;%1&quot; now takes resolvers from the IP list &quot;%2&quot;; press OK there to save it.</source>
+        <translation>Открытый редактор &quot;%1&quot; теперь берет резолверы из списка IP &quot;%2&quot;; нажмите в нем «ОК», чтобы сохранить.</translation>
+    </message>
+    <message>
+        <source>Failed to store the profile.</source>
+        <translation>Не удалось сохранить профиль.</translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; now takes resolvers from the IP list &quot;%2&quot;.</source>
+        <translation>&quot;%1&quot; теперь берет резолверы из списка IP &quot;%2&quot;.</translation>
+    </message>
 </context>
 <context>
     <name>DialogScanner</name>
@@ -4641,30 +5199,12 @@ Close without saving?</source>
         <translation>Восстановить диапазоны по умолчанию</translation>
     </message>
     <message>
-        <source>Troubleshooting</source>
-        <translation>Устранение неполадок</translation>
-    </message>
-    <message>
         <source>IPv6 needs an MTU of at least %1; below that the system may drop IPv6 from the Tun.</source>
         <translation>Для IPv6 нужен MTU не меньше %1; при меньшем значении система может отключить IPv6 на интерфейсе TUN.</translation>
     </message>
     <message>
         <source>This covers every address, which would stop Tun from routing anything.</source>
         <translation>Это охватывает все адреса — в этом случае TUN вообще перестанет маршрутизировать трафик.</translation>
-    </message>
-    <message>
-        <source>If you have trouble starting VPN, you can force reset Core process here.
-
-If still not working, see documentation for more information.
-https://matsuridayo.github.io/n-configuration/#vpn-tun</source>
-        <translation>Если возникают проблемы с запуском режима TUN, здесь можно принудительно сбросить процесс ядра.
-
-Если это не помогло, подробности см. в документации:
-https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
-    </message>
-    <message>
-        <source>Reset</source>
-        <translation>Сбросить</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -4709,6 +5249,14 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>IPv6 CIDR</source>
         <translation>IPv6 CIDR</translation>
+    </message>
+    <message>
+        <source>Restart Core</source>
+        <translation>Перезапустить ядро</translation>
+    </message>
+    <message>
+        <source>Stops the running profile and restarts the core. Try this when Tun fails to start, then start the profile again.</source>
+        <translation>Останавливает запущенный профиль и перезапускает ядро. Попробуйте, если Tun не запускается, затем снова запустите профиль.</translation>
     </message>
 </context>
 <context>
@@ -5091,10 +5639,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>оставьте поле пустым, чтобы использовать все профили в отмеченных группах</translation>
     </message>
     <message>
-        <source>Optional regular expression. Only profiles whose name matches are considered — useful to pick out one country or provider.</source>
-        <translation>Необязательное регулярное выражение. Учитываются только профили с подходящим названием — удобно, чтобы выбрать одну страну или провайдера.</translation>
-    </message>
-    <message>
         <source>Share traffic between the best profiles</source>
         <translation>Распределить трафик между лучшими профилями</translation>
     </message>
@@ -5129,14 +5673,6 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Only countries</source>
         <translation>Только страны</translation>
-    </message>
-    <message>
-        <source>e.g. DE,NL,FR</source>
-        <translation>например, DE,NL,FR</translation>
-    </message>
-    <message>
-        <source>Comma-separated country codes, empty means any. Uses the country found by the IP test, so profiles that were never IP-tested are skipped while this is set.</source>
-        <translation>Коды стран через запятую; пустое поле — любая страна. Используется страна, определённая IP-тестом, поэтому, пока фильтр задан, профили без IP-теста пропускаются.</translation>
     </message>
     <message>
         <source>Run the best</source>
@@ -5403,8 +5939,24 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>Профилей с недавним результатом теста (он будет использован повторно): %1.</translation>
     </message>
     <message>
-        <source>The rest will be measured before the selector starts.</source>
-        <translation>Остальные профили будут измерены до запуска автовыбора.</translation>
+        <source>Optional regular expression, matched anywhere in the profile name and ignoring case. Only profiles whose name matches are used.
+Pick several: germany|nl
+Leave some out: ^(?!.*(germany|🇩🇪)).*$ uses every name that contains neither.</source>
+        <translation>Необязательное регулярное выражение; ищется в любом месте названия профиля без учёта регистра. Используются только профили с подходящим названием.
+Выбрать несколько: germany|nl
+Исключить некоторые: ^(?!.*(germany|🇩🇪)).*$ берёт все названия, где нет ни того, ни другого.</translation>
+    </message>
+    <message>
+        <source>e.g. DE,NL,FR or !RU</source>
+        <translation>например, DE,NL,FR или !RU</translation>
+    </message>
+    <message>
+        <source>Comma-separated country codes, empty means any. Put ! before a code to exclude that country instead, e.g. !RU uses every country but Russia. Uses the country found by the IP test, so profiles that were never IP-tested are skipped while this is set.</source>
+        <translation>Коды стран через запятую; пустое поле — любая страна. Поставьте ! перед кодом, чтобы исключить страну, например !RU — все страны, кроме России. Используется страна, определённая IP-тестом, поэтому, пока фильтр задан, профили без IP-теста пропускаются.</translation>
+    </message>
+    <message>
+        <source>The rest will be measured as the selector starts: it runs as soon as enough profiles work, and switches to the full ranking once all are measured.</source>
+        <translation>Остальные профили будут измерены при запуске: автовыбор заработает, как только наберётся достаточно рабочих профилей, и перейдёт на полный рейтинг, когда измерены все.</translation>
     </message>
 </context>
 <context>
@@ -5514,6 +6066,145 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Use the Advanced section to specify bind options</source>
         <translation>Используйте кнопку «Доп. настройки», чтобы указать параметры привязки</translation>
+    </message>
+</context>
+<context>
+    <name>EditDnstt</name>
+    <message>
+        <source>Mode</source>
+        <translation>Режим</translation>
+    </message>
+    <message>
+        <source>Domain</source>
+        <translation>Домен</translation>
+    </message>
+    <message>
+        <source>Public Key</source>
+        <translation>Public Key</translation>
+    </message>
+    <message>
+        <source>Record Type</source>
+        <translation>Тип записи</translation>
+    </message>
+    <message>
+        <source>Client ID Size</source>
+        <translation>Размер ID клиента</translation>
+    </message>
+    <message>
+        <source>Max QNAME Length</source>
+        <translation>Макс. длина QNAME</translation>
+    </message>
+    <message>
+        <source>Payload per Query</source>
+        <translation>Полезная нагрузка на запрос</translation>
+    </message>
+    <message>
+        <source>Resolvers</source>
+        <translation>Резолверы</translation>
+    </message>
+    <message>
+        <source>Strategy</source>
+        <translation>Стратегия</translation>
+    </message>
+    <message>
+        <source>Retry truncated replies over TCP</source>
+        <translation>Повторять усеченные ответы через TCP</translation>
+    </message>
+    <message>
+        <source>Backend</source>
+        <translation>Бэкенд</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>Тип</translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation>Имя пользователя</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation>Пароль</translation>
+    </message>
+    <message>
+        <source>UDP over TCP</source>
+        <translation>UDP over TCP</translation>
+    </message>
+    <message>
+        <source>Encryption</source>
+        <translation>Шифрование</translation>
+    </message>
+    <message>
+        <source>User</source>
+        <translation>Пользователь</translation>
+    </message>
+    <message>
+        <source>Private Key</source>
+        <translation>Private Key</translation>
+    </message>
+    <message>
+        <source>Private Key Path</source>
+        <translation>Путь к Private Key</translation>
+    </message>
+    <message>
+        <source>Choose File</source>
+        <translation>Выбрать файл</translation>
+    </message>
+    <message>
+        <source>Private Key Password</source>
+        <translation>Пароль к Private Key</translation>
+    </message>
+    <message>
+        <source>Host Keys</source>
+        <translation>Host Keys</translation>
+    </message>
+    <message>
+        <source>One per line</source>
+        <translation>По одному в строке</translation>
+    </message>
+    <message>
+        <source>Host Key Algorithms</source>
+        <translation>Host Key Algorithms</translation>
+    </message>
+    <message>
+        <source>Client Version</source>
+        <translation>Версия клиента</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>Дополнительно</translation>
+    </message>
+    <message>
+        <source>Idle Timeout</source>
+        <translation>Idle Timeout</translation>
+    </message>
+    <message>
+        <source>Keepalive Interval</source>
+        <translation>Keepalive Interval</translation>
+    </message>
+    <message>
+        <source>Queries per Second</source>
+        <translation>Запросов в секунду</translation>
+    </message>
+    <message>
+        <source>VayDNS (dnstt-compatible)</source>
+        <translation>VayDNS (совместимый с dnstt)</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>По умолчанию</translation>
+    </message>
+    <message>
+        <source>None (chain only)</source>
+        <translation>Нет (только для цепочки)</translation>
+    </message>
+    <message>
+        <source>Tunnel data each query carries; a longer domain leaves less room.</source>
+        <translation>Сколько данных туннеля несет каждый запрос; чем длиннее домен, тем меньше места.</translation>
+    </message>
+    <message>
+        <source>%1 bytes</source>
+        <translation>%1 байт</translation>
     </message>
 </context>
 <context>
@@ -5683,8 +6374,12 @@ rendezvous service. Replaces the server address and port.</source>
         <translation>Параметры Realm</translation>
     </message>
     <message>
-        <source>Gecko obfuscation needs a password; without one, obfuscation is off.</source>
-        <translation>Для обфускации gecko нужен пароль; без него обфускация выключена.</translation>
+        <source>None</source>
+        <translation>Нет</translation>
+    </message>
+    <message>
+        <source>Obfuscation needs a password; without one, it is off.</source>
+        <translation>Для обфускации нужен пароль; без него она выключена.</translation>
     </message>
 </context>
 <context>
@@ -5820,6 +6515,113 @@ Improves hole-punching reliability. Requires IPv4.</source>
     <message>
         <source>Success!</source>
         <translation>Успешно!</translation>
+    </message>
+</context>
+<context>
+    <name>EditMasterDns</name>
+    <message>
+        <source>Domains</source>
+        <translation>Домены</translation>
+    </message>
+    <message>
+        <source>One per line</source>
+        <translation>По одному в строке</translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation>Режим</translation>
+    </message>
+    <message>
+        <source>Encryption</source>
+        <translation>Шифрование</translation>
+    </message>
+    <message>
+        <source>Key</source>
+        <translation>Ключ</translation>
+    </message>
+    <message>
+        <source>Resolvers</source>
+        <translation>Резолверы</translation>
+    </message>
+    <message>
+        <source>Strategy</source>
+        <translation>Стратегия</translation>
+    </message>
+    <message>
+        <source>Transfer</source>
+        <translation>Передача</translation>
+    </message>
+    <message>
+        <source>Duplication</source>
+        <translation>Дублирование</translation>
+    </message>
+    <message>
+        <source>Setup Duplication</source>
+        <translation>Дублирование при подключении</translation>
+    </message>
+    <message>
+        <source>Upload Compression</source>
+        <translation>Сжатие отправки</translation>
+    </message>
+    <message>
+        <source>Download Compression</source>
+        <translation>Сжатие приема</translation>
+    </message>
+    <message>
+        <source>Base64-encoded replies</source>
+        <translation>Ответы в Base64</translation>
+    </message>
+    <message>
+        <source>MTU</source>
+        <translation>MTU</translation>
+    </message>
+    <message>
+        <source>Min Upload</source>
+        <translation>Мин. отправка</translation>
+    </message>
+    <message>
+        <source>Max Upload</source>
+        <translation>Макс. отправка</translation>
+    </message>
+    <message>
+        <source>Min Download</source>
+        <translation>Мин. прием</translation>
+    </message>
+    <message>
+        <source>Max Download</source>
+        <translation>Макс. прием</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>Дополнительно</translation>
+    </message>
+    <message>
+        <source>MTU Test Retries</source>
+        <translation>Повторы проверки MTU</translation>
+    </message>
+    <message>
+        <source>MTU Test Timeout</source>
+        <translation>Таймаут проверки MTU</translation>
+    </message>
+    <message>
+        <source>MTU Test Parallelism</source>
+        <translation>Параллельность проверки MTU</translation>
+    </message>
+    <message>
+        <source>Drop resolvers below the minimum MTU</source>
+        <translation>Отбрасывать резолверы с MTU ниже минимального</translation>
+    </message>
+    <message>
+        <source>TCP / custom chain</source>
+        <translation>TCP / пользовательская цепочка</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>По умолчанию</translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation>Выкл.</translation>
     </message>
 </context>
 <context>
@@ -8031,6 +8833,30 @@ Improves hole-punching reliability. Requires IPv4.</source>
         <source>Latency</source>
         <translation>Задержка</translation>
     </message>
+    <message>
+        <source>Max QNAME</source>
+        <translation>Макс. QNAME</translation>
+    </message>
+    <message>
+        <source>Upload MTU</source>
+        <translation>MTU отправки</translation>
+    </message>
+    <message>
+        <source>Download MTU</source>
+        <translation>MTU приема</translation>
+    </message>
+    <message>
+        <source>The longest query name the resolver relays: max_qname_len for DNSTT, lenLimit for XDNS.</source>
+        <translation>Самое длинное имя запроса, которое пропускает резолвер: max_qname_len для DNSTT, lenLimit для XDNS.</translation>
+    </message>
+    <message>
+        <source>The largest payload per query the resolver relays.</source>
+        <translation>Наибольшая полезная нагрузка запроса, которую пропускает резолвер.</translation>
+    </message>
+    <message>
+        <source>The largest payload per answer the resolver relays.</source>
+        <translation>Наибольшая полезная нагрузка ответа, которую пропускает резолвер.</translation>
+    </message>
 </context>
 <context>
     <name>IpListItem</name>
@@ -8891,6 +9717,22 @@ Error: %1</source>
         <translation>Отмена</translation>
     </message>
     <message>
+        <source>Leftover Tun adapter</source>
+        <translation>Оставшийся адаптер TUN</translation>
+    </message>
+    <message>
+        <source>Windows was still holding the Tun adapter from an earlier session that did not close cleanly. Starting the profile again usually works; if it keeps failing, restart Windows.
+
+Error: %1</source>
+        <translation>Windows всё ещё удерживала адаптер TUN от предыдущего сеанса, который не был корректно завершён. Обычно помогает повторный запуск профиля; если ошибка повторяется, перезагрузите Windows.
+
+Ошибка: %1</translation>
+    </message>
+    <message>
+        <source>Start Again</source>
+        <translation>Запустить снова</translation>
+    </message>
+    <message>
         <source>Add new Group</source>
         <translation>Добавить новую группу</translation>
     </message>
@@ -9112,7 +9954,7 @@ Error: %1</source>
     </message>
     <message>
         <source>Routing</source>
-        <translation>Маршрутизация</translation>
+        <translation>Маршруты</translation>
     </message>
     <message>
         <source>Operation Mode</source>
@@ -9397,12 +10239,40 @@ Name: %1</source>
         <translation>Изменить правила</translation>
     </message>
     <message>
+        <source>Specific server</source>
+        <translation>Другой сервер</translation>
+    </message>
+    <message>
+        <source>Route through another server</source>
+        <translation>Направить через другой сервер</translation>
+    </message>
+    <message>
+        <source>There are no servers to route to.</source>
+        <translation>Нет серверов для маршрутизации.</translation>
+    </message>
+    <message>
         <source>%1 rules</source>
         <translation>Правила «%1»</translation>
     </message>
     <message>
+        <source>Specific server rules</source>
+        <translation>Правила сервера</translation>
+    </message>
+    <message>
         <source>Routing profile &quot;%1&quot;. Checked targets go %2; unchecking one removes its rule.</source>
         <translation>Профиль маршрутизации &quot;%1&quot;. Отмеченные цели попадают в правила «%2»; снятие флажка удаляет правило.</translation>
+    </message>
+    <message>
+        <source>Routing profile &quot;%1&quot;. Checked targets go through the chosen server; unchecking one removes its rule.</source>
+        <translation>Профиль маршрутизации &quot;%1&quot;. Отмеченные цели идут через выбранный сервер; снятие флажка удаляет правило.</translation>
+    </message>
+    <message>
+        <source>Server (type part of its name to search):</source>
+        <translation>Сервер (введите часть имени для поиска):</translation>
+    </message>
+    <message>
+        <source>Search servers</source>
+        <translation>Поиск серверов</translation>
     </message>
     <message>
         <source>in %1</source>
@@ -9565,6 +10435,46 @@ Name: %1</source>
     <message>
         <source>Kill switch is blocking traffic</source>
         <translation>Kill switch блокирует трафик</translation>
+    </message>
+    <message>
+        <source>Search Commands and Settings</source>
+        <translation>Поиск команд и настроек</translation>
+    </message>
+    <message>
+        <source>close the open settings window first</source>
+        <translation>сначала закройте открытое окно настроек</translation>
+    </message>
+    <message>
+        <source>close &quot;%1&quot; first</source>
+        <translation>сначала закройте «%1»</translation>
+    </message>
+    <message>
+        <source>About</source>
+        <translation>О программе</translation>
+    </message>
+    <message>
+        <source>Advanced Mode</source>
+        <translation>Расширенный режим</translation>
+    </message>
+    <message>
+        <source>Show every option. Simple mode hides the advanced ones; they keep their values and still apply.</source>
+        <translation>Показывать все параметры. Простой режим скрывает дополнительные, но их значения сохраняются и продолжают действовать.</translation>
+    </message>
+    <message>
+        <source>[Auto selector] %1 working profiles found; starting now while the remaining %2 are still being measured.</source>
+        <translation>[Автовыбор] Найдено рабочих профилей: %1; запуск сейчас, остальные (%2) ещё измеряются.</translation>
+    </message>
+    <message>
+        <source>[Auto selector] Every profile is measured and the best ones changed — rebuilding with the full ranking.</source>
+        <translation>[Автовыбор] Все профили измерены, и лучшие изменились — пересборка по полному рейтингу.</translation>
+    </message>
+    <message>
+        <source>The current routing profile is updated by the subscription &quot;%1&quot;.</source>
+        <translation>Текущий профиль маршрутизации обновляется подпиской «%1».</translation>
+    </message>
+    <message>
+        <source>The group &quot;%1&quot; uses its own routing profile, so the running profile keeps it.</source>
+        <translation>Группа «%1» использует собственный профиль маршрутизации, поэтому запущенный профиль сохраняет его.</translation>
     </message>
 </context>
 <context>
@@ -9896,22 +10806,6 @@ To fix this, share the hotspot from the throne-tun adapter instead of &quot;%1&q
     <message>
         <source>No update</source>
         <translation>Обновлений нет</translation>
-    </message>
-    <message>
-        <source>Update found: %1
-Release note:
-%2</source>
-        <translation>Найдено обновление: %1
-Список изменений:
-%2</translation>
-    </message>
-    <message>
-        <source>Open in browser</source>
-        <translation>Открыть в браузере</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation>Закрыть</translation>
     </message>
     <message>
         <source>Update is ready, restart to install?</source>
@@ -11005,6 +11899,102 @@ Release note:
         <source>This group no longer exists.</source>
         <translation>Этой группы больше не существует.</translation>
     </message>
+    <message>
+        <source>Changed: %1</source>
+        <translation>Изменено: %1</translation>
+    </message>
+    <message>
+        <source>%1 was removed by the update and stays stopped: no single profile with the same name replaces it.</source>
+        <translation>%1 удалён при обновлении и остаётся остановленным: нет единственного профиля с тем же названием, который бы его заменил.</translation>
+    </message>
+    <message>
+        <source>%1 was replaced by the update; connecting to the profile with the same name.</source>
+        <translation>%1 заменён при обновлении; подключение к профилю с тем же названием.</translation>
+    </message>
+    <message>
+        <source>the routing profile is not in the Happ format</source>
+        <translation>профиль маршрутизации не в формате Happ</translation>
+    </message>
+    <message>
+        <source>a raw routing profile is not accepted from a subscription</source>
+        <translation>необработанный (raw) профиль маршрутизации из подписки не принимается</translation>
+    </message>
+    <message>
+        <source>unknown routing link action &quot;%1&quot;</source>
+        <translation>неизвестное действие ссылки маршрутизации «%1»</translation>
+    </message>
+    <message>
+        <source>the routing profile is not valid base64</source>
+        <translation>профиль маршрутизации не является корректным base64</translation>
+    </message>
+    <message>
+        <source>the routing profile is not a JSON object</source>
+        <translation>профиль маршрутизации не является JSON-объектом</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: the routing profile the subscription provides was ignored: %2</source>
+        <translation>[Маршрутизация] %1: профиль маршрутизации из подписки пропущен: %2</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: the routing profile the subscription provides was not applied, the routing profiles are open for editing.</source>
+        <translation>[Маршрутизация] %1: профиль маршрутизации из подписки не применён — профили маршрутизации открыты для редактирования.</translation>
+    </message>
+    <message>
+        <source>%1 entries, %2 skipped</source>
+        <translation>записей: %1, пропущено: %2</translation>
+    </message>
+    <message>
+        <source>%1 entries</source>
+        <translation>записей: %1</translation>
+    </message>
+    <message>
+        <source>%1 routing</source>
+        <translation>%1 — маршрутизация</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: created the routing profile &quot;%2&quot; from the subscription (%3)</source>
+        <translation>[Маршрутизация] %1: из подписки создан профиль маршрутизации «%2» (%3)</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: updated the routing profile &quot;%2&quot; from the subscription (%3)</source>
+        <translation>[Маршрутизация] %1: профиль маршрутизации «%2» обновлён из подписки (%3)</translation>
+    </message>
+    <message>
+        <source>Choose the DNS tunnel profile to find resolvers for</source>
+        <translation>Выберите профиль DNS-туннеля, для которого нужно найти резолверы</translation>
+    </message>
+    <message>
+        <source>Only DNSTT, MasterDNS and XDNS profiles can be used to find resolvers</source>
+        <translation>Искать резолверы можно только для профилей DNSTT, MasterDNS и XDNS</translation>
+    </message>
+    <message>
+        <source>%1: the resolver &quot;%2&quot; is invalid: %3</source>
+        <translation>%1: резолвер &quot;%2&quot; недопустим: %3</translation>
+    </message>
+    <message>
+        <source>the resolver IP list no longer exists</source>
+        <translation>список IP резолверов больше не существует</translation>
+    </message>
+    <message>
+        <source>the resolver IP list &quot;%1&quot; is empty</source>
+        <translation>список IP резолверов &quot;%1&quot; пуст</translation>
+    </message>
+    <message>
+        <source>the resolver IP list &quot;%1&quot; holds more than %2 entries; the rest were skipped</source>
+        <translation>список IP резолверов &quot;%1&quot; содержит более %2 записей; остальные пропущены</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n entries of the resolver IP list &quot;%1&quot; were skipped: ranges too large or past the resolver limit</source>
+        <translation>
+            <numerusform>пропущена %n запись списка IP резолверов &quot;%1&quot;: слишком большие диапазоны или превышен лимит резолверов</numerusform>
+            <numerusform>пропущено %n записи списка IP резолверов &quot;%1&quot;: слишком большие диапазоны или превышен лимит резолверов</numerusform>
+            <numerusform>пропущено %n записей списка IP резолверов &quot;%1&quot;: слишком большие диапазоны или превышен лимит резолверов</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Plaintext Replies</source>
+        <translation>Ответы без шифрования</translation>
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>
@@ -11210,6 +12200,53 @@ outbound и другие функции Throne могут не работать.
     <message>
         <source>Throne is shutting down</source>
         <translation>Throne завершает работу</translation>
+    </message>
+</context>
+<context>
+    <name>ResolverSourceWidget</name>
+    <message>
+        <source>IP list</source>
+        <translation>Список IP</translation>
+    </message>
+    <message>
+        <source>Its addresses are used after the lines above; an entry without a port uses port 53.</source>
+        <translation>Его адреса используются после строк выше; запись без порта использует порт 53.</translation>
+    </message>
+    <message>
+        <source>Find resolvers…</source>
+        <translation>Найти резолверы…</translation>
+    </message>
+    <message>
+        <source>One per line. Replaces the resolvers in Finalmask; empty keeps them.</source>
+        <translation>По одному в строке. Заменяют резолверы в Finalmask; если пусто, они сохраняются.</translation>
+    </message>
+    <message>
+        <source>One per line. Empty uses the system resolver.</source>
+        <translation>По одному в строке. Если пусто, используется системный резолвер.</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation>Нет</translation>
+    </message>
+    <message>
+        <source>Missing list</source>
+        <translation>Список не найден</translation>
+    </message>
+    <message>
+        <source>Opens a scan that finds the resolvers relaying this profile&apos;s tunnel, as last saved.</source>
+        <translation>Открывает сканирование, которое ищет резолверы, пропускающие туннель этого профиля в последней сохраненной версии.</translation>
+    </message>
+    <message>
+        <source>Save the profile first; the scan tests the saved profile.</source>
+        <translation>Сначала сохраните профиль: сканирование проверяет сохраненный профиль.</translation>
+    </message>
+    <message>
+        <source>Resolvers</source>
+        <translation>Резолверы</translation>
+    </message>
+    <message>
+        <source>This IP list no longer exists, so it adds no resolvers.</source>
+        <translation>Этот список IP больше не существует, поэтому резолверы из него не добавляются.</translation>
     </message>
 </context>
 <context>
@@ -11714,6 +12751,22 @@ Remove that endpoint from this routing profile as well?</source>
         <source>Start</source>
         <translation>Запустить</translation>
     </message>
+    <message>
+        <source>DNS resolvers</source>
+        <translation>DNS-резолверы</translation>
+    </message>
+    <message>
+        <source>Only a saved DNSTT, MasterDNS or XDNS profile can be used to find resolvers; save the profile first.</source>
+        <translation>Искать резолверы можно только для сохраненного профиля DNSTT, MasterDNS или XDNS; сначала сохраните профиль.</translation>
+    </message>
+    <message>
+        <source>Resolvers for %1</source>
+        <translation>Резолверы для %1</translation>
+    </message>
+    <message>
+        <source>Failed to store the scan.</source>
+        <translation>Не удалось сохранить сканирование.</translation>
+    </message>
 </context>
 <context>
     <name>Scanner::IpListUpdater</name>
@@ -12036,6 +13089,14 @@ Remove that endpoint from this routing profile as well?</source>
         <source>Checking network</source>
         <translation>Проверка сети</translation>
     </message>
+    <message>
+        <source>%1 relays the DNS tunnel (%2 ms)</source>
+        <translation>%1 пропускает DNS-туннель (%2 мс)</translation>
+    </message>
+    <message>
+        <source>The DNS tunnel profile cannot be used to find resolvers</source>
+        <translation>Профиль DNS-туннеля нельзя использовать для поиска резолверов</translation>
+    </message>
 </context>
 <context>
     <name>StartStopButton</name>
@@ -12099,12 +13160,12 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Осталось %1 мин.</translation>
     </message>
     <message>
-        <source>%1h left</source>
-        <translation>Осталось %1 ч.</translation>
+        <source>%1h %2m left</source>
+        <translation>Осталось %1 ч. %2 мин.</translation>
     </message>
     <message>
-        <source>%1d left</source>
-        <translation>Осталось %1 д.</translation>
+        <source>%1d %2h left</source>
+        <translation>Осталось %1 д. %2 ч.</translation>
     </message>
     <message>
         <source>Announcement - %1</source>
@@ -12400,10 +13461,6 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Чтобы подключаться к этому серверу через другой, создайте профиль цепочки вместо detour.</translation>
     </message>
     <message>
-        <source>Throne picks the resolver for server names itself.</source>
-        <translation>Резолвер для имен серверов Throne выбирает сам.</translation>
-    </message>
-    <message>
         <source>A missing, 0 or negative speed is sent as 1 Mbps. Enter your speed in Mbps, for example 100.</source>
         <translation>Отсутствующая, нулевая или отрицательная скорость отправляется как 1 Мбит/с. Укажите скорость в Мбит/с, например 100.</translation>
     </message>
@@ -12470,10 +13527,6 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Unknown cipher suite. Use Go&apos;s names, for example TLS_AES_128_GCM_SHA256.</source>
         <translation>Неизвестный набор шифров. Используйте названия из Go, например TLS_AES_128_GCM_SHA256.</translation>
-    </message>
-    <message>
-        <source>The trailing = padding was removed from the REALITY public key.</source>
-        <translation>Из публичного ключа REALITY удалены завершающие символы = (padding).</translation>
     </message>
     <message>
         <source>Unknown fingerprint &quot;%1&quot;. Use chrome, firefox, safari, ios, android, edge, 360, qq, random, randomized or unsafe.</source>
@@ -12620,8 +13673,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Значение finalmask проигнорировано: оно должно быть объектом JSON.</translation>
     </message>
     <message>
-        <source>Throne does not support the Xray transport &quot;%1&quot;. Use raw, xhttp, ws, httpupgrade or grpc.</source>
-        <translation>Throne не поддерживает транспорт Xray &quot;%1&quot;. Используйте raw, xhttp, ws, httpupgrade или grpc.</translation>
+        <source>Throne does not support the Xray transport &quot;%1&quot;. Use raw, xhttp, ws, httpupgrade, grpc, kcp or xdrive.</source>
+        <translation>Throne не поддерживает транспорт Xray &quot;%1&quot;. Используйте raw, xhttp, ws, httpupgrade, grpc, kcp или xdrive.</translation>
     </message>
     <message>
         <source>Xray does not support the security &quot;%1&quot;. Use none, tls or reality.</source>
@@ -12750,14 +13803,6 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>&quot;%1&quot; is not a valid port; use a number from 1 to 65535.</source>
         <translation>&quot;%1&quot; — недопустимый порт; укажите число от 1 до 65535.</translation>
-    </message>
-    <message>
-        <source>AnyTLS does not support TCP Fast Open, so it was turned off.</source>
-        <translation>AnyTLS не поддерживает TCP Fast Open, поэтому он был отключен.</translation>
-    </message>
-    <message>
-        <source>Use two-letter country codes separated by commas, for example DE,NL,FR.</source>
-        <translation>Используйте двухбуквенные коды стран через запятую, например DE,NL,FR.</translation>
     </message>
     <message>
         <source>Cannot run more profiles than are ranked (%1).</source>
@@ -12896,10 +13941,6 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Игнорируется без «Hop Interval»; задайте и его, например 30s при максимуме 60s.</translation>
     </message>
     <message>
-        <source>Hysteria v1 needs both Up Mbps and Down Mbps, for example 100.</source>
-        <translation>Для Hysteria v1 нужны и «Up Mbps», и «Down Mbps», например 100.</translation>
-    </message>
-    <message>
         <source>Packet sizes must be from 0 to 2048; 0 uses the default.</source>
         <translation>Размеры пакетов должны быть от 0 до 2048; 0 — значение по умолчанию.</translation>
     </message>
@@ -12946,10 +13987,6 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>The certificate pin must be a SHA-256 hash in hex (64 characters) or base64 (44 characters).</source>
         <translation>Pin сертификата должен быть хешем SHA-256 в hex (64 символа) или base64 (44 символа).</translation>
-    </message>
-    <message>
-        <source>Only the server&apos;s own certificate is checked against this pin; if it is the hash of an intermediate or root certificate, the connection will fail.</source>
-        <translation>С этим pin сверяется только собственный сертификат сервера; если это хеш промежуточного или корневого сертификата, подключение не удастся.</translation>
     </message>
     <message>
         <source>Not a speed such as 100 Mbps or 12 MBps, so it was ignored.</source>
@@ -13458,10 +14495,6 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Unknown tag &lt;%1&gt;. Use &lt;b 0x...&gt;, &lt;r N&gt;, &lt;rc N&gt;, &lt;rd N&gt;, &lt;dz N&gt;, &lt;t&gt;, &lt;d&gt; or &lt;ds&gt;.</source>
         <translation>Неизвестный тег &lt;%1&gt;. Используйте &lt;b 0x...&gt;, &lt;r N&gt;, &lt;rc N&gt;, &lt;rd N&gt;, &lt;dz N&gt;, &lt;t&gt;, &lt;d&gt; или &lt;ds&gt;.</translation>
-    </message>
-    <message>
-        <source>Ignored; Throne resolves names with its own DNS settings.</source>
-        <translation>Игнорируется; Throne разрешает имена через собственные настройки DNS.</translation>
     </message>
     <message>
         <source>Unknown setting, ignored.</source>
@@ -14290,6 +15323,330 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Warnings:</source>
         <translation>Предупреждения:</translation>
+    </message>
+    <message>
+        <source>XDRIVE has no share-link format. Import the server&apos;s JSON configuration instead.</source>
+        <translation>У XDRIVE нет формата ссылки. Импортируйте JSON-конфигурацию сервера.</translation>
+    </message>
+    <message>
+        <source>Must be google-drive, s3, template or local.</source>
+        <translation>Должно быть google-drive, s3, template или local.</translation>
+    </message>
+    <message>
+        <source>Enter the directory both ends share.</source>
+        <translation>Укажите каталог, общий для обеих сторон.</translation>
+    </message>
+    <message>
+        <source>Enter the ID of the Google Drive folder both ends share.</source>
+        <translation>Укажите ID папки Google Drive, общей для обеих сторон.</translation>
+    </message>
+    <message>
+        <source>Google Drive needs the client ID, client secret and refresh token.</source>
+        <translation>Для Google Drive нужны client ID, client secret и refresh token.</translation>
+    </message>
+    <message>
+        <source>The template service needs a template describing the storage API.</source>
+        <translation>Сервису template нужен шаблон, описывающий API хранилища.</translation>
+    </message>
+    <message>
+        <source>Enter the key prefix both ends share in the bucket.</source>
+        <translation>Укажите префикс ключей в бакете, общий для обеих сторон.</translation>
+    </message>
+    <message>
+        <source>The key prefix must be relative, without empty, &quot;.&quot; or &quot;..&quot; parts, backslashes or control characters.</source>
+        <translation>Префикс ключей должен быть относительным, без пустых частей, «.» и «..», обратных косых черт и управляющих символов.</translation>
+    </message>
+    <message>
+        <source>S3 needs the access key ID and the secret access key; the session token is optional.</source>
+        <translation>Для S3 нужны access key ID и secret access key; session token необязателен.</translation>
+    </message>
+    <message>
+        <source>The S3 keys cannot contain control characters.</source>
+        <translation>Ключи S3 не могут содержать управляющие символы.</translation>
+    </message>
+    <message>
+        <source>The access key ID cannot contain spaces, commas or slashes.</source>
+        <translation>Access key ID не может содержать пробелы, запятые или косые черты.</translation>
+    </message>
+    <message>
+        <source>Enter the S3 endpoint URL, such as https://s3.example.com.</source>
+        <translation>Укажите URL эндпоинта S3, например https://s3.example.com.</translation>
+    </message>
+    <message>
+        <source>The endpoint must be an http or https URL without credentials, query or fragment.</source>
+        <translation>Эндпоинт должен быть URL http или https без учётных данных, параметров запроса и фрагмента.</translation>
+    </message>
+    <message>
+        <source>The signing region cannot contain spaces, commas, slashes or control characters.</source>
+        <translation>Регион подписи не может содержать пробелы, запятые, косые черты или управляющие символы.</translation>
+    </message>
+    <message>
+        <source>Enter the bucket both ends share.</source>
+        <translation>Укажите бакет, общий для обеих сторон.</translation>
+    </message>
+    <message>
+        <source>The bucket name cannot be &quot;.&quot; or &quot;..&quot;, nor contain slashes, backslashes or control characters.</source>
+        <translation>Имя бакета не может быть «.» или «..» и не может содержать косые и обратные косые черты или управляющие символы.</translation>
+    </message>
+    <message>
+        <source>Virtual-hosted addressing needs a DNS-compatible bucket name: lowercase letters, digits, dots and hyphens.</source>
+        <translation>Для адресации virtual-hosted нужно совместимое с DNS имя бакета: строчные буквы, цифры, точки и дефисы.</translation>
+    </message>
+    <message>
+        <source>Virtual-hosted addressing needs a DNS endpoint, not an IP address. Turn on path-style addressing instead.</source>
+        <translation>Для адресации virtual-hosted нужен DNS-эндпоинт, а не IP-адрес. Включите вместо этого адресацию path-style.</translation>
+    </message>
+    <message>
+        <source>The front port is used only together with a front address.</source>
+        <translation>Порт фронта используется только вместе с адресом фронта.</translation>
+    </message>
+    <message>
+        <source>XDRIVE needs VLESS encryption: enter the mlkem768x25519plus string the server gives.</source>
+        <translation>Для XDRIVE нужно шифрование VLESS: введите строку mlkem768x25519plus, которую выдаёт сервер.</translation>
+    </message>
+    <message>
+        <source>XDRIVE does not support a flow; clear it.</source>
+        <translation>XDRIVE не поддерживает flow; очистите его.</translation>
+    </message>
+    <message>
+        <source>XDRIVE needs Mux: set it to On or Keep Default.</source>
+        <translation>Для XDRIVE нужен Mux: выберите «Вкл.» или «По умолчанию».</translation>
+    </message>
+    <message>
+        <source>Hysteria v1 needs both Up Mbps and Down Mbps; %1 up and %2 down is used for a missing one. Set your real line speed for the best results.</source>
+        <translation>Для Hysteria v1 нужны и «Up Mbps», и «Down Mbps»; вместо отсутствующего значения используется %1 на отдачу и %2 на загрузку. Для лучшего результата укажите реальную скорость канала.</translation>
+    </message>
+    <message>
+        <source>Use two-letter country codes separated by commas, for example DE,NL,FR; put ! before a code to exclude that country, for example !RU.</source>
+        <translation>Используйте двухбуквенные коды стран через запятую, например DE,NL,FR; поставьте ! перед кодом, чтобы исключить страну, например !RU.</translation>
+    </message>
+    <message>
+        <source>Xray does not know the mKCP header type &quot;%1&quot;, so it was ignored.</source>
+        <translation>Xray не знает тип заголовка mKCP &quot;%1&quot;, поэтому он проигнорирован.</translation>
+    </message>
+    <message>
+        <source>Add the tunnel domain the server answers for, for example &quot;domains&quot;: [{&quot;names&quot;: [&quot;t.example.com&quot;]}].</source>
+        <translation>Добавьте домен туннеля, на который отвечает сервер, например &quot;domains&quot;: [{&quot;names&quot;: [&quot;t.example.com&quot;]}].</translation>
+    </message>
+    <message>
+        <source>Use udp://, tcp:// or https:// resolver addresses.</source>
+        <translation>Используйте адреса резолверов udp://, tcp:// или https://.</translation>
+    </message>
+    <message>
+        <source>A DoH resolver needs &quot;tlsConfig&quot;, for example &quot;tlsConfig&quot;: {&quot;serverName&quot;: &quot;dns.google&quot;}.</source>
+        <translation>Для DoH-резолвера нужен &quot;tlsConfig&quot;, например &quot;tlsConfig&quot;: {&quot;serverName&quot;: &quot;dns.google&quot;}.</translation>
+    </message>
+    <message>
+        <source>Over h3 the brutal congestion control crashes Xray; use bbr, reno or force-brutal.</source>
+        <translation>При h3 управление перегрузкой brutal приводит к сбою Xray; используйте bbr, reno или force-brutal.</translation>
+    </message>
+    <message>
+        <source>Set &quot;serverName&quot; in tlsConfig: over HTTP/2 Xray does not take it from the URL, so the TLS handshake fails.</source>
+        <translation>Укажите &quot;serverName&quot; в tlsConfig: при HTTP/2 Xray не берет его из URL, поэтому TLS-хендшейк не удается.</translation>
+    </message>
+    <message>
+        <source>Add a DNS resolver to send the tunnel&apos;s queries through, for example &quot;resolvers&quot;: [{&quot;addrs&quot;: [&quot;udp://8.8.8.8:53&quot;]}]; without one Xray cannot connect.</source>
+        <translation>Добавьте DNS-резолвер, через который пойдут запросы туннеля, например &quot;resolvers&quot;: [{&quot;addrs&quot;: [&quot;udp://8.8.8.8:53&quot;]}]; без него Xray не сможет подключиться.</translation>
+    </message>
+    <message>
+        <source>The resolver IP list belongs to another installation, so it was not imported.</source>
+        <translation>Список IP резолверов принадлежит другой установке, поэтому он не импортирован.</translation>
+    </message>
+    <message>
+        <source>Must be at least the MTU (%1).</source>
+        <translation>Должно быть не меньше MTU (%1).</translation>
+    </message>
+    <message>
+        <source>The xdns mask must be the last udp mask: it sends the DNS queries itself, so Xray skips the masks after it.</source>
+        <translation>Маска xdns должна быть последней маской udp: она сама отправляет DNS-запросы, поэтому Xray пропускает маски после нее.</translation>
+    </message>
+    <message>
+        <source>The link is too long.</source>
+        <translation>Ссылка слишком длинная.</translation>
+    </message>
+    <message>
+        <source>Not a dnst:// link.</source>
+        <translation>Это не ссылка dnst://.</translation>
+    </message>
+    <message>
+        <source>The link does not name the tunnel type.</source>
+        <translation>В ссылке не указан тип туннеля.</translation>
+    </message>
+    <message>
+        <source>The SSH private key in the link could not be read; it was ignored.</source>
+        <translation>Не удалось прочитать закрытый ключ SSH из ссылки; он проигнорирован.</translation>
+    </message>
+    <message>
+        <source>Enter the tunnel domain, for example t.example.com.</source>
+        <translation>Введите домен туннеля, например t.example.com.</translation>
+    </message>
+    <message>
+        <source>Use the domain name delegated to the tunnel server, for example t.example.com.</source>
+        <translation>Укажите доменное имя, делегированное серверу туннеля, например t.example.com.</translation>
+    </message>
+    <message>
+        <source>Use system, an IP address with an optional port, a range such as 192.0.2.0/24, or a udp://, tcp://, tls:// or https:// address.</source>
+        <translation>Укажите system, IP-адрес с необязательным портом, диапазон вида 192.0.2.0/24 или адрес udp://, tcp://, tls:// или https://.</translation>
+    </message>
+    <message>
+        <source>Use system, an IP address or a range such as 192.0.2.0/24, each with an optional :port.</source>
+        <translation>Укажите system, IP-адрес или диапазон вида 192.0.2.0/24, каждый с необязательным :port.</translation>
+    </message>
+    <message>
+        <source>Use an IP address with an optional port, or a udp://, tcp:// or https:// address.</source>
+        <translation>Укажите IP-адрес с необязательным портом или адрес udp://, tcp:// или https://.</translation>
+    </message>
+    <message>
+        <source>Only https:// addresses take a path.</source>
+        <translation>Путь допускается только в адресах https://.</translation>
+    </message>
+    <message>
+        <source>XDNS has no system resolver: enter the address of a DNS resolver.</source>
+        <translation>У XDNS нет системного резолвера: введите адрес DNS-резолвера.</translation>
+    </message>
+    <message>
+        <source>Enter single addresses here; a range works only from an IP list.</source>
+        <translation>Здесь указывайте отдельные адреса; диапазон работает только из списка IP.</translation>
+    </message>
+    <message>
+        <source>Put an IPv6 address in brackets, for example [2001:db8::1]:53.</source>
+        <translation>Заключите адрес IPv6 в квадратные скобки, например [2001:db8::1]:53.</translation>
+    </message>
+    <message>
+        <source>A range may hold at most %1 addresses: use /%2 or longer for IPv4 and /%3 or longer for IPv6.</source>
+        <translation>Диапазон может содержать не более %1 адресов: используйте /%2 или длиннее для IPv4 и /%3 или длиннее для IPv6.</translation>
+    </message>
+    <message>
+        <source>Only system, udp, tcp, tls and https resolvers with a server are supported.</source>
+        <translation>Поддерживаются только system и резолверы udp, tcp, tls и https с указанным сервером.</translation>
+    </message>
+    <message>
+        <source>A TLS server name other than the resolver&apos;s own host is not kept.</source>
+        <translation>Имя TLS-сервера, отличное от хоста самого резолвера, не сохраняется.</translation>
+    </message>
+    <message>
+        <source>Only the first %1 resolvers were kept.</source>
+        <translation>Сохранены только первые %1 резолверов.</translation>
+    </message>
+    <message>
+        <source>Use true or false.</source>
+        <translation>Укажите true или false.</translation>
+    </message>
+    <message>
+        <source>This DNS tunnel type is not supported.</source>
+        <translation>Этот тип DNS-туннеля не поддерживается.</translation>
+    </message>
+    <message>
+        <source>The link does not name the service behind the tunnel.</source>
+        <translation>В ссылке не указан сервис за туннелем.</translation>
+    </message>
+    <message>
+        <source>This service behind the tunnel is not supported.</source>
+        <translation>Этот сервис за туннелем не поддерживается.</translation>
+    </message>
+    <message>
+        <source>The resolver&apos;s transport is unknown, so it is used over UDP.</source>
+        <translation>Транспорт резолвера неизвестен, поэтому используется UDP.</translation>
+    </message>
+    <message>
+        <source>This SlipNet link version is not supported.</source>
+        <translation>Эта версия ссылки SlipNet не поддерживается.</translation>
+    </message>
+    <message>
+        <source>The link is damaged: it is shorter than its version allows.</source>
+        <translation>Ссылка повреждена: она короче, чем допускает ее версия.</translation>
+    </message>
+    <message>
+        <source>This link comes from a newer SlipNet version; check the imported settings.</source>
+        <translation>Ссылка создана более новой версией SlipNet; проверьте импортированные настройки.</translation>
+    </message>
+    <message>
+        <source>NoizDNS was imported as plain DNSTT: its server accepts that, but without NoizDNS&apos;s DPI evasion.</source>
+        <translation>NoizDNS импортирован как обычный DNSTT: его сервер это принимает, но без обхода DPI, который дает NoizDNS.</translation>
+    </message>
+    <message>
+        <source>This SlipNet profile type is not supported.</source>
+        <translation>Этот тип профиля SlipNet не поддерживается.</translation>
+    </message>
+    <message>
+        <source>Use the server&apos;s public key: 64 hexadecimal digits, as the server prints it.</source>
+        <translation>Укажите публичный ключ сервера: 64 шестнадцатеричные цифры, как его выводит сервер.</translation>
+    </message>
+    <message>
+        <source>The classic dnstt wire only uses TXT records.</source>
+        <translation>Классический протокол dnstt использует только записи TXT.</translation>
+    </message>
+    <message>
+        <source>The classic dnstt wire always uses 8-byte client IDs.</source>
+        <translation>Классический протокол dnstt всегда использует 8-байтовые ID клиента.</translation>
+    </message>
+    <message>
+        <source>Each query would carry %1 bytes, fewer than the %2 the tunnel needs: use a shorter domain or a longer maximum QNAME length.</source>
+        <translation>Каждый запрос нес бы %1 байт — меньше %2, нужных туннелю: используйте более короткий домен или увеличьте максимальную длину QNAME.</translation>
+    </message>
+    <message>
+        <source>The keepalive interval must be shorter than the idle timeout.</source>
+        <translation>Значение «Keepalive Interval» должно быть меньше «Idle Timeout».</translation>
+    </message>
+    <message>
+        <source>Without a backend, only a profile chained over this one can use the tunnel.</source>
+        <translation>Без бэкенда туннелем может пользоваться только профиль, подключенный цепочкой через этот.</translation>
+    </message>
+    <message>
+        <source>Encrypted SlipNet links cannot be read: export the profile from SlipNet without encryption.</source>
+        <translation>Зашифрованные ссылки SlipNet прочитать нельзя: экспортируйте профиль из SlipNet без шифрования.</translation>
+    </message>
+    <message>
+        <source>Use only one of socks, shadowsocks and ssh.</source>
+        <translation>Используйте только что-то одно: socks, shadowsocks или ssh.</translation>
+    </message>
+    <message>
+        <source>Unknown encryption method: use a number from 0 to 5.</source>
+        <translation>Неизвестный метод шифрования: используйте число от 0 до 5.</translation>
+    </message>
+    <message>
+        <source>MasterDNS only carries a SOCKS or a custom service.</source>
+        <translation>MasterDNS переносит только SOCKS или пользовательский сервис.</translation>
+    </message>
+    <message>
+        <source>The link also carries a proxy to run over the tunnel; import that proxy separately and chain it over this profile.</source>
+        <translation>Ссылка также содержит прокси для работы через туннель; импортируйте этот прокси отдельно и подключите его цепочкой через этот профиль.</translation>
+    </message>
+    <message>
+        <source>This MasterDNS link format is not supported.</source>
+        <translation>Этот формат ссылки MasterDNS не поддерживается.</translation>
+    </message>
+    <message>
+        <source>This MasterDNS link version is not supported.</source>
+        <translation>Эта версия ссылки MasterDNS не поддерживается.</translation>
+    </message>
+    <message>
+        <source>The link is damaged: its client configuration cannot be read.</source>
+        <translation>Ссылка повреждена: не удается прочитать ее клиентскую конфигурацию.</translation>
+    </message>
+    <message>
+        <source>Unknown protocol type: use SOCKS5 or TCP.</source>
+        <translation>Неизвестный тип протокола: используйте SOCKS5 или TCP.</translation>
+    </message>
+    <message>
+        <source>Use a number of seconds above 0.</source>
+        <translation>Укажите число секунд больше 0.</translation>
+    </message>
+    <message>
+        <source>Settings this profile does not support were ignored.</source>
+        <translation>Настройки, которые этот профиль не поддерживает, проигнорированы.</translation>
+    </message>
+    <message>
+        <source>Enter the encryption key the server uses.</source>
+        <translation>Введите ключ шифрования, который использует сервер.</translation>
+    </message>
+    <message>
+        <source>The minimum MTU %1 is above the maximum %2.</source>
+        <translation>Минимальный MTU %1 больше максимального %2.</translation>
+    </message>
+    <message>
+        <source>Must be a number.</source>
+        <translation>Должно быть числом.</translation>
     </message>
 </context>
 </TS>

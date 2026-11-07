@@ -29,6 +29,8 @@
 #include "include/configs/outbounds/vless.h"
 #include "include/configs/outbounds/vmess.h"
 #include "include/configs/outbounds/xrayVless.h"
+#include "include/configs/outbounds/dnstt.h"
+#include "include/configs/outbounds/masterdns.h"
 
 #include "include/database/entities/EndpointSource.h"
 #include "include/global/CountryHelper.hpp"
@@ -81,21 +83,21 @@ namespace Configs {
         [[nodiscard]] bool IsUnavailable() const { return latency < 0 && latency != kLatencyConnectOnly; }
 
         // Progressive health elimination:
-        // When healthScoring is enabled, only nodes with failed_count >= 3 (and latency < 0) are eliminated.
-        // Single failures (failed_count == 1) or 2 failures are NOT eliminated.
+        // When healthScoring is enabled, only nodes with failed_count >= 3 (and latency < 0) are automatically eliminated.
+        // Single failures (failed_count == 1) or 2 failures are NOT automatically eliminated.
         // When healthScoring is disabled, any latency < 0 is eliminated.
         [[nodiscard]] bool IsEliminated(bool healthScoring = true) const {
             if (latency >= 0 || latency == kLatencyConnectOnly) return false;
             return healthScoring ? (failed_count >= 3) : true;
         }
 
-        // Abnormal check:
-        // When healthScoring is enabled, a single failure (failed_count == 1) is only 'Suspicious (1/3)'
-        // and is NOT abnormal. A node becomes 'Abnormal (2/3)' only after 2 or more failures (failed_count >= 2).
-        // When healthScoring is disabled, any latency < 0 is abnormal.
-        [[nodiscard]] bool IsAbnormal(bool healthScoring = true) const {
-            if (latency >= 0 || latency == kLatencyConnectOnly) return false;
-            return healthScoring ? (failed_count >= 2) : true;
+        // Manual abnormal node removal check:
+        // Any node whose last test failed (including 1/3 Suspicious, 2/3 Abnormal, or 3/3 Unavailable) is treated as abnormal
+        // when the user explicitly triggers "Remove abnormal items".
+        [[nodiscard]] bool IsAbnormal(bool /*healthScoring*/ = true) const {
+            if (latency < 0 && latency != kLatencyConnectOnly) return true;
+            if (failed_count >= 1) return true;
+            return IsUnavailable();
         }
 
         [[nodiscard]] QString DisplayTestResult() const;
@@ -211,6 +213,14 @@ namespace Configs {
 
         [[nodiscard]] Configs::extracore *ExtraCore() const {
             return dynamic_cast<Configs::extracore *>(outbound.get());
+        };
+
+        [[nodiscard]] Configs::dnstt *Dnstt() const {
+            return dynamic_cast<Configs::dnstt *>(outbound.get());
+        };
+
+        [[nodiscard]] Configs::masterdns *MasterDns() const {
+            return dynamic_cast<Configs::masterdns *>(outbound.get());
         };
     };
     class ProfileFilter {

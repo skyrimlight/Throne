@@ -1,6 +1,7 @@
 #include "include/configs/sub/SubscriptionParser.hpp"
 
 #include "include/configs/ParseDiagnostics.h"
+#include "include/configs/common/DnsTunnel.h"
 #include "include/configs/common/OutboundFactory.h"
 #include "include/configs/common/utils.h"
 #include "include/configs/sub/SubscriptionScan.hpp"
@@ -71,6 +72,9 @@ namespace Subscription {
             {"masque", {}, {"masque"}, {"masque"}},
             {"ssh", {"ssh://"}, {"ssh"}, {"ssh"}},
             {"naive", {"naive+https://", "naive+quic://"}, {"naive"}, {}},
+            // dnst:// links of the masterdns transport go to masterdns, see link().
+            {"dnstt", {"dnst://", "slipnet://", "slipnet-enc://", "slipnet-bundle-enc://"}, {"dnstt"}, {}},
+            {"masterdns", {"masterdns://", "stormdns://"}, {"masterdns"}, {}},
         };
 
         const char *typeForScheme(std::string_view link) {
@@ -167,6 +171,12 @@ namespace Subscription {
                 if (!std::isalnum(c) && c != '+' && c != '.' && c != '-') return {};
             }
             return line.substr(0, sep);
+        }
+
+        // "happ://routing/onadd/...": a routing profile for the group, read by ShippedRoutingLink, not a proxy.
+        bool isRoutingLink(std::string_view line) {
+            const auto scheme = linkScheme(line);
+            return !scheme.empty() && scan::startsWithNoCase(line.substr(scheme.size()), "://routing/");
         }
 
         // Never the raw link: "scheme://host:port #name", the address taken from the parsed outbound when it has one.
@@ -450,7 +460,7 @@ namespace Subscription {
                     {"serverName", V::Text, true, false}, {"pinnedPeerCertSha256", V::Text, true, true},
                     {"verifyPeerCertByName", V::Text, true, true}, {"alpn", V::TextOrList, true, false},
                     {"fingerprint", V::Text, true, false}, {"cipherSuites", V::Text, true, false},
-                    {"echConfigList", V::Text, true, true}, {"allowInsecure", V::Flag, false, false},
+                    {"echConfigList", V::Text, true, true}, {"useSystemCA", V::Flag, true, false}, {"allowInsecure", V::Flag, false, false},
                     {"minVersion", V::Text, false, false}, {"maxVersion", V::Text, false, false},
                     {"curvePreferences", V::TextOrList, false, false}}, found);
             } else if (security == "reality") {
@@ -484,6 +494,8 @@ namespace Subscription {
             const auto stream = out["streamSettings"].toObject();
             const auto &s = *typed.streamSetting;
             if (stream.contains("security") && stream["security"].toString().toLower() != s.security) return true;
+            // Old mask names and xdns shapes are upgraded, and a legacy mKCP header or seed becomes masks.
+            if (s.finalmask != stream.value("finalmask").toObject()) return true;
             // The typed profile keeps neither key in any spelling, while Xray reads every spelling of sockopt.
             for (auto s = stream.constBegin(); s != stream.constEnd(); ++s) {
                 if (s.key().compare(QLatin1String("sockopt"), Qt::CaseInsensitive) != 0) continue;
@@ -1040,6 +1052,7 @@ namespace Subscription {
 
             const char *profileType = typeForScheme(line);
             if (profileType == nullptr) {
+                if (isRoutingLink(line)) return;
                 if (const auto scheme = linkScheme(line); !scheme.empty() && sink.report) {
                     const auto written = toQString(scheme);
                     const auto lower = written.toLower();
@@ -1055,6 +1068,8 @@ namespace Subscription {
             ProfilePtr ent;
             if (line.starts_with("vless://") && Configs::useXrayVless(str)) {
                 ent = Configs::ProfilesRepo::NewProfile("xrayvless");
+            } else if (line.starts_with("dnst://") && Configs::DnstLinkTransport(str) == QLatin1String("masterdns")) {
+                ent = Configs::ProfilesRepo::NewProfile("masterdns");
             } else {
                 ent = Configs::ProfilesRepo::NewProfile(profileType);
             }
@@ -1211,6 +1226,24 @@ namespace Subscription {
 
         Parser parser(sink);
         parser.document(scan::view(body), false, true, 0);
+    }
+
+    QString ShippedRoutingLink(QByteArray body) {
+        scan::trimInPlace(body);
+        if (body.isEmpty()) return {};
+        if (scan::looksLikeBase64(scan::view(body))) {
+            if (auto decoded = scan::decodeBase64(scan::view(body)); !decoded.isEmpty()) body = std::move(decoded);
+        } else if (scan::looksLikeWrappedBase64(scan::view(body))) {
+            if (auto decoded = QByteArray::fromBase64(body); !decoded.isEmpty()) body = std::move(decoded);
+        }
+        QString found;
+        scan::forEachLine(scan::view(body), [&](std::string_view line) {
+            line = scan::trim(line);
+            if (!isRoutingLink(line)) return true;
+            found = toQString(line);
+            return false;
+        });
+        return found;
     }
 
     void ParseText(const QString &text, const ParseSink &sink) {

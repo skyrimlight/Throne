@@ -1,6 +1,7 @@
 #include "include/engine/tests/TestRunner.h"
 
 #include "include/api/RPC.h"
+#include "include/configs/common/DnsTunnel.h"
 #include "include/configs/generate.h"
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
@@ -57,14 +58,25 @@ namespace Engine {
         constexpr int kTestRunnerRpcSlackMs = 30000;
 
         // Test/IPTest answer only once the whole batch is done, so the deadline covers its worst case.
-        int testRunnerBatchRpcTimeoutMs(qsizetype tagCount, int requestsPerTag) {
+        int testRunnerBatchRpcTimeoutMs(qsizetype tagCount, int requestsPerTag, int startupAllowanceMs) {
             const auto& settings = Configs::dataManager->settingsRepo;
             int concurrency = settings->test_concurrent;
             if (concurrency <= 0 || concurrency >= 500) concurrency = kTestRunnerCoreMaxConcurrency;
             const qint64 timeoutMs = settings->url_test_timeout_ms > 0 ? settings->url_test_timeout_ms : kTestRunnerCoreDefaultTimeoutMs;
             const qint64 rounds = (qMax<qsizetype>(tagCount, 1) + concurrency - 1) / concurrency;
-            const qint64 total = rounds * (kTestRunnerTunnelHandshakeMs + requestsPerTag * timeoutMs + kTestRunnerTunnelStartupMs) + kTestRunnerRpcSlackMs;
+            const qint64 total = rounds * (kTestRunnerTunnelHandshakeMs + requestsPerTag * timeoutMs + kTestRunnerTunnelStartupMs + startupAllowanceMs) +
+                                 kTestRunnerRpcSlackMs;
             return static_cast<int>(qMin<qint64>(total, std::numeric_limits<int>::max()));
+        }
+
+        int testRunnerStartupAllowanceMs(const QMap<QString, int>& tag2entID, int entID) {
+            int allowance = 0;
+            const auto add = [&allowance](int id) {
+                if (id >= 0) allowance = qMax(allowance, Configs::DnsTunnelStartupAllowanceMs(Configs::dataManager->profilesRepo->GetProfile(id)));
+            };
+            add(entID);
+            for (const int id : tag2entID) add(id);
+            return allowance;
         }
 
         int testRunnerResolveEntID(const QMap<QString, int>& tag2entID, const std::string& tag, int fallback) {
@@ -215,7 +227,7 @@ namespace Engine {
         auto processedEnts = std::make_shared<QSet<int>>();
         auto processedMu = std::make_shared<QMutex>();
         {
-            TestRunnerResultPoller poller([this, gen = sessionGen_.load(), tag2entID = target.tag2entID, processedEnts, processedMu] {
+            TestRunnerResultPoller poller([this, gen = sessionGen_.load(), tag2entID = target.tag2entID, onResult = target.onResult, processedEnts, processedMu] {
                 if (staleGen(gen)) return;
                 bool ok = false;
                 const auto resp = API::defaultClient->QueryURLTest(&ok);
@@ -237,6 +249,7 @@ namespace Engine {
                     auto ent = Configs::dataManager->profilesRepo->GetProfile(entid);
                     if (ent == nullptr) continue;
                     applyUrlResult(ent, res);
+                    if (onResult) onResult(ent);
                     updated << entid;
                 }
                 if (updated.isEmpty()) return;
@@ -244,7 +257,9 @@ namespace Engine {
                 runOnUiThread([=, this] { observer_->testedProfilesChanged(updated); });
             }, kTestRunnerLatencyPollIntervalMs);
 
-            result = API::defaultClient->Test(&rpcOK, req, &coreError, testRunnerBatchRpcTimeoutMs(target.outboundTags.size(), 2));
+            result = API::defaultClient->Test(&rpcOK, req, &coreError,
+                                              testRunnerBatchRpcTimeoutMs(target.outboundTags.size(), 2,
+                                                                          testRunnerStartupAllowanceMs(target.tag2entID, target.entID)));
         }
 
         if (!rpcOK || result.results.empty()) {
@@ -281,6 +296,7 @@ namespace Engine {
                 continue;
             }
             applyUrlResult(ent, res, &vpnConnected);
+            if (target.onResult) target.onResult(ent);
         }
     }
 
@@ -322,7 +338,9 @@ namespace Engine {
                 runOnUiThread([=, this] { observer_->testedProfilesChanged(updated); });
             }, kTestRunnerLatencyPollIntervalMs);
 
-            result = API::defaultClient->IPTest(&rpcOK, req, &coreError, testRunnerBatchRpcTimeoutMs(target.outboundTags.size(), 1));
+            result = API::defaultClient->IPTest(&rpcOK, req, &coreError,
+                                                testRunnerBatchRpcTimeoutMs(target.outboundTags.size(), 1,
+                                                                            testRunnerStartupAllowanceMs(target.tag2entID, target.entID)));
         }
 
         if (!rpcOK || result.results.empty()) {
@@ -345,8 +363,9 @@ namespace Engine {
         }
     }
 
-    bool TestRunner::runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished, bool interactive) {
-        return runLatencyGroup(LatencyKind::Url, profileIDs, onFinished, false, interactive);
+    bool TestRunner::runUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished, bool interactive,
+                                 const ResultHook& onResult) {
+        return runLatencyGroup(LatencyKind::Url, profileIDs, onFinished, false, interactive, onResult);
     }
 
     void TestRunner::queueUrlTests(const QList<int>& profileIDs, const std::function<void()>& onFinished, bool interactive) {
@@ -358,7 +377,8 @@ namespace Engine {
     }
 
     bool TestRunner::runLatencyGroup(LatencyKind kind, const QList<int>& requestedIDs,
-                                     const std::function<void()>& onFinished, bool waitForSession, bool interactive) {
+                                     const std::function<void()>& onFinished, bool waitForSession, bool interactive,
+                                     const ResultHook& onResult) {
         const bool isUrl = kind == LatencyKind::Url;
         const auto panelKind = isUrl ? TestKind::Latency : TestKind::Ip;
         // Must fire on every exit path — a caller may be blocked on it.
@@ -386,11 +406,11 @@ namespace Engine {
         stopRequested_.store(false);
         interactive_.store(interactive);
 
-        runOnNewThread([this, profileIDs, panelKind, isUrl, finish]() {
+        runOnNewThread([this, profileIDs, panelKind, isUrl, finish, onResult]() {
             observer_->testPanelSeeded(panelKind, profileIDs.size());
             observer_->testViewChanged(true);
 
-            auto runBatch = [this, isUrl](const QList<std::shared_ptr<Configs::Profile>>& profileSlice, const QList<int>& ids) {
+            auto runBatch = [this, isUrl, &onResult](const QList<std::shared_ptr<Configs::Profile>>& profileSlice, const QList<int>& ids) {
                 // Per batch, not per probe: a batch's probes drain each other's results, and tags restart each batch.
                 sessionGen_.fetch_add(1);
                 auto buildObject = Configs::BuildTestConfig(profileSlice);
@@ -416,6 +436,7 @@ namespace Engine {
                     target.coreConfig = buildObject->fullConfigs[entID];
                     target.useDefaultOutbound = true;
                     target.entID = entID;
+                    target.onResult = onResult;
                     probe(target);
                 }
                 if (!buildObject->outboundTags.empty()) {
@@ -426,6 +447,7 @@ namespace Engine {
                     target.outboundTags = buildObject->outboundTags;
                     target.tag2entID = buildObject->tag2entID;
                     target.xrayDnsStrategy = buildObject->xrayDnsStrategy;
+                    target.onResult = onResult;
                     probe(target);
                 }
                 batchDone.acquire(testCount);

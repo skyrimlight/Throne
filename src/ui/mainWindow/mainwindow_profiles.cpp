@@ -32,10 +32,12 @@
 
 #include "include/ui/utils/ScreenQrScanner.h"
 
+#include "include/api/RPC.h"
 #include "include/configs/generate.h"
 #include "include/configs/sub/GroupUpdater.hpp"
 #include "include/database/GroupsRepo.h"
 #include "include/database/ProfilesRepo.h"
+#include "include/engine/EngineEvents.h"
 #include "include/engine/EngineHost.h"
 #include "include/engine/services/ProfileService.h"
 #include "include/ui/mainWindow/MainWindowInternal.h"
@@ -457,24 +459,74 @@ void MainWindow::on_menu_remove_insecure_triggered() {
     }
 }
 
+void MainWindow::resolve_profile_domains(const QList<std::shared_ptr<Configs::Profile>> &profiles, const std::function<void()> &onFinished) {
+    QList<std::shared_ptr<Configs::Profile>> pending;
+    QStringList domains;
+    for (const auto &profile : profiles) {
+        if (profile == nullptr || profile->outbound == nullptr) continue;
+        const auto address = profile->outbound->GetAddress();
+        if (address.isEmpty() || IsIpAddress(address)) continue;
+        pending << profile;
+        domains << address;
+    }
+    domains.removeDuplicates();
+    if (pending.isEmpty()) {
+        onFinished();
+        return;
+    }
+    const auto probe = Configs::BuildTestConfig({});
+    if (!probe->error.isEmpty()) {
+        MW_show_log(tr("Failed to resolve domains: %1").arg(probe->error));
+        onFinished();
+        return;
+    }
+    const auto config = QJsonObject2QString(probe->coreConfig, false);
+
+    QPointer<MainWindow> self(this);
+    runOnNewThread([self, pending, domains, config, onFinished] {
+        bool rpcOK = false;
+        QString coreError;
+        const auto reply = API::defaultClient->ResolveDomains(&rpcOK, domains, config, &coreError);
+        runOnUiThread([self, pending, rpcOK, coreError, reply, onFinished] {
+            if (self == nullptr) return;
+            QHash<QString, QString> resolved;
+            if (!rpcOK) {
+                MW_show_log(tr("Failed to resolve domains: %1").arg(coreError.isEmpty() ? tr("the core did not answer") : coreError));
+            }
+            for (const auto &result : reply.results) {
+                const auto domain = QString::fromStdString(result.domain.value_or(""));
+                if (!result.addresses.empty()) {
+                    resolved.insert(domain, QString::fromStdString(result.addresses.front()));
+                } else {
+                    MW_show_log(tr("Failed to resolve %1: %2").arg(domain, QString::fromStdString(result.error.value_or(""))));
+                }
+            }
+            QList<int> changed;
+            for (const auto &profile : pending) {
+                const auto address = resolved.value(profile->outbound->GetAddress());
+                if (address.isEmpty()) continue;
+                profile->outbound->SetAddress(address);
+                Configs::dataManager->profilesRepo->Save(profile);
+                changed << profile->id;
+            }
+            if (!changed.isEmpty()) self->refresh_proxy_list(changed);
+            onFinished();
+        });
+    });
+}
+
 void MainWindow::on_menu_resolve_selected_triggered() {
     auto profiles = get_now_selected_list();
     if (profiles.isEmpty()) return;
 
     if (mw_sub_updating) return;
     mw_sub_updating = true;
-    Configs::dataManager->settingsRepo->resolve_count = profiles.count();
 
     auto ents = Configs::dataManager->profilesRepo->GetProfileBatch(profiles);
-    for (const auto &profile: ents) {
-        profile->outbound->ResolveDomainToIP([=,this] {
-            Configs::dataManager->profilesRepo->Save(profile);
-            refresh_proxy_list({profile->id});
-            if (--Configs::dataManager->settingsRepo->resolve_count != 0) return;
-            mw_sub_updating = false;
-            Configs::RepositionLater(ents, Configs::SortInput::Config);
-        });
-    }
+    resolve_profile_domains(ents, [ents] {
+        mw_sub_updating = false;
+        Configs::RepositionLater(ents, Configs::SortInput::Config);
+    });
 }
 
 void MainWindow::on_menu_resolve_domain_triggered() {
@@ -491,18 +543,12 @@ void MainWindow::on_menu_resolve_domain_triggered() {
     }
     if (mw_sub_updating) return;
     mw_sub_updating = true;
-    Configs::dataManager->settingsRepo->resolve_count = profiles.count();
 
-    for (const auto id: profiles) {
-        auto profile = Configs::dataManager->profilesRepo->GetProfile(id);
-        profile->outbound->ResolveDomainToIP([=,this] {
-            Configs::dataManager->profilesRepo->Save(profile);
-            refresh_proxy_list({profile->id});
-            if (--Configs::dataManager->settingsRepo->resolve_count != 0) return;
-            mw_sub_updating = false;
-            Configs::RepositionLater(QHash<int, QList<int>>{{currGroup->id, profiles}}, Configs::SortInput::Config);
-        });
-    }
+    const int groupId = currGroup->id;
+    resolve_profile_domains(Configs::dataManager->profilesRepo->GetProfileBatch(profiles), [groupId, profiles] {
+        mw_sub_updating = false;
+        Configs::RepositionLater(QHash<int, QList<int>>{{groupId, profiles}}, Configs::SortInput::Config);
+    });
 }
 
 void MainWindow::on_profilesTableView_customContextMenuRequested(const QPoint &pos) {
@@ -654,8 +700,10 @@ void MainWindow::clearUnavailableProfiles(bool confirm, QList<int> profileIDs) {
         }
     }
 
-    auto clearFunc = [&, this] {
-        Configs::dataManager->profilesRepo->BatchDeleteProfiles(del_ids);
+    auto clearFunc = [del_ids, this] {
+        QList<int> idsCopy = del_ids;
+        Configs::dataManager->profilesRepo->BatchDeleteProfiles(idsCopy);
+        Engine::EngineEvents::ProfilesRemoved(idsCopy);
         refresh_proxy_list({}, true, RefreshAnchor::Removal);
     };
 
@@ -675,8 +723,14 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
         ? Configs::dataManager->groupsRepo->GetGroup(targetGid)
         : Configs::dataManager->groupsRepo->CurrentGroup();
 
+    const bool isDefaultGroup = currentGroup != nullptr && (
+        currentGroup->id == 0 ||
+        currentGroup->name.compare(tr("Default"), Qt::CaseInsensitive) == 0 ||
+        currentGroup->name.compare("Default", Qt::CaseInsensitive) == 0
+    );
+
     QList<int> profileIDs;
-    if (currentGroup != nullptr && currentGroup->id == 0 && Configs::dataManager->settingsRepo->default_group_include_all) {
+    if (isDefaultGroup && Configs::dataManager->settingsRepo->default_group_include_all) {
         profileIDs = Configs::dataManager->profilesRepo->GetAllProfileIds();
     } else if (currentGroup != nullptr) {
         profileIDs = currentGroup->Profiles();
@@ -690,7 +744,6 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
     }
 
     auto profiles = Configs::dataManager->profilesRepo->GetProfileBatch(profileIDs);
-    const bool healthScoring = Configs::dataManager->settingsRepo->health_scoring_enabled;
 
     QList<int> del_ids;
     int remove_display_count = 0;
@@ -699,9 +752,17 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
     for (const auto &profile: profiles) {
         if (!profile) continue;
 
-        // When healthScoring is enabled, only nodes with failed_count >= 2 (Abnormal 2/3 or Failed 3/3)
-        // are treated as abnormal. Single failures (failed_count == 1, Suspicious 1/3) are preserved.
-        if (profile->IsAbnormal(healthScoring)) {
+        bool isAbnormal = profile->IsAbnormal();
+        if (!isAbnormal) {
+            const QString disp = profile->DisplayTestResult();
+            if (disp.contains(tr("Suspicious (1/3)")) || disp.contains(tr("Abnormal (2/3)")) ||
+                disp.contains(tr("Failed 3 times (Unavailable)")) || disp.contains(tr("Unavailable")) ||
+                disp.contains("可疑") || disp.contains("异常") || disp.contains("不可用") || disp.contains("移除")) {
+                isAbnormal = true;
+            }
+        }
+
+        if (isAbnormal) {
             del_ids += profile->id;
             QString failInfo;
             if (profile->failed_count > 0) {
@@ -719,22 +780,22 @@ void MainWindow::removeAbnormalProfiles(int targetGid) {
     const QString groupName = currentGroup ? currentGroup->name : tr("All");
 
     if (del_ids.isEmpty()) {
-        MW_show_log(tr("No abnormal nodes found in group: %1").arg(groupName));
+        MW_show_log(tr("No abnormal nodes (last test failed) found in group: %1").arg(groupName));
         return;
     }
 
     auto clearFunc = [del_ids, groupName, this] {
         QList<int> idsCopy = del_ids;
         Configs::dataManager->profilesRepo->BatchDeleteProfiles(idsCopy, true);
+        Engine::EngineEvents::ProfilesRemoved(idsCopy);
         refresh_proxy_list({}, true, RefreshAnchor::Removal);
-        MW_show_log(tr("Removed %1 abnormal node(s) from group: %2").arg(del_ids.length()).arg(groupName));
+        MW_show_log(tr("Removed %1 abnormal node(s) (last test failed) from group: %2").arg(del_ids.length()).arg(groupName));
     };
 
     if (!Configs::dataManager->settingsRepo->skip_delete_confirmation) {
-        const QString confirmMsg = healthScoring
-            ? tr("Remove %1 abnormal node(s) (failed 2 or more times)?").arg(del_ids.length()) + "\n" + remove_display
-            : tr("Remove %1 abnormal node(s)?").arg(del_ids.length()) + "\n" + remove_display;
-        if (QMessageBox::question(this, tr("Confirmation"), confirmMsg) == QMessageBox::StandardButton::Yes) {
+        if (QMessageBox::question(this, tr("Confirmation"),
+                tr("Remove %1 abnormal node(s) that failed the last test (including 1 or 2 failures)?").arg(del_ids.length()) + "\n" + remove_display)
+            == QMessageBox::StandardButton::Yes) {
             clearFunc();
         }
     } else {

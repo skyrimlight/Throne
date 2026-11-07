@@ -1,6 +1,7 @@
 #include "include/configs/generate.h"
 #include "include/api/RPC.h"
 #include "include/configs/AutoSelectorPlan.h"
+#include "include/configs/common/ResolverSource.h"
 #include "include/configs/common/utils.h"
 #include "include/global/Configs.hpp"
 
@@ -20,6 +21,7 @@
 
 
 #include "include/database/entities/Profile.h"
+#include "include/global/RunningProfiles.hpp"
 #include "include/global/VpnCredentialOverride.hpp"
 #ifdef Q_OS_LINUX
 #include "include/sys/linux/systemChecks.h"
@@ -60,6 +62,7 @@ namespace Configs {
             constexpr auto dnsEchPrefix = "dns-ech";
 
             constexpr auto dnsIn = "dns-in";
+            constexpr auto dnsSystem = "dns-system";
             constexpr auto mixedIn = "mixed-in";
             constexpr auto tunIn = "tun-in";
             constexpr auto xrayFullConfigIn = "throne-bridge";
@@ -189,7 +192,9 @@ namespace Configs {
             bool xrayToSingTransitioned = false;
             bool proxyUsesXray = false;
             std::shared_ptr<Profile> ent = std::make_shared<Profile>(nullptr, nullptr);
-            // The current routing profile's DNS; routeOwnsDns also overrides the global DNS object.
+            // The routing profile this build uses (BuildSingBoxConfig only).
+            int routeId = -1;
+            // That routing profile's DNS; routeOwnsDns also overrides the global DNS object.
             RouteDns dns;
             bool routeOwnsDns = false;
             BuildPrerequisites prerequisites;
@@ -205,6 +210,8 @@ namespace Configs {
             QList<QString> vpnAuxTags;
             // Names whose HTTPS record a hop's ECH needs to fetch; they must not resolve over the proxy they unlock.
             QStringList echQueryNames;
+            // DNS tunnel domains; a loopback stub resolver forwarding them back through the Tun must not reach dns-remote.
+            QStringList dnsTunnelDomains;
             // The main-profile tunnel set to Strict tunnel DNS; its resolvers take every remote query.
             QString vpnStrictTag;
             QList<QString> xrayIngressTags;
@@ -228,6 +235,11 @@ namespace Configs {
 #else
             return ctx.tunEnabled && !ctx.forTest && dataManager->settingsRepo->vpn_l3_bridge;
 #endif
+        }
+
+        // The core points macOS's system resolver at this lo0 alias and moves the inbound behind a pf redirect from :53 (#2061).
+        bool systemDnsInbound(const BuildContext &ctx) {
+            return ctx.os == Darwin && ctx.tunEnabled && !ctx.forTest;
         }
 
         // preferred_by matches only during pre-match, leaving the copy inert at L4.
@@ -485,6 +497,7 @@ namespace Configs {
         private:
             GenerateEndpointCache cache_;
             GenerateEndpointCache *previous_;
+            const ResolverSourceScope resolvers_;
         };
 
         enum class GenerateServerless { None, Missing, NoServer, Realm };
@@ -493,7 +506,7 @@ namespace Configs {
             if (profile == nullptr || profile->outbound == nullptr) return GenerateServerless::Missing;
             const auto &type = profile->type;
             if (type == "chain" || type == "custom" || type == "extracore" || type == "tailscale" ||
-                type == "autoselector" || type == "direct" || profile->outbound->IsExtraCore() ||
+                type == "autoselector" || type == "direct" || type == "dnstt" || type == "masterdns" || profile->outbound->IsExtraCore() ||
                 profile->outbound->IsXrayFullConfig())
                 return GenerateServerless::NoServer;
             if (const auto *hy = profile->Hysteria(); hy != nullptr && hy->RealmActive())
@@ -677,6 +690,22 @@ namespace Configs {
             outbound->peer = peer;
             outbound->mtu = 1280;
 
+            if (settings.warp_mode == "amnezia") {
+                outbound->enable_amnezia = true;
+                outbound->jc = 4;
+                outbound->jmin = 40;
+                outbound->jmax = 70;
+                // Cloudflare expects the standard WireGuard headers.
+                outbound->h1 = "1";
+                outbound->h2 = "2";
+                outbound->h3 = "3";
+                outbound->h4 = "4";
+                const auto &packets = settings.warp_amnezia_packets;
+                const QList<QString *> fields = {&outbound->i1, &outbound->i2, &outbound->i3, &outbound->i4, &outbound->i5};
+                for (qsizetype i = 0; i < fields.size(); ++i)
+                    *fields[i] = packets.value(i);
+            }
+
             warpProfile->outbound = outbound;
             return warpProfile;
         }
@@ -704,10 +733,10 @@ namespace Configs {
 #ifdef Q_OS_LINUX
             ctx.isResolvedUsed = isSystemdResolvedDefaultResolver();
 #endif
-            ctx.dns = RouteDns::Current(&ctx.routeOwnsDns);
+            ctx.dns = RouteDns::OfRoute(ctx.routeId, &ctx.routeOwnsDns);
             auto &preReqs = ctx.prerequisites;
 
-            auto routeChain = dataManager->routesRepo->GetRouteProfile(settings.current_route_id);
+            auto routeChain = dataManager->routesRepo->GetRouteProfile(ctx.routeId);
             if (routeChain == nullptr) {
                 ctx.error = "Routing profile does not exist, try resetting the route profile in Routing Settings";
                 return;
@@ -715,16 +744,7 @@ namespace Configs {
             // A verbatim raw profile takes no twins, and an unreachable bridge still starts a tun.
             ctx.l3Bridge = l3BridgeEnabled(ctx) && !(routeChain->isRaw && routeChain->preventModifications);
 
-            const bool warpMissing = settings.warp_mode == "masque"
-                ? settings.warp_masque_private_key.isEmpty() ||
-                  settings.warp_masque_peer_public_key.isEmpty() ||
-                  settings.warp_masque_ep.isEmpty() ||
-                  settings.warp_masque_ifc_addrs.isEmpty()
-                : settings.warp_private_key.isEmpty() ||
-                  settings.warp_public_key.isEmpty() ||
-                  settings.warp_ep.isEmpty() ||
-                  settings.warp_ifc_addrs.isEmpty();
-            if (settings.enable_warp && warpMissing) {
+            if (settings.enable_warp && !WarpConfigured(settings.warp_mode)) {
                 ctx.error = "Warp is enabled but its config has not been generated. Please generate the Warp config first in Routing Settings.";
                 return;
             }
@@ -1013,8 +1033,12 @@ namespace Configs {
                 return legacyDnsObj(address);
             }
             if (parsed.type == "local") {
-                // A probe box outlives Tun toggles, and its `local` would follow resolved's `~.` into a running tun (#1975).
-                if (ctx.isResolvedUsed && (ctx.tunEnabled || ctx.forTest)) {
+                // The kill switch drops resolved's own upstream queries; a probe box outlives Tun toggles, and its `local` would follow resolved's `~.` into a running tun (#1975).
+                if (ctx.isResolvedUsed && (ctx.tunEnabled || ctx.forTest || dataManager->settingsRepo->kill_switch)) {
+                    return {{"type", "underlying"}};
+                }
+                // A macOS Tun points the system resolver at its dns-system inbound, which `local` would query and loop through (#2045).
+                if (ctx.os == Darwin && (ctx.tunEnabled || ctx.forTest)) {
                     return {{"type", "underlying"}};
                 }
                 return {{"type", "local"}};
@@ -1171,6 +1195,14 @@ namespace Configs {
                 headRules += QJsonObject{
                     {"domain", QJsonArray::fromStringList(ctx.echQueryNames)},
                     {"query_type", QJsonArray{"HTTPS"}},
+                    {"action", "route"},
+                    {"server", tags::dnsDirect},
+                };
+            }
+
+            if (!ctx.forTest && !ctx.dnsTunnelDomains.isEmpty()) {
+                headRules += QJsonObject{
+                    {"domain_suffix", QJsonArray::fromStringList(ctx.dnsTunnelDomains)},
                     {"action", "route"},
                     {"server", tags::dnsDirect},
                 };
@@ -1367,9 +1399,18 @@ namespace Configs {
             inbounds.prepend(QJsonObject{
                 {"tag", tags::dnsIn},
                 {"type", "direct"},
-                {"listen", "127.0.0.1"},
+                {"listen", settings.core_dns_in_lan ? "::" : "127.0.0.1"},
                 {"listen_port", settings.core_dns_in_port}
             });
+            if (systemDnsInbound(ctx)) {
+                inbounds.prepend(QJsonObject{
+                    {"tag", tags::dnsSystem},
+                    {"type", "direct"},
+                    {"listen", "127.0.0.53"},
+                    {"listen_port", 53},
+                    {"reuse_addr", true},
+                });
+            }
 
             QJSONARRAY_ADD(inbounds, QString2QJsonObject(settings.custom_inbound)["inbounds"].toArray())
             ctx.result->coreConfig["inbounds"] = inbounds;
@@ -1549,6 +1590,18 @@ namespace Configs {
             }
         }
 
+        void collectDnsTunnelDomains(BuildContext &ctx, const Profile &hop) {
+            QStringList domains;
+            if (const auto *dnstt = hop.Dnstt()) domains << dnstt->domain;
+            if (const auto *masterDns = hop.MasterDns()) domains << masterDns->domains;
+            for (const auto &domain : domains) {
+                // sing-box lower-cases the query name but matches domain_suffix entries verbatim.
+                auto name = toAceHost(domain.trimmed()).toLower();
+                if (name.endsWith(u'.')) name.chop(1);
+                if (!name.isEmpty() && !ctx.dnsTunnelDomains.contains(name)) ctx.dnsTunnelDomains << name;
+            }
+        }
+
         void buildSingboxChain(BuildContext &ctx, const QList<std::shared_ptr<Profile>> &ents, const hopChainOptions &opts) {
             for (int idx = 0; idx < ents.size(); idx++)
             {
@@ -1585,6 +1638,7 @@ namespace Configs {
                 }
                 object["tag"] = tag;
                 collectEchQueryName(ctx, *ent);
+                collectDnsTunnelDomains(ctx, *ent);
                 // Realm reads its STUN resolver off this key only; without it the hosts go through DNS rules.
                 if (auto hy = ent->Hysteria(); hy != nullptr && hy->RealmActive())
                     object["domain_resolver"] = QJsonObject{{"server", tags::dnsDirect}};
@@ -1623,6 +1677,7 @@ namespace Configs {
                 object["tag"] = tag;
                 // Xray removed outbound-level proxySettings; sockopt.dialerProxy is its 1:1 replacement.
                 if (!nextTag.isEmpty() && (opts.link || bridgeConfig.needed)) SetXrayDialerProxy(object, nextTag);
+                if (dataManager->settingsRepo->xray_use_system_ca) UseXraySystemCA(object);
                 ctx.xrayOutbounds.append(object);
             }
             if (bridgeConfig.needed) {
@@ -1698,6 +1753,16 @@ namespace Configs {
                                                                      : userXrayConfig["inbounds"].toArray();
                 inbounds.prepend(bridgeInbound);
                 userXrayConfig["inbounds"] = inbounds;
+                if (dataManager->settingsRepo->xray_use_system_ca) {
+                    auto outbounds = userXrayConfig["outbounds"].toArray();
+                    for (qsizetype i = 0; i < outbounds.size(); ++i) {
+                        if (!outbounds[i].isObject()) continue;
+                        auto outbound = outbounds[i].toObject();
+                        UseXraySystemCA(outbound);
+                        outbounds[i] = outbound;
+                    }
+                    userXrayConfig["outbounds"] = outbounds;
+                }
 
                 ctx.result->xrayConfig = userXrayConfig;
                 ctx.result->isXrayNeeded = true;
@@ -2212,7 +2277,7 @@ namespace Configs {
 
         void buildRouteSection(BuildContext &ctx) {
             const auto &settings = *dataManager->settingsRepo;
-            auto routeChain = dataManager->routesRepo->GetRouteProfile(settings.current_route_id);
+            auto routeChain = dataManager->routesRepo->GetRouteProfile(ctx.routeId);
             if (routeChain == nullptr) {
                 ctx.error = "Routing profile does not exist, try resetting the route profile in Routing Settings";
                 return;
@@ -2251,7 +2316,15 @@ namespace Configs {
                 QJsonObject resolve;
                 QJsonObject dnsHijack;
                 QJsonObject dnsInReject;
+                QJsonObject dnsSystem;
             } injected;
+
+            if (systemDnsInbound(ctx)) {
+                injected.dnsSystem = QJsonObject{
+                    {"inbound", tags::dnsSystem},
+                    {"action", "hijack-dns"},
+                };
+            }
 
             if (!routeChain->isRaw) {
                 injected.sniff = QJsonObject{{"action", "sniff"}};
@@ -2361,6 +2434,7 @@ namespace Configs {
             for (const auto& r : bridgeRules) routeRules.append(r);
             if (!extraCoreDirect.isEmpty()) routeRules.append(extraCoreDirect);
             auto appendIfSet = [&routeRules](const QJsonObject& r) { if (!r.isEmpty()) routeRules.append(r); };
+            appendIfSet(injected.dnsSystem);
             appendIfSet(injected.sniff);
             appendIfSet(injected.resolve);
             appendIfSet(injected.dnsHijack);
@@ -2735,7 +2809,7 @@ namespace Configs {
         return true;
     }
 
-    std::shared_ptr<BuildConfigResult> BuildSingBoxConfig(const std::shared_ptr<Profile>& ent) {
+    std::shared_ptr<BuildConfigResult> BuildSingBoxConfig(const std::shared_ptr<Profile>& ent, std::optional<int> routeId) {
         if (ent->type == "custom")
         {
             auto res = std::make_shared<BuildConfigResult>();
@@ -2772,6 +2846,9 @@ namespace Configs {
         const GenerateEndpointScope endpointScope;
         BuildContext ctx;
         ctx.ent = ent;
+        ctx.routeId = routeId ? *routeId : RouteIdFor(ent->gid);
+        ctx.result->routeId = ctx.routeId;
+        const ScopedBuildRoute routeScope(ctx.routeId);
         ctx.result->involvedProfiles = {ent->id};
         buildProfileSink = &ctx.result->involvedProfiles;
         const auto clearProfileSink = qScopeGuard([] { buildProfileSink = nullptr; });
@@ -2810,6 +2887,9 @@ namespace Configs {
 
         buildXrayConfig(ctx);
         if (failed()) return ctx.result;
+
+        if (!ctx.result->xrayConfig.isEmpty() || !ctx.result->xrayFullConfigs.isEmpty())
+            ctx.result->xrayDnsStrategy = getXrayOutboundDomainStrategy();
 
         return ctx.result;
     }
@@ -3016,6 +3096,8 @@ namespace Configs {
 #ifdef Q_OS_LINUX
         ctx.isResolvedUsed = isSystemdResolvedDefaultResolver();
 #endif
+        // Tests mix groups, so they keep the global routing profile's DNS.
+        const ScopedBuildRoute routeScope(dataManager->settingsRepo->current_route_id);
         ctx.dns = RouteDns::Current(&ctx.routeOwnsDns);
 
         for (const auto &item : profiles) {
@@ -3051,6 +3133,7 @@ namespace Configs {
             if (!options.validate) return false;
             MW_show_log(QObject::tr("Skipped testing %1: %2").arg(item->outbound->DisplayTypeAndName(), ctx.error));
             item->SetLatency(-1);
+            Configs::dataManager->profilesRepo->Save(item);
             mark.rollback(ctx);
             return true;
         };
@@ -3068,6 +3151,7 @@ namespace Configs {
                 if (options.validate && !IsValid(item)) {
                     MW_show_log("Skipping invalid custom Xray full config: " + item->outbound->name);
                     item->SetLatency(-1);
+                    Configs::dataManager->profilesRepo->Save(item);
                     continue;
                 }
                 // Clear the single xrayConfig slot per full config so they all share one sing-box.
@@ -3084,6 +3168,7 @@ namespace Configs {
                 if (!ctx.result->isXrayNeeded || ctx.result->xrayConfig.isEmpty()) {
                     MW_show_log("Custom Xray full config produced no Xray config: " + item->outbound->name);
                     item->SetLatency(-1);
+                    Configs::dataManager->profilesRepo->Save(item);
                     continue;
                 }
                 res->xrayFullConfigs << QJsonObject2QString(ctx.result->xrayConfig, false);
@@ -3096,6 +3181,7 @@ namespace Configs {
             if (options.validate && !IsValid(item)) {
                 MW_show_log("Skipping invalid config: " + item->outbound->name);
                 item->SetLatency(-1);
+                Configs::dataManager->profilesRepo->Save(item);
                 continue;
             }
             if (item->type == "custom")
@@ -3420,5 +3506,21 @@ namespace Configs {
     void SplitWarpEndpoint(const QString &endpoint, int defaultPort, QString &host, int &port)
     {
         splitWarpEndpoint(endpoint, defaultPort, host, port);
+    }
+
+    bool WarpConfigured(const QString &mode)
+    {
+        const auto &settings = *dataManager->settingsRepo;
+        if (mode == "masque") {
+            return !settings.warp_masque_private_key.isEmpty() &&
+                   !settings.warp_masque_peer_public_key.isEmpty() &&
+                   !settings.warp_masque_ep.isEmpty() &&
+                   !settings.warp_masque_ifc_addrs.isEmpty();
+        }
+        return !settings.warp_private_key.isEmpty() &&
+               !settings.warp_public_key.isEmpty() &&
+               !settings.warp_ep.isEmpty() &&
+               !settings.warp_ifc_addrs.isEmpty() &&
+               !(mode == "amnezia" && settings.warp_amnezia_packets.isEmpty());
     }
 }

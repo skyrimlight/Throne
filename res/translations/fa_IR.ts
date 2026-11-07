@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fa_IR" sourcelanguage="en">
 <context>
+    <name>CommandPalette</name>
+    <message>
+        <source>Settings in Advanced mode</source>
+        <translation>تنظیمات حالت پیشرفته</translation>
+    </message>
+</context>
+<context>
     <name>ConnectionsTreeModel</name>
     <message>
         <source>Close this connection</source>
@@ -175,28 +182,12 @@ Deleted %3 Profiles:
         <translation type="unfinished">بدون بروزرسانی جدید</translation>
     </message>
     <message>
-        <source>Update found: %1
-Release note:
-%2</source>
-        <translation type="unfinished">به‌روزرسانی یافت شد: %1
-یادداشت انتشار:
-%2</translation>
-    </message>
-    <message>
-        <source>Open in browser</source>
-        <translation type="unfinished">در مرور گر باز شود</translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="unfinished">بستن</translation>
-    </message>
-    <message>
         <source>Update is ready, restart to install?</source>
         <translation type="unfinished">به روز رسانی آماده است، برای نصب مجدد راه اندازی شود؟</translation>
     </message>
     <message>
         <source>Select</source>
-        <translation type="unfinished"></translation>
+        <translation>انتخاب</translation>
     </message>
     <message>
         <source>Proxy</source>
@@ -229,6 +220,121 @@ Release note:
     <message>
         <source>This group no longer exists.</source>
         <translation>این گروه دیگر وجود ندارد.</translation>
+    </message>
+    <message>
+        <source>Changed: %1</source>
+        <translation>تغییر کرده: %1</translation>
+    </message>
+    <message>
+        <source>%1 was removed by the update and stays stopped: no single profile with the same name replaces it.</source>
+        <translation>%1 با به‌روزرسانی حذف شد و متوقف می‌ماند: هیچ نمایهٔ یکتایی با همین نام جایگزین آن نیست.</translation>
+    </message>
+    <message>
+        <source>%1 was replaced by the update; connecting to the profile with the same name.</source>
+        <translation>%1 با به‌روزرسانی جایگزین شد؛ در حال اتصال به نمایهٔ هم‌نام.</translation>
+    </message>
+    <message>
+        <source>the routing profile is not in the Happ format</source>
+        <translation>نمایه مسیریابی در قالب Happ نیست</translation>
+    </message>
+    <message>
+        <source>a raw routing profile is not accepted from a subscription</source>
+        <translation>نمایه مسیریابی خام از اشتراک پذیرفته نمی‌شود</translation>
+    </message>
+    <message>
+        <source>unknown routing link action &quot;%1&quot;</source>
+        <translation>عمل ناشناخته در پیوند مسیریابی «%1»</translation>
+    </message>
+    <message>
+        <source>the routing profile is not valid base64</source>
+        <translation>نمایه مسیریابی base64 معتبر نیست</translation>
+    </message>
+    <message>
+        <source>the routing profile is not a JSON object</source>
+        <translation>نمایه مسیریابی یک شیء JSON نیست</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: the routing profile the subscription provides was ignored: %2</source>
+        <translation>[مسیریابی] %1: نمایه مسیریابی ارائه‌شده توسط اشتراک نادیده گرفته شد: %2</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: the routing profile the subscription provides was not applied, the routing profiles are open for editing.</source>
+        <translation>[مسیریابی] %1: نمایه مسیریابی ارائه‌شده توسط اشتراک اعمال نشد، نمایه‌های مسیریابی در حال ویرایش هستند.</translation>
+    </message>
+    <message>
+        <source>%1 entries, %2 skipped</source>
+        <translation>%1 مورد، %2 رد شد</translation>
+    </message>
+    <message>
+        <source>%1 entries</source>
+        <translation>%1 مورد</translation>
+    </message>
+    <message>
+        <source>%1 routing</source>
+        <translation>مسیریابی %1</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: created the routing profile &quot;%2&quot; from the subscription (%3)</source>
+        <translation>[مسیریابی] %1: نمایه مسیریابی «%2» از اشتراک ایجاد شد (%3)</translation>
+    </message>
+    <message>
+        <source>[Routing] %1: updated the routing profile &quot;%2&quot; from the subscription (%3)</source>
+        <translation>[مسیریابی] %1: نمایه مسیریابی «%2» از اشتراک به‌روز شد (%3)</translation>
+    </message>
+</context>
+<context>
+    <name>DialogAbout</name>
+    <message>
+        <source>About Throne</source>
+        <translation>درباره Throne</translation>
+    </message>
+    <message>
+        <source>Version:</source>
+        <translation>نسخه:</translation>
+    </message>
+    <message>
+        <source>Open-source and cross platform Desktop Proxy management utility developed as a successor to Nekoray.</source>
+        <translation>ابزار متن‌باز و چندسکویی مدیریت پروکسی برای دسکتاپ که به‌عنوان جانشین Nekoray توسعه یافته است.</translation>
+    </message>
+    <message>
+        <source>Support Throne</source>
+        <translation>حمایت از Throne</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation>نامشخص</translation>
+    </message>
+</context>
+<context>
+    <name>DialogUpdate</name>
+    <message>
+        <source>Update (Pre-release)</source>
+        <translation>به‌روزرسانی (پیش‌انتشار)</translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation>به‌روزرسانی</translation>
+    </message>
+    <message>
+        <source>Throne %1 is available, you are using %2.</source>
+        <translation>نسخه %1 از Throne در دسترس است، نسخه فعلی شما %2 است.</translation>
+    </message>
+    <message>
+        <source>Release notes are unavailable.</source>
+        <translation>یادداشت‌های انتشار در دسترس نیست.</translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <comment>button</comment>
+        <translation>به‌روزرسانی</translation>
+    </message>
+    <message>
+        <source>Open in browser</source>
+        <translation>باز کردن در مرورگر</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>بستن</translation>
     </message>
 </context>
 <context>
@@ -606,6 +712,38 @@ Release note:
         <source>The backup&apos;s database is damaged: %1</source>
         <translation>پایگاه دادهٔ پشتیبان آسیب دیده است: %1</translation>
     </message>
+    <message>
+        <source>Trust System Certificates in Xray</source>
+        <translation>اعتماد Xray به گواهی‌های سیستم</translation>
+    </message>
+    <message>
+        <source>Xray verifies servers only against its built-in root certificates. Turn this on to also trust the certificates installed in the system, such as a company or self-signed root. A profile or Xray config that sets useSystemCA itself keeps its own value.</source>
+        <translation>Xray سرورها را فقط با گواهی‌های ریشهٔ داخلی خودش بررسی می‌کند. با روشن کردن این گزینه، گواهی‌های نصب‌شده در سیستم، مانند گواهی ریشهٔ سازمانی یا خودامضا، نیز معتبر شمرده می‌شوند. پروفایل یا پیکربندی Xray که خودش useSystemCA را تعیین کرده باشد، مقدار خودش را نگه می‌دارد.</translation>
+    </message>
+    <message>
+        <source>Interface</source>
+        <translation>رابط کاربری</translation>
+    </message>
+    <message>
+        <source>Simple hides the advanced options. They keep their values and still apply.</source>
+        <translation>حالت ساده گزینه‌های پیشرفته را پنهان می‌کند. مقدارشان حفظ می‌شود و همچنان اعمال می‌شوند.</translation>
+    </message>
+    <message>
+        <source>Simple</source>
+        <translation>ساده</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>پیشرفته</translation>
+    </message>
+    <message>
+        <source>Allow other devices to connect</source>
+        <translation>به دستگاه های دیگر اجازه اتصال دهید</translation>
+    </message>
+    <message>
+        <source>Lets other devices on your network use this DNS server, for example a router that sends its DNS through this computer. Anyone who can reach this port can then resolve names through your DNS settings.</source>
+        <translation>به دستگاه‌های دیگر شبکه اجازه می‌دهد از این سرور DNS استفاده کنند، مثلاً روتری که DNS خود را از طریق این رایانه می‌فرستد. هر کسی که به این پورت دسترسی داشته باشد می‌تواند نام‌ها را با تنظیمات DNS شما ترجمه کند.</translation>
+    </message>
 </context>
 <context>
     <name>DialogEditGroup</name>
@@ -676,6 +814,34 @@ Release note:
     <message>
         <source>Copy profile share links (Deep Links)</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default (%1)</source>
+        <translation>پیش فرض (%1)</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>پیش فرض</translation>
+    </message>
+    <message>
+        <source>%1 (from this subscription)</source>
+        <translation>%1 (از این اشتراک)</translation>
+    </message>
+    <message>
+        <source>Routing Profile</source>
+        <translation>نمایه مسیریابی</translation>
+    </message>
+    <message>
+        <source>Use the subscription&apos;s routing profile</source>
+        <translation>استفاده از نمایه مسیریابی اشتراک</translation>
+    </message>
+    <message>
+        <source>The routing profile this group&apos;s profiles connect with. Default follows the routing profile chosen in the Routing menu.</source>
+        <translation>نمایه مسیریابی که نمایه‌های این گروه با آن متصل می‌شوند. «پیش فرض» از نمایه مسیریابی انتخاب‌شده در منوی مسیریابی پیروی می‌کند.</translation>
+    </message>
+    <message>
+        <source>Each update saves the routing profile the subscription provides (Happ format) as this group&apos;s own routing profile. DNS settings from the subscription are never used.</source>
+        <translation>هر به‌روزرسانی، نمایه مسیریابی ارائه‌شده توسط اشتراک (قالب Happ) را به‌عنوان نمایه مسیریابی خود این گروه ذخیره می‌کند. تنظیمات DNS اشتراک هرگز استفاده نمی‌شود.</translation>
     </message>
 </context>
 <context>
@@ -971,6 +1137,214 @@ Release note:
     <message>
         <source>This profile was deleted while you were editing it.</source>
         <translation>این پروفایل در حین ویرایش شما حذف شد.</translation>
+    </message>
+    <message>
+        <source>Storage</source>
+        <translation>فضای ذخیره‌سازی</translation>
+    </message>
+    <message>
+        <source>Tuning</source>
+        <translation>تنظیم دقیق</translation>
+    </message>
+    <message>
+        <source>Service</source>
+        <translation>سرویس</translation>
+    </message>
+    <message>
+        <source>Folder</source>
+        <translation>پوشه</translation>
+    </message>
+    <message>
+        <source>Client ID</source>
+        <translation>شناسهٔ کلاینت</translation>
+    </message>
+    <message>
+        <source>Client Secret</source>
+        <translation>رمز کلاینت</translation>
+    </message>
+    <message>
+        <source>Refresh Token</source>
+        <translation>توکن تازه‌سازی</translation>
+    </message>
+    <message>
+        <source>Secrets</source>
+        <translation>رمزها</translation>
+    </message>
+    <message>
+        <source>Template</source>
+        <translation>قالب</translation>
+    </message>
+    <message>
+        <source>Front Address</source>
+        <translation>نشانی جلویی</translation>
+    </message>
+    <message>
+        <source>Front Port</source>
+        <translation>درگاه جلویی</translation>
+    </message>
+    <message>
+        <source>Segment Bytes</source>
+        <translation>بایت هر بخش</translation>
+    </message>
+    <message>
+        <source>Flush Interval</source>
+        <translation>فاصلهٔ ارسال</translation>
+    </message>
+    <message>
+        <source>Poll Interval</source>
+        <translation>فاصلهٔ بررسی</translation>
+    </message>
+    <message>
+        <source>Max Poll Interval</source>
+        <translation>بیشینهٔ فاصلهٔ بررسی</translation>
+    </message>
+    <message>
+        <source>Eager Window</source>
+        <translation>پنجرهٔ بررسی فعال</translation>
+    </message>
+    <message>
+        <source>Hole Timeout</source>
+        <translation>مهلت بخش گم‌شده</translation>
+    </message>
+    <message>
+        <source>Session TTL</source>
+        <translation>عمر نشست</translation>
+    </message>
+    <message>
+        <source>Concurrency</source>
+        <translation>هم‌زمانی</translation>
+    </message>
+    <message>
+        <source>Google Drive folder ID</source>
+        <translation>شناسهٔ پوشهٔ Google Drive</translation>
+    </message>
+    <message>
+        <source>A directory path</source>
+        <translation>مسیر یک پوشه</translation>
+    </message>
+    <message>
+        <source>Where both ends exchange the stream: google-drive uses a Google Drive folder, template any HTTP storage API described by Template, local a folder on this machine.</source>
+        <translation>جایی که دو طرف جریان را مبادله می‌کنند: google-drive از یک پوشهٔ Google Drive استفاده می‌کند، template از هر API ذخیره‌سازی HTTP که در قالب توصیف شده باشد، و local از پوشه‌ای روی همین دستگاه.</translation>
+    </message>
+    <message>
+        <source>google-drive: the folder ID. local: a directory path. template: read as {folder}.</source>
+        <translation>google-drive: شناسهٔ پوشه. local: مسیر یک پوشه. template: به‌صورت {folder} خوانده می‌شود.</translation>
+    </message>
+    <message>
+        <source>The Google Drive OAuth client ID.</source>
+        <translation>شناسهٔ کلاینت OAuth برای Google Drive.</translation>
+    </message>
+    <message>
+        <source>The Google Drive OAuth client secret.</source>
+        <translation>رمز کلاینت OAuth برای Google Drive.</translation>
+    </message>
+    <message>
+        <source>The OAuth refresh token for the Google account that owns the folder.</source>
+        <translation>توکن تازه‌سازی OAuth برای حساب Google که مالک پوشه است.</translation>
+    </message>
+    <message>
+        <source>Values the template reads as {secret0}, {secret1}, …, separated by commas.</source>
+        <translation>مقدارهایی که قالب به‌صورت {secret0}، {secret1}، … می‌خواند، جداشده با ویرگول.</translation>
+    </message>
+    <message>
+        <source>The storage API&apos;s auth, put, get, list and delete operations, as JSON.</source>
+        <translation>عملیات auth، put، get، list و delete در API ذخیره‌سازی، به‌صورت JSON.</translation>
+    </message>
+    <message>
+        <source>Optional domain front: the storage API is dialed at this address while TLS still names the API host.</source>
+        <translation>دامنهٔ جلویی اختیاری: اتصال به API ذخیره‌سازی از طریق این نشانی برقرار می‌شود، در حالی که TLS همچنان نام میزبان API را می‌برد.</translation>
+    </message>
+    <message>
+        <source>Port of the front address. Default: 443.</source>
+        <translation>درگاه نشانی جلویی. پیش‌فرض: 443.</translation>
+    </message>
+    <message>
+        <source>Largest upload per file, in bytes. Default: 524288; Xray caps it at 16 MiB.</source>
+        <translation>بیشترین حجم بارگذاری در هر فایل، بر حسب بایت. پیش‌فرض: 524288؛ Xray آن را حداکثر ۱۶ مبی‌بایت می‌کند.</translation>
+    </message>
+    <message>
+        <source>How long writes are gathered before an upload, in milliseconds. Default: 20.</source>
+        <translation>مدت جمع‌آوری نوشته‌ها پیش از بارگذاری، بر حسب میلی‌ثانیه. پیش‌فرض: 20.</translation>
+    </message>
+    <message>
+        <source>Shortest wait between checks for new files, in milliseconds. Default: 50.</source>
+        <translation>کوتاه‌ترین فاصله میان بررسی فایل‌های تازه، بر حسب میلی‌ثانیه. پیش‌فرض: 50.</translation>
+    </message>
+    <message>
+        <source>Longest wait between checks while the stream is idle, in milliseconds. Default: 500.</source>
+        <translation>بلندترین فاصله میان بررسی‌ها هنگامی که جریان بیکار است، بر حسب میلی‌ثانیه. پیش‌فرض: 500.</translation>
+    </message>
+    <message>
+        <source>How long after traffic polling stays at the shortest wait, in milliseconds. Default: 2000.</source>
+        <translation>مدتی که پس از ترافیک، بررسی با کوتاه‌ترین فاصله ادامه می‌یابد، بر حسب میلی‌ثانیه. پیش‌فرض: 2000.</translation>
+    </message>
+    <message>
+        <source>How long a missing segment is waited for before the stream fails, in milliseconds. Default: 30000.</source>
+        <translation>مدت انتظار برای یک بخش گم‌شده پیش از شکست جریان، بر حسب میلی‌ثانیه. پیش‌فرض: 30000.</translation>
+    </message>
+    <message>
+        <source>How long an idle session lives before its files are cleaned up, in seconds. Default: 300.</source>
+        <translation>مدت زنده ماندن یک نشست بیکار پیش از پاک شدن فایل‌هایش، بر حسب ثانیه. پیش‌فرض: 300.</translation>
+    </message>
+    <message>
+        <source>Parallel storage requests per stream. Default: 8; Xray caps it at 64.</source>
+        <translation>درخواست‌های هم‌زمان به فضای ذخیره‌سازی در هر جریان. پیش‌فرض: 8؛ Xray آن را حداکثر 64 می‌کند.</translation>
+    </message>
+    <message>
+        <source>MTU</source>
+        <translation>MTU</translation>
+    </message>
+    <message>
+        <source>TTI</source>
+        <translation>TTI</translation>
+    </message>
+    <message>
+        <source>Uplink Capacity</source>
+        <translation>ظرفیت ارسال</translation>
+    </message>
+    <message>
+        <source>Downlink Capacity</source>
+        <translation>ظرفیت دریافت</translation>
+    </message>
+    <message>
+        <source>CWND Multiplier</source>
+        <translation>ضریب CWND</translation>
+    </message>
+    <message>
+        <source>Max Sending Window</source>
+        <translation>بیشینهٔ پنجرهٔ ارسال</translation>
+    </message>
+    <message>
+        <source>Largest packet mKCP sends, in bytes, from 21 to 8192. Default: 1350.</source>
+        <translation>بزرگ‌ترین بسته‌ای که mKCP می‌فرستد، بر حسب بایت، از 21 تا 8192. پیش‌فرض: 1350.</translation>
+    </message>
+    <message>
+        <source>How often mKCP sends, in milliseconds, from 10 to 1000. Default: 50.</source>
+        <translation>فاصلهٔ ارسال در mKCP، بر حسب میلی‌ثانیه، از 10 تا 1000. پیش‌فرض: 50.</translation>
+    </message>
+    <message>
+        <source>Most data sent per second, in MB/s; 0 means very little. Default: 5.</source>
+        <translation>بیشترین داده‌ای که در هر ثانیه فرستاده می‌شود، بر حسب MB/s؛ 0 یعنی بسیار کم. پیش‌فرض: 5.</translation>
+    </message>
+    <message>
+        <source>Most data received per second, in MB/s; 0 means very little. Default: 20.</source>
+        <translation>بیشترین داده‌ای که در هر ثانیه دریافت می‌شود، بر حسب MB/s؛ 0 یعنی بسیار کم. پیش‌فرض: 20.</translation>
+    </message>
+    <message>
+        <source>Multiplies how many packets may be in flight at once. Default: 1.</source>
+        <translation>ضریب تعداد بسته‌هایی که هم‌زمان می‌توانند در مسیر باشند. پیش‌فرض: 1.</translation>
+    </message>
+    <message>
+        <source>Most data waiting to be sent or acknowledged, in bytes; at least the MTU. Default: 2097152.</source>
+        <translation>بیشترین داده‌ای که در انتظار ارسال یا تایید است، بر حسب بایت؛ دست‌کم برابر MTU. پیش‌فرض: 2097152.</translation>
+    </message>
+    <message>
+        <source>Resolvers</source>
+        <translation>ریزالورها</translation>
+    </message>
+    <message>
+        <source>DNSTT / VayDNS</source>
+        <translation>DNSTT / VayDNS</translation>
     </message>
 </context>
 <context>
@@ -1282,6 +1656,136 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
         <source>Local Override</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>WARP has no config yet: click Generate Warp Config.</source>
+        <translation>WARP هنوز پیکربندی ندارد: روی «Generate Warp Config» کلیک کنید.</translation>
+    </message>
+    <message>
+        <source>%1 (updated by subscription &quot;%2&quot;)</source>
+        <translation>%1 (به‌روزشده توسط اشتراک «%2»)</translation>
+    </message>
+    <message>
+        <source>Every update of the subscription &quot;%1&quot; overwrites its rules. Deleting it stops the import.</source>
+        <translation>هر به‌روزرسانی اشتراک «%1» قوانین آن را بازنویسی می‌کند. حذف آن، وارد کردن را متوقف می‌کند.</translation>
+    </message>
+</context>
+<context>
+    <name>DialogNewScan</name>
+    <message>
+        <source>DNS resolver scan</source>
+        <translation>اسکن ریزالور DNS</translation>
+    </message>
+    <message>
+        <source>Find DNS resolvers that relay the tunnel of one of your DNSTT, MasterDNS or XDNS profiles.</source>
+        <translation>ریزالورهای DNS را پیدا می‌کند که تونل یکی از نمایه‌های DNSTT، MasterDNS یا XDNS شما را عبور می‌دهند.</translation>
+    </message>
+</context>
+<context>
+    <name>DialogScanInstance</name>
+    <message>
+        <source>Poll: relays one tunnel query</source>
+        <translation>بررسی: یک پرس‌وجوی تونل را عبور می‌دهد</translation>
+    </message>
+    <message>
+        <source>Query names: also relays names as long as the profile sends</source>
+        <translation>نام‌های پرس‌وجو: نام‌هایی به بلندی نام‌های ارسالی نمایه را هم عبور می‌دهد</translation>
+    </message>
+    <message>
+        <source>Handshake: also opens a tunnel session</source>
+        <translation>دست‌دهی: یک نشست تونل هم باز می‌کند</translation>
+    </message>
+    <message>
+        <source>Quick: relays the smallest packets</source>
+        <translation>سریع: کوچک‌ترین بسته‌ها را عبور می‌دهد</translation>
+    </message>
+    <message>
+        <source>Full: also measures the upload and download MTU</source>
+        <translation>کامل: MTU بارگذاری و بارگیری را هم اندازه می‌گیرد</translation>
+    </message>
+    <message>
+        <source>Each address is tried as a resolver; an entry without a port uses port 53.</source>
+        <translation>هر نشانی به‌عنوان ریزالور آزموده می‌شود؛ ورودی بدون پورت از پورت 53 استفاده می‌کند.</translation>
+    </message>
+    <message>
+        <source>Profile</source>
+        <translation>نمایه</translation>
+    </message>
+    <message>
+        <source>DNS tunnel test</source>
+        <translation>تست تونل DNS</translation>
+    </message>
+    <message>
+        <source>Each address is tried as the only resolver of this profile; those that relay its tunnel are kept.</source>
+        <translation>هر نشانی به‌عنوان تنها ریزالور این نمایه آزموده می‌شود؛ نشانی‌هایی که تونل آن را عبور می‌دهند نگه داشته می‌شوند.</translation>
+    </message>
+    <message>
+        <source>Test</source>
+        <translation>تست</translation>
+    </message>
+    <message>
+        <source>Bounds the whole test of one resolver. Empty: the default of the chosen test.</source>
+        <translation>سقف زمان کل تست یک ریزالور. خالی: مقدار پیش‌فرض تست انتخاب‌شده.</translation>
+    </message>
+    <message>
+        <source>Timeout (ms)</source>
+        <translation>مهلت (میلی‌ثانیه)</translation>
+    </message>
+    <message>
+        <source>Use as resolvers</source>
+        <translation>استفاده به‌عنوان ریزالور</translation>
+    </message>
+    <message>
+        <source>Makes the scan&apos;s profile take its resolvers from this result list; the resolvers typed in the profile are kept.</source>
+        <translation>نمایهٔ اسکن ریزالورهایش را از این فهرست نتایج می‌گیرد؛ ریزالورهایی که در نمایه وارد شده‌اند حفظ می‌شوند.</translation>
+    </message>
+    <message>
+        <source>WARP scan</source>
+        <translation>اسکن WARP</translation>
+    </message>
+    <message>
+        <source>DNS resolver scan</source>
+        <translation>اسکن ریزالور DNS</translation>
+    </message>
+    <message>
+        <source>Generic scan</source>
+        <translation>اسکن عمومی</translation>
+    </message>
+    <message>
+        <source>ICMP (ping): the timeout must be between %1 and %2 ms.</source>
+        <translation>ICMP (ping): مهلت باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
+    </message>
+    <message>
+        <source>ICMP (ping): echo requests must be between %1 and %2.</source>
+        <translation>ICMP (ping): تعداد درخواست‌های echo باید بین %1 تا %2 باشد.</translation>
+    </message>
+    <message>
+        <source>DNS tunnel test: the timeout must be between %1 and %2 ms.</source>
+        <translation>تست تونل DNS: مهلت باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
+    </message>
+    <message>
+        <source>Select a profile…</source>
+        <translation>یک نمایه انتخاب کنید…</translation>
+    </message>
+    <message>
+        <source>The scan&apos;s profile was deleted or is no longer a DNS tunnel profile.</source>
+        <translation>نمایهٔ اسکن حذف شده یا دیگر نمایهٔ تونل DNS نیست.</translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; is open in an editor; close it and try again.</source>
+        <translation>«%1» در یک ویرایشگر باز است؛ آن را ببندید و دوباره تلاش کنید.</translation>
+    </message>
+    <message>
+        <source>The open editor of &quot;%1&quot; now takes resolvers from the IP list &quot;%2&quot;; press OK there to save it.</source>
+        <translation>ویرایشگر باز «%1» اکنون ریزالورها را از فهرست IP «%2» می‌گیرد؛ برای ذخیره، در آن «تایید» را بزنید.</translation>
+    </message>
+    <message>
+        <source>Failed to store the profile.</source>
+        <translation>ذخیرهٔ نمایه ناموفق بود.</translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; now takes resolvers from the IP list &quot;%2&quot;.</source>
+        <translation>«%1» اکنون ریزالورها را از فهرست IP «%2» می‌گیرد.</translation>
+    </message>
 </context>
 <context>
     <name>DialogVPNSettings</name>
@@ -1292,24 +1796,6 @@ For more information, see the document &quot;Configuration/DNS&quot;.</source>
     <message>
         <source>Tun Enable IPv6</source>
         <translation>فعال کردن IPv6 برای Tun</translation>
-    </message>
-    <message>
-        <source>Troubleshooting</source>
-        <translation>عیب یابی</translation>
-    </message>
-    <message>
-        <source>If you have trouble starting VPN, you can force reset Core process here.
-
-If still not working, see documentation for more information.
-https://matsuridayo.github.io/n-configuration/#vpn-tun</source>
-        <translation>اگر در راه‌اندازی VPN مشکل دارید، می‌توانید فرآیند هسته را اینجا بازنشانی کنید.
-
-اگر همچنان کار نکرد، برای اطلاعات بیشتر به مستندات مراجعه کنید:
-https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
-    </message>
-    <message>
-        <source>Reset</source>
-        <translation>بازنشانی</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -1354,6 +1840,14 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>IPv6 CIDR is invalid.</source>
         <translation>CIDR IPv6 نامعتبر است.</translation>
+    </message>
+    <message>
+        <source>Restart Core</source>
+        <translation>راه‌اندازی مجدد هسته</translation>
+    </message>
+    <message>
+        <source>Stops the running profile and restarts the core. Try this when Tun fails to start, then start the profile again.</source>
+        <translation>پروفایل در حال اجرا را متوقف و هسته را دوباره راه‌اندازی می‌کند. وقتی Tun راه‌اندازی نمی‌شود این را امتحان کنید و سپس پروفایل را دوباره اجرا کنید.</translation>
     </message>
 </context>
 <context>
@@ -1489,6 +1983,145 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
+    <name>EditDnstt</name>
+    <message>
+        <source>Mode</source>
+        <translation>حالت</translation>
+    </message>
+    <message>
+        <source>Domain</source>
+        <translation>دامنه</translation>
+    </message>
+    <message>
+        <source>Public Key</source>
+        <translation>کلید عمومی</translation>
+    </message>
+    <message>
+        <source>Record Type</source>
+        <translation>نوع رکورد</translation>
+    </message>
+    <message>
+        <source>Client ID Size</source>
+        <translation>اندازهٔ شناسهٔ کلاینت</translation>
+    </message>
+    <message>
+        <source>Max QNAME Length</source>
+        <translation>بیشینهٔ طول QNAME</translation>
+    </message>
+    <message>
+        <source>Payload per Query</source>
+        <translation>بار مفید هر پرس‌وجو</translation>
+    </message>
+    <message>
+        <source>Resolvers</source>
+        <translation>ریزالورها</translation>
+    </message>
+    <message>
+        <source>Strategy</source>
+        <translation>راهبرد</translation>
+    </message>
+    <message>
+        <source>Retry truncated replies over TCP</source>
+        <translation>تلاش دوباره برای پاسخ‌های بریده‌شده روی TCP</translation>
+    </message>
+    <message>
+        <source>Backend</source>
+        <translation>بک‌اند</translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation>نوع</translation>
+    </message>
+    <message>
+        <source>Username</source>
+        <translation>نام کاربری</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation>کلمه عبور</translation>
+    </message>
+    <message>
+        <source>UDP over TCP</source>
+        <translation>UDP روی TCP</translation>
+    </message>
+    <message>
+        <source>Encryption</source>
+        <translation>رمزگذاری</translation>
+    </message>
+    <message>
+        <source>User</source>
+        <translation>کاربر</translation>
+    </message>
+    <message>
+        <source>Private Key</source>
+        <translation>کلید خصوصی</translation>
+    </message>
+    <message>
+        <source>Private Key Path</source>
+        <translation>مسیر کلید خصوصی</translation>
+    </message>
+    <message>
+        <source>Choose File</source>
+        <translation>انتخاب پرونده</translation>
+    </message>
+    <message>
+        <source>Private Key Password</source>
+        <translation>گذرواژه کلید خصوصی</translation>
+    </message>
+    <message>
+        <source>Host Keys</source>
+        <translation>کلیدهای میزبان</translation>
+    </message>
+    <message>
+        <source>One per line</source>
+        <translation>هر خط یکی</translation>
+    </message>
+    <message>
+        <source>Host Key Algorithms</source>
+        <translation>الگوریتم‌های کلید میزبان</translation>
+    </message>
+    <message>
+        <source>Client Version</source>
+        <translation>نسخهٔ کلاینت</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>پیشرفته</translation>
+    </message>
+    <message>
+        <source>Idle Timeout</source>
+        <translation>مهلت بیکاری</translation>
+    </message>
+    <message>
+        <source>Keepalive Interval</source>
+        <translation>فاصلهٔ keepalive</translation>
+    </message>
+    <message>
+        <source>Queries per Second</source>
+        <translation>پرس‌وجو در ثانیه</translation>
+    </message>
+    <message>
+        <source>VayDNS (dnstt-compatible)</source>
+        <translation>VayDNS (سازگار با dnstt)</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>پیش‌فرض</translation>
+    </message>
+    <message>
+        <source>None (chain only)</source>
+        <translation>هیچ‌کدام (فقط زنجیره)</translation>
+    </message>
+    <message>
+        <source>Tunnel data each query carries; a longer domain leaves less room.</source>
+        <translation>مقدار داده‌ای از تونل که هر پرس‌وجو حمل می‌کند؛ دامنهٔ بلندتر جای کمتری باقی می‌گذارد.</translation>
+    </message>
+    <message>
+        <source>%1 bytes</source>
+        <translation>%1 بایت</translation>
+    </message>
+</context>
+<context>
     <name>EditExtraCore</name>
     <message>
         <source>Form</source>
@@ -1611,6 +2244,121 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Password</source>
         <translation type="unfinished">کلمه عبور</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation>هیچ‌کدام</translation>
+    </message>
+    <message>
+        <source>Obfuscation needs a password; without one, it is off.</source>
+        <translation>مبهم‌سازی به کلمه عبور نیاز دارد؛ بدون آن خاموش است.</translation>
+    </message>
+</context>
+<context>
+    <name>EditMasterDns</name>
+    <message>
+        <source>Domains</source>
+        <translation>دامنه‌ها</translation>
+    </message>
+    <message>
+        <source>One per line</source>
+        <translation>هر خط یکی</translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation>حالت</translation>
+    </message>
+    <message>
+        <source>Encryption</source>
+        <translation>رمزگذاری</translation>
+    </message>
+    <message>
+        <source>Key</source>
+        <translation>کلید</translation>
+    </message>
+    <message>
+        <source>Resolvers</source>
+        <translation>ریزالورها</translation>
+    </message>
+    <message>
+        <source>Strategy</source>
+        <translation>راهبرد</translation>
+    </message>
+    <message>
+        <source>Transfer</source>
+        <translation>انتقال داده</translation>
+    </message>
+    <message>
+        <source>Duplication</source>
+        <translation>تکرار ارسال</translation>
+    </message>
+    <message>
+        <source>Setup Duplication</source>
+        <translation>تکرار ارسال هنگام اتصال</translation>
+    </message>
+    <message>
+        <source>Upload Compression</source>
+        <translation>فشرده‌سازی بارگذاری</translation>
+    </message>
+    <message>
+        <source>Download Compression</source>
+        <translation>فشرده‌سازی بارگیری</translation>
+    </message>
+    <message>
+        <source>Base64-encoded replies</source>
+        <translation>پاسخ‌های کدگذاری‌شده با Base64</translation>
+    </message>
+    <message>
+        <source>MTU</source>
+        <translation>MTU</translation>
+    </message>
+    <message>
+        <source>Min Upload</source>
+        <translation>کمینهٔ بارگذاری</translation>
+    </message>
+    <message>
+        <source>Max Upload</source>
+        <translation>بیشینهٔ بارگذاری</translation>
+    </message>
+    <message>
+        <source>Min Download</source>
+        <translation>کمینهٔ بارگیری</translation>
+    </message>
+    <message>
+        <source>Max Download</source>
+        <translation>بیشینهٔ بارگیری</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>پیشرفته</translation>
+    </message>
+    <message>
+        <source>MTU Test Retries</source>
+        <translation>تلاش‌های دوبارهٔ تست MTU</translation>
+    </message>
+    <message>
+        <source>MTU Test Timeout</source>
+        <translation>مهلت تست MTU</translation>
+    </message>
+    <message>
+        <source>MTU Test Parallelism</source>
+        <translation>هم‌زمانی تست MTU</translation>
+    </message>
+    <message>
+        <source>Drop resolvers below the minimum MTU</source>
+        <translation>کنار گذاشتن ریزالورهای با MTU کمتر از کمینه</translation>
+    </message>
+    <message>
+        <source>TCP / custom chain</source>
+        <translation>TCP / زنجیرهٔ سفارشی</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>پیش‌فرض</translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation>خاموش</translation>
     </message>
 </context>
 <context>
@@ -2035,6 +2783,33 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
+    <name>IpEntriesModel</name>
+    <message>
+        <source>Max QNAME</source>
+        <translation>بیشینهٔ QNAME</translation>
+    </message>
+    <message>
+        <source>Upload MTU</source>
+        <translation>MTU بارگذاری</translation>
+    </message>
+    <message>
+        <source>Download MTU</source>
+        <translation>MTU بارگیری</translation>
+    </message>
+    <message>
+        <source>The longest query name the resolver relays: max_qname_len for DNSTT, lenLimit for XDNS.</source>
+        <translation>بلندترین نام پرس‌وجویی که ریزالور عبور می‌دهد: max_qname_len برای DNSTT و lenLimit برای XDNS.</translation>
+    </message>
+    <message>
+        <source>The largest payload per query the resolver relays.</source>
+        <translation>بیشترین بار مفید هر پرس‌وجو که ریزالور عبور می‌دهد.</translation>
+    </message>
+    <message>
+        <source>The largest payload per answer the resolver relays.</source>
+        <translation>بیشترین بار مفید هر پاسخ که ریزالور عبور می‌دهد.</translation>
+    </message>
+</context>
+<context>
     <name>JsonEditor</name>
     <message>
         <source>JSON Editor</source>
@@ -2416,6 +3191,22 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <translation>لغو کردن</translation>
     </message>
     <message>
+        <source>Leftover Tun adapter</source>
+        <translation>آداپتور Tun باقی‌مانده</translation>
+    </message>
+    <message>
+        <source>Windows was still holding the Tun adapter from an earlier session that did not close cleanly. Starting the profile again usually works; if it keeps failing, restart Windows.
+
+Error: %1</source>
+        <translation>ویندوز هنوز آداپتور Tun یک نشست قبلی را که به‌درستی بسته نشده بود نگه داشته بود. معمولاً آغاز دوبارهٔ نمایه کار می‌کند؛ اگر باز هم ناموفق بود، ویندوز را دوباره راه‌اندازی کنید.
+
+خطا: %1</translation>
+    </message>
+    <message>
+        <source>Start Again</source>
+        <translation>آغاز دوباره</translation>
+    </message>
+    <message>
         <source>Add new Group</source>
         <translation>افزودن گروه جدید</translation>
     </message>
@@ -2777,6 +3568,30 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <source>Kill switch is blocking traffic</source>
         <translation>Kill switch در حال مسدود کردن ترافیک است</translation>
     </message>
+    <message>
+        <source>Check For Update</source>
+        <translation>بررسی به‌روزرسانی</translation>
+    </message>
+    <message>
+        <source>About</source>
+        <translation>درباره</translation>
+    </message>
+    <message>
+        <source>Advanced Mode</source>
+        <translation>حالت پیشرفته</translation>
+    </message>
+    <message>
+        <source>Show every option. Simple mode hides the advanced ones; they keep their values and still apply.</source>
+        <translation>همه گزینه‌ها را نشان می‌دهد. حالت ساده گزینه‌های پیشرفته را پنهان می‌کند؛ مقدارشان حفظ می‌شود و همچنان اعمال می‌شوند.</translation>
+    </message>
+    <message>
+        <source>The current routing profile is updated by the subscription &quot;%1&quot;.</source>
+        <translation>نمایه مسیریابی فعلی توسط اشتراک «%1» به‌روز می‌شود.</translation>
+    </message>
+    <message>
+        <source>The group &quot;%1&quot; uses its own routing profile, so the running profile keeps it.</source>
+        <translation>گروه «%1» از نمایه مسیریابی خودش استفاده می‌کند، بنابراین نمایه در حال اجرا همان را نگه می‌دارد.</translation>
+    </message>
 </context>
 <context>
     <name>ProfilesTableModel</name>
@@ -2837,6 +3652,56 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
         <source>Local DNS and Tun mode do not work together, please set an IP to be used as the Local DNS server in the Routing Settings -&gt; Local override</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Choose the DNS tunnel profile to find resolvers for</source>
+        <translation>نمایهٔ تونل DNS را که برایش ریزالور پیدا می‌شود انتخاب کنید</translation>
+    </message>
+    <message>
+        <source>Choose a profile for the config test</source>
+        <translation>یک نمایه برای تست پیکربندی انتخاب کنید</translation>
+    </message>
+    <message>
+        <source>Only DNSTT, MasterDNS and XDNS profiles can be used to find resolvers</source>
+        <translation>فقط نمایه‌های DNSTT، MasterDNS و XDNS را می‌توان برای یافتن ریزالور به کار برد</translation>
+    </message>
+    <message>
+        <source>%1: the resolver &quot;%2&quot; is invalid: %3</source>
+        <translation>%1: ریزالور «%2» نامعتبر است: %3</translation>
+    </message>
+    <message>
+        <source>the resolver IP list no longer exists</source>
+        <translation>فهرست IP ریزالورها دیگر وجود ندارد</translation>
+    </message>
+    <message>
+        <source>the resolver IP list &quot;%1&quot; is empty</source>
+        <translation>فهرست IP ریزالورها «%1» خالی است</translation>
+    </message>
+    <message>
+        <source>the resolver IP list &quot;%1&quot; holds more than %2 entries; the rest were skipped</source>
+        <translation>فهرست IP ریزالورها «%1» بیش از %2 ورودی دارد؛ بقیه نادیده گرفته شدند</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n entries of the resolver IP list &quot;%1&quot; were skipped: ranges too large or past the resolver limit</source>
+        <translation>
+            <numerusform>%n ورودی از فهرست IP ریزالورها «%1» نادیده گرفته شد: بازه‌های بیش از حد بزرگ یا فراتر از سقف ریزالورها</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Encrypted</source>
+        <translation>رمزگذاری‌شده</translation>
+    </message>
+    <message>
+        <source>Raw</source>
+        <translation>خام</translation>
+    </message>
+    <message>
+        <source>Plaintext Replies</source>
+        <translation>پاسخ‌های رمزنشده</translation>
+    </message>
+    <message>
+        <source>Weak Cipher</source>
+        <translation>رمز ضعیف</translation>
+    </message>
 </context>
 <context>
     <name>QPlatformTheme</name>
@@ -2866,6 +3731,53 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>You can not input space characters here.</source>
         <translation>شما نمی توانید کاراکتر فضای خالی در اینجا استفاده کنید.</translation>
+    </message>
+</context>
+<context>
+    <name>ResolverSourceWidget</name>
+    <message>
+        <source>IP list</source>
+        <translation>فهرست IP</translation>
+    </message>
+    <message>
+        <source>Its addresses are used after the lines above; an entry without a port uses port 53.</source>
+        <translation>نشانی‌های آن پس از خطوط بالا به کار می‌روند؛ ورودی بدون پورت از پورت 53 استفاده می‌کند.</translation>
+    </message>
+    <message>
+        <source>Find resolvers…</source>
+        <translation>یافتن ریزالور…</translation>
+    </message>
+    <message>
+        <source>One per line. Replaces the resolvers in Finalmask; empty keeps them.</source>
+        <translation>هر خط یکی. جایگزین ریزالورهای Finalmask می‌شود؛ اگر خالی باشد، همان‌ها حفظ می‌شوند.</translation>
+    </message>
+    <message>
+        <source>One per line. Empty uses the system resolver.</source>
+        <translation>هر خط یکی. اگر خالی باشد، ریزالور سیستم به کار می‌رود.</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation>هیچ‌کدام</translation>
+    </message>
+    <message>
+        <source>Missing list</source>
+        <translation>فهرست یافت نشد</translation>
+    </message>
+    <message>
+        <source>Opens a scan that finds the resolvers relaying this profile&apos;s tunnel, as last saved.</source>
+        <translation>اسکنی را باز می‌کند که ریزالورهای عبوردهندهٔ تونل این نمایه را، طبق آخرین نسخهٔ ذخیره‌شده، پیدا می‌کند.</translation>
+    </message>
+    <message>
+        <source>Save the profile first; the scan tests the saved profile.</source>
+        <translation>ابتدا نمایه را ذخیره کنید؛ اسکن، نمایهٔ ذخیره‌شده را تست می‌کند.</translation>
+    </message>
+    <message>
+        <source>Resolvers</source>
+        <translation>ریزالورها</translation>
+    </message>
+    <message>
+        <source>This IP list no longer exists, so it adds no resolvers.</source>
+        <translation>این فهرست IP دیگر وجود ندارد، بنابراین ریزالوری اضافه نمی‌کند.</translation>
     </message>
 </context>
 <context>
@@ -2994,6 +3906,48 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     </message>
 </context>
 <context>
+    <name>ScanItem</name>
+    <message>
+        <source>WARP</source>
+        <translation>WARP</translation>
+    </message>
+    <message>
+        <source>DNS resolvers</source>
+        <translation>ریزالورهای DNS</translation>
+    </message>
+    <message>
+        <source>Generic</source>
+        <translation>عمومی</translation>
+    </message>
+    <message>
+        <source>IP Scanner</source>
+        <translation>اسکنر IP</translation>
+    </message>
+    <message>
+        <source>Only a saved DNSTT, MasterDNS or XDNS profile can be used to find resolvers; save the profile first.</source>
+        <translation>فقط با نمایهٔ ذخیره‌شدهٔ DNSTT، MasterDNS یا XDNS می‌توان ریزالور پیدا کرد؛ ابتدا نمایه را ذخیره کنید.</translation>
+    </message>
+    <message>
+        <source>Resolvers for %1</source>
+        <translation>ریزالورهای %1</translation>
+    </message>
+    <message>
+        <source>Failed to store the scan.</source>
+        <translation>ذخیرهٔ اسکن ناموفق بود.</translation>
+    </message>
+</context>
+<context>
+    <name>Scanner::ScanManager</name>
+    <message>
+        <source>%1 relays the DNS tunnel (%2 ms)</source>
+        <translation>%1 تونل DNS را عبور می‌دهد (%2 میلی‌ثانیه)</translation>
+    </message>
+    <message>
+        <source>The DNS tunnel profile cannot be used to find resolvers</source>
+        <translation>از نمایهٔ تونل DNS نمی‌توان برای یافتن ریزالور استفاده کرد</translation>
+    </message>
+</context>
+<context>
     <name>LiveChart</name>
     <message>
         <source>Down</source>
@@ -3084,6 +4038,265 @@ https://matsuridayo.github.io/n-configuration/#vpn-tun</translation>
     <message>
         <source>Kill switch is blocking traffic</source>
         <translation>Kill switch در حال مسدود کردن ترافیک است</translation>
+    </message>
+</context>
+<context>
+    <name>Validation</name>
+    <message>
+        <source>%1: %2</source>
+        <translation>%1: %2</translation>
+    </message>
+    <message>
+        <source>Xray does not know the mKCP header type &quot;%1&quot;, so it was ignored.</source>
+        <translation>Xray نوع سرآیند mKCP «%1» را نمی‌شناسد، بنابراین نادیده گرفته شد.</translation>
+    </message>
+    <message>
+        <source>Add the tunnel domain the server answers for, for example &quot;domains&quot;: [{&quot;names&quot;: [&quot;t.example.com&quot;]}].</source>
+        <translation>دامنهٔ تونلی را که سرور به آن پاسخ می‌دهد اضافه کنید، برای مثال &quot;domains&quot;: [{&quot;names&quot;: [&quot;t.example.com&quot;]}].</translation>
+    </message>
+    <message>
+        <source>Use udp://, tcp:// or https:// resolver addresses.</source>
+        <translation>از نشانی‌های ریزالور udp://، tcp:// یا https:// استفاده کنید.</translation>
+    </message>
+    <message>
+        <source>A DoH resolver needs &quot;tlsConfig&quot;, for example &quot;tlsConfig&quot;: {&quot;serverName&quot;: &quot;dns.google&quot;}.</source>
+        <translation>ریزالور DoH به &quot;tlsConfig&quot; نیاز دارد، برای مثال &quot;tlsConfig&quot;: {&quot;serverName&quot;: &quot;dns.google&quot;}.</translation>
+    </message>
+    <message>
+        <source>Over h3 the brutal congestion control crashes Xray; use bbr, reno or force-brutal.</source>
+        <translation>روی h3، کنترل ازدحام brutal باعث از کار افتادن Xray می‌شود؛ از bbr، reno یا force-brutal استفاده کنید.</translation>
+    </message>
+    <message>
+        <source>Set &quot;serverName&quot; in tlsConfig: over HTTP/2 Xray does not take it from the URL, so the TLS handshake fails.</source>
+        <translation>&quot;serverName&quot; را در tlsConfig تنظیم کنید: روی HTTP/2، Xray آن را از URL نمی‌گیرد و دست‌دهی TLS شکست می‌خورد.</translation>
+    </message>
+    <message>
+        <source>Add a DNS resolver to send the tunnel&apos;s queries through, for example &quot;resolvers&quot;: [{&quot;addrs&quot;: [&quot;udp://8.8.8.8:53&quot;]}]; without one Xray cannot connect.</source>
+        <translation>یک ریزالور DNS برای فرستادن پرس‌وجوهای تونل اضافه کنید، برای مثال &quot;resolvers&quot;: [{&quot;addrs&quot;: [&quot;udp://8.8.8.8:53&quot;]}]؛ بدون آن Xray نمی‌تواند وصل شود.</translation>
+    </message>
+    <message>
+        <source>Removed from the imported configuration: it would write a file on this computer at a path the sender chose.</source>
+        <translation>از پیکربندی واردشده حذف شد: روی این رایانه پرونده‌ای را در مسیری که فرستنده انتخاب کرده می‌نوشت.</translation>
+    </message>
+    <message>
+        <source>List items that are not text were ignored.</source>
+        <translation>موارد غیرمتنی فهرست نادیده گرفته شدند.</translation>
+    </message>
+    <message>
+        <source>The resolver IP list belongs to another installation, so it was not imported.</source>
+        <translation>فهرست IP ریزالورها به نصب دیگری تعلق دارد، بنابراین وارد نشد.</translation>
+    </message>
+    <message>
+        <source>Throne does not support the Xray transport &quot;%1&quot;. Use raw, xhttp, ws, httpupgrade, grpc, kcp or xdrive.</source>
+        <translation>Throne از روش انتقال Xray «%1» پشتیبانی نمی‌کند. از raw، xhttp، ws، httpupgrade، grpc، kcp یا xdrive استفاده کنید.</translation>
+    </message>
+    <message>
+        <source>Must be at least the MTU (%1).</source>
+        <translation>باید دست‌کم برابر MTU (%1) باشد.</translation>
+    </message>
+    <message>
+        <source>The xdns mask must be the last udp mask: it sends the DNS queries itself, so Xray skips the masks after it.</source>
+        <translation>ماسک xdns باید آخرین ماسک udp باشد: خودش پرس‌وجوهای DNS را می‌فرستد، بنابراین Xray ماسک‌های پس از آن را رد می‌کند.</translation>
+    </message>
+    <message>
+        <source>The link is too long.</source>
+        <translation>پیوند بیش از حد طولانی است.</translation>
+    </message>
+    <message>
+        <source>Not a dnst:// link.</source>
+        <translation>این پیوند dnst:// نیست.</translation>
+    </message>
+    <message>
+        <source>The link is damaged: its payload is not valid base64.</source>
+        <translation>پیوند آسیب دیده است: محتوای آن base64 معتبر نیست.</translation>
+    </message>
+    <message>
+        <source>The link is damaged: its payload is not a JSON object.</source>
+        <translation>پیوند آسیب دیده است: محتوای آن یک شیء JSON نیست.</translation>
+    </message>
+    <message>
+        <source>The link does not name the tunnel type.</source>
+        <translation>پیوند، نوع تونل را مشخص نمی‌کند.</translation>
+    </message>
+    <message>
+        <source>The SSH private key in the link could not be read; it was ignored.</source>
+        <translation>کلید خصوصی SSH در پیوند خوانده نشد؛ نادیده گرفته شد.</translation>
+    </message>
+    <message>
+        <source>Enter the tunnel domain, for example t.example.com.</source>
+        <translation>دامنهٔ تونل را وارد کنید، برای مثال t.example.com.</translation>
+    </message>
+    <message>
+        <source>Use the domain name delegated to the tunnel server, for example t.example.com.</source>
+        <translation>از نام دامنه‌ای که به سرور تونل واگذار شده استفاده کنید، برای مثال t.example.com.</translation>
+    </message>
+    <message>
+        <source>Use system, an IP address with an optional port, a range such as 192.0.2.0/24, or a udp://, tcp://, tls:// or https:// address.</source>
+        <translation>از system، نشانی IP با پورت اختیاری، بازه‌ای مانند 192.0.2.0/24، یا نشانی udp://، tcp://، tls:// یا https:// استفاده کنید.</translation>
+    </message>
+    <message>
+        <source>Use system, an IP address or a range such as 192.0.2.0/24, each with an optional :port.</source>
+        <translation>از system، یک نشانی IP یا بازه‌ای مانند 192.0.2.0/24 استفاده کنید، هر کدام با :port اختیاری.</translation>
+    </message>
+    <message>
+        <source>Use an IP address with an optional port, or a udp://, tcp:// or https:// address.</source>
+        <translation>یک نشانی IP با پورت اختیاری، یا یک نشانی udp://، tcp:// یا https:// به کار ببرید.</translation>
+    </message>
+    <message>
+        <source>Only https:// addresses take a path.</source>
+        <translation>فقط نشانی‌های https:// مسیر می‌پذیرند.</translation>
+    </message>
+    <message>
+        <source>XDNS has no system resolver: enter the address of a DNS resolver.</source>
+        <translation>XDNS ریزالور سیستمی ندارد: نشانی یک ریزالور DNS را وارد کنید.</translation>
+    </message>
+    <message>
+        <source>Enter single addresses here; a range works only from an IP list.</source>
+        <translation>اینجا نشانی‌های تکی وارد کنید؛ بازه فقط از طریق فهرست IP کار می‌کند.</translation>
+    </message>
+    <message>
+        <source>Put an IPv6 address in brackets, for example [2001:db8::1]:53.</source>
+        <translation>نشانی IPv6 را داخل کروشه بگذارید، برای مثال [2001:db8::1]:53.</translation>
+    </message>
+    <message>
+        <source>A range may hold at most %1 addresses: use /%2 or longer for IPv4 and /%3 or longer for IPv6.</source>
+        <translation>یک بازه حداکثر %1 نشانی می‌تواند داشته باشد: برای IPv4 از /%2 یا بلندتر و برای IPv6 از /%3 یا بلندتر استفاده کنید.</translation>
+    </message>
+    <message>
+        <source>Only system, udp, tcp, tls and https resolvers with a server are supported.</source>
+        <translation>فقط system و ریزالورهای udp، tcp، tls و https دارای سرور پشتیبانی می‌شوند.</translation>
+    </message>
+    <message>
+        <source>A TLS server name other than the resolver&apos;s own host is not kept.</source>
+        <translation>نام سرور TLS که با میزبان خود ریزالور فرق دارد نگه داشته نمی‌شود.</translation>
+    </message>
+    <message>
+        <source>Only the first %1 resolvers were kept.</source>
+        <translation>فقط %1 ریزالور نخست نگه داشته شدند.</translation>
+    </message>
+    <message>
+        <source>Use true or false.</source>
+        <translation>از true یا false استفاده کنید.</translation>
+    </message>
+    <message>
+        <source>This DNS tunnel type is not supported.</source>
+        <translation>این نوع تونل DNS پشتیبانی نمی‌شود.</translation>
+    </message>
+    <message>
+        <source>The link does not name the service behind the tunnel.</source>
+        <translation>پیوند، سرویس پشت تونل را مشخص نمی‌کند.</translation>
+    </message>
+    <message>
+        <source>This service behind the tunnel is not supported.</source>
+        <translation>این سرویس پشت تونل پشتیبانی نمی‌شود.</translation>
+    </message>
+    <message>
+        <source>The resolver&apos;s transport is unknown, so it is used over UDP.</source>
+        <translation>روش انتقال ریزالور ناشناخته است، بنابراین روی UDP استفاده می‌شود.</translation>
+    </message>
+    <message>
+        <source>This SlipNet link version is not supported.</source>
+        <translation>این نسخهٔ پیوند SlipNet پشتیبانی نمی‌شود.</translation>
+    </message>
+    <message>
+        <source>The link is damaged: it is shorter than its version allows.</source>
+        <translation>پیوند آسیب دیده است: کوتاه‌تر از حدی است که نسخه‌اش اجازه می‌دهد.</translation>
+    </message>
+    <message>
+        <source>This link comes from a newer SlipNet version; check the imported settings.</source>
+        <translation>این پیوند از نسخهٔ جدیدتر SlipNet است؛ تنظیمات واردشده را بررسی کنید.</translation>
+    </message>
+    <message>
+        <source>NoizDNS was imported as plain DNSTT: its server accepts that, but without NoizDNS&apos;s DPI evasion.</source>
+        <translation>NoizDNS به‌صورت DNSTT ساده وارد شد: سرور آن این را می‌پذیرد، اما بدون گریز از DPI که NoizDNS دارد.</translation>
+    </message>
+    <message>
+        <source>This SlipNet profile type is not supported.</source>
+        <translation>این نوع نمایهٔ SlipNet پشتیبانی نمی‌شود.</translation>
+    </message>
+    <message>
+        <source>Must not be negative.</source>
+        <translation>نباید منفی باشد.</translation>
+    </message>
+    <message>
+        <source>Use the server&apos;s public key: 64 hexadecimal digits, as the server prints it.</source>
+        <translation>کلید عمومی سرور را به کار ببرید: 64 رقم هگزادسیمال، همان‌طور که سرور چاپ می‌کند.</translation>
+    </message>
+    <message>
+        <source>The classic dnstt wire only uses TXT records.</source>
+        <translation>پروتکل کلاسیک dnstt فقط از رکوردهای TXT استفاده می‌کند.</translation>
+    </message>
+    <message>
+        <source>The classic dnstt wire always uses 8-byte client IDs.</source>
+        <translation>پروتکل کلاسیک dnstt همیشه از شناسه‌های کلاینت 8 بایتی استفاده می‌کند.</translation>
+    </message>
+    <message>
+        <source>Each query would carry %1 bytes, fewer than the %2 the tunnel needs: use a shorter domain or a longer maximum QNAME length.</source>
+        <translation>هر پرس‌وجو %1 بایت حمل می‌کرد، کمتر از %2 بایتی که تونل نیاز دارد: از دامنهٔ کوتاه‌تر یا بیشینهٔ طول QNAME بزرگ‌تر استفاده کنید.</translation>
+    </message>
+    <message>
+        <source>The keepalive interval must be shorter than the idle timeout.</source>
+        <translation>فاصلهٔ keepalive باید کوتاه‌تر از مهلت بیکاری باشد.</translation>
+    </message>
+    <message>
+        <source>Without a backend, only a profile chained over this one can use the tunnel.</source>
+        <translation>بدون بک‌اند، فقط نمایه‌ای که به‌صورت زنجیره‌ای از طریق این نمایه وصل می‌شود می‌تواند از تونل استفاده کند.</translation>
+    </message>
+    <message>
+        <source>Encrypted SlipNet links cannot be read: export the profile from SlipNet without encryption.</source>
+        <translation>پیوندهای رمزگذاری‌شدهٔ SlipNet خوانده نمی‌شوند: نمایه را بدون رمزگذاری از SlipNet صادر کنید.</translation>
+    </message>
+    <message>
+        <source>Use only one of socks, shadowsocks and ssh.</source>
+        <translation>فقط یکی از socks، shadowsocks و ssh را به کار ببرید.</translation>
+    </message>
+    <message>
+        <source>Unknown encryption method: use a number from 0 to 5.</source>
+        <translation>روش رمزگذاری ناشناخته است: عددی از 0 تا 5 به کار ببرید.</translation>
+    </message>
+    <message>
+        <source>MasterDNS only carries a SOCKS or a custom service.</source>
+        <translation>MasterDNS فقط SOCKS یا یک سرویس سفارشی را حمل می‌کند.</translation>
+    </message>
+    <message>
+        <source>The link also carries a proxy to run over the tunnel; import that proxy separately and chain it over this profile.</source>
+        <translation>پیوند، پروکسی‌ای برای اجرا روی تونل هم دارد؛ آن پروکسی را جداگانه وارد کنید و به‌صورت زنجیره‌ای از طریق این نمایه وصلش کنید.</translation>
+    </message>
+    <message>
+        <source>This MasterDNS link format is not supported.</source>
+        <translation>این قالب پیوند MasterDNS پشتیبانی نمی‌شود.</translation>
+    </message>
+    <message>
+        <source>This MasterDNS link version is not supported.</source>
+        <translation>این نسخهٔ پیوند MasterDNS پشتیبانی نمی‌شود.</translation>
+    </message>
+    <message>
+        <source>The link is damaged: its client configuration cannot be read.</source>
+        <translation>پیوند آسیب دیده است: پیکربندی کلاینت آن خوانده نمی‌شود.</translation>
+    </message>
+    <message>
+        <source>Unknown protocol type: use SOCKS5 or TCP.</source>
+        <translation>نوع پروتکل ناشناخته است: از SOCKS5 یا TCP استفاده کنید.</translation>
+    </message>
+    <message>
+        <source>Use a number of seconds above 0.</source>
+        <translation>تعداد ثانیه‌ای بیشتر از 0 به کار ببرید.</translation>
+    </message>
+    <message>
+        <source>Settings this profile does not support were ignored.</source>
+        <translation>تنظیماتی که این نمایه پشتیبانی نمی‌کند نادیده گرفته شدند.</translation>
+    </message>
+    <message>
+        <source>Enter the encryption key the server uses.</source>
+        <translation>کلید رمزگذاری‌ای را که سرور به کار می‌برد وارد کنید.</translation>
+    </message>
+    <message>
+        <source>The minimum MTU %1 is above the maximum %2.</source>
+        <translation>کمینهٔ MTU (%1) از بیشینهٔ آن (%2) بیشتر است.</translation>
+    </message>
+    <message>
+        <source>Must be a number.</source>
+        <translation>باید عدد باشد.</translation>
     </message>
 </context>
 <context>
